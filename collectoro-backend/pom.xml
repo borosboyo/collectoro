@@ -3,19 +3,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>hu.bme.aut.collectoro</groupId>
+        <artifactId>collectoro</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>hu.bme.aut</groupId>
-    <artifactId>collectoro</artifactId>
+    <groupId>hu.bme.aut.collectoro.collectoro-backend</groupId>
+    <artifactId>collectoro-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>collectoro-backend</name>
     <description>collectoro-backend</description>
+    <packaging>jar</packaging>
     <properties>
         <java.version>17</java.version>
         <kotlin.version>1.7.22</kotlin.version>
+        <frontendDir>${project.parent.basedir}/collectoro-frontend</frontendDir>
     </properties>
     <dependencies>
         <dependency>
@@ -37,6 +38,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -103,12 +109,70 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.5</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>hu.bme.aut.collectoro.controller</location>
+                            </locations>
+                            <info>
+                                <title>REST API SPEC FOR COLLECTORO LIFE FRONTEND</title>
+                                <description>REST API SPEC FOR COLLECTORO LIFE FRONTEND</description>
+                                <version>v1</version>
+                            </info>
+                            <swaggerDirectory>${frontendDir}/swagger-json</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.codegen.v3</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>3.0.41</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${frontendDir}/swagger-json/swagger.json</inputSpec>
+                            <language>typescript-axios</language>
+                            <output>${frontendDir}/webapp/swagger</output>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -120,6 +184,7 @@
                         <plugin>spring</plugin>
                         <plugin>jpa</plugin>
                     </compilerPlugins>
+                    <sourceDirs>src/main/kotlin</sourceDirs>
                 </configuration>
                 <dependencies>
                     <dependency>
