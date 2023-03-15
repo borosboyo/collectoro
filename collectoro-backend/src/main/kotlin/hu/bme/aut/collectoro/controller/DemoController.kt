@@ -1,13 +1,17 @@
 package hu.bme.aut.collectoro.controller
 
-import hu.bme.aut.collectoro.service.UserService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/user")
-class UserController(private val userService: UserService) {
+@RequestMapping("/api/demo")
+class DemoController {
+
+    @GetMapping
+    fun sayHello(): ResponseEntity<String?>? {
+        return ResponseEntity.ok("Hello from secured endpoint")
+    }
 
 }

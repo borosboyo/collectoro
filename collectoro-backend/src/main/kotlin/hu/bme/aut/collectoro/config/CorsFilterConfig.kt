@@ -9,7 +9,7 @@ import org.springframework.web.filter.GenericFilterBean
 import java.io.IOException
 
 
-class CorsFilter : GenericFilterBean() {
+class CorsFilterConfig : GenericFilterBean() {
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(servletRequest: ServletRequest?, servletResponse: ServletResponse, filterChain: FilterChain) {
         val response = servletResponse as HttpServletResponse

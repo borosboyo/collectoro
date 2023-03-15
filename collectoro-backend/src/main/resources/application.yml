@@ -34,8 +34,7 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-        naming_strategy : org.hibernate.cfg.EJB3NamingStrategy
-        dialect : org.hibernate.dialect.PostgreSQL9Dialect
+        dialect : org.hibernate.dialect.PostgreSQLDialect
         ddl-auto : update     # Hibernate ddl auto (create, create-drop, validate, update)
     generate-ddl: true
 
@@ -51,3 +50,10 @@ db:
   auto-reconnect : true
   ssl : false
 
+#server:
+#  ssl:
+#    key-store-password: collectoro
+#    key-store-type: PKCS12
+#    key-store: src/main/resources/keystore.p12
+#    enabled: 'true'
+#    key-alias: collectoro
