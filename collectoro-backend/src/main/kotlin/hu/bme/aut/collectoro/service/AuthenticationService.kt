@@ -4,13 +4,11 @@ import hu.bme.aut.collectoro.domain.Role
 import hu.bme.aut.collectoro.domain.Token
 import hu.bme.aut.collectoro.domain.TokenType
 import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.dto.AuthenticationReq
-import hu.bme.aut.collectoro.dto.AuthenticationResp
-import hu.bme.aut.collectoro.dto.RegisterReq
+import hu.bme.aut.collectoro.dto.auth.AuthenticationReq
+import hu.bme.aut.collectoro.dto.auth.AuthenticationResp
+import hu.bme.aut.collectoro.dto.auth.RegisterReq
 import hu.bme.aut.collectoro.repository.UserRepository
 import hu.bme.aut.collectoro.repository.TokenRepository
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder

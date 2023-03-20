@@ -1,13 +1,13 @@
 package hu.bme.aut.collectoro.controller
 
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest
-import hu.bme.aut.collectoro.dto.AuthenticationReq
-import hu.bme.aut.collectoro.dto.AuthenticationResp
-import hu.bme.aut.collectoro.dto.RegisterReq
+import hu.bme.aut.collectoro.dto.auth.AuthenticationReq
+import hu.bme.aut.collectoro.dto.auth.AuthenticationResp
+import hu.bme.aut.collectoro.dto.auth.RegisterReq
 import hu.bme.aut.collectoro.service.AuthenticationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,5 +34,12 @@ class AuthenticationController(
    ): ResponseEntity<AuthenticationResp> {
        return ResponseEntity.ok(authenticationService.authenticate(request))
    }
+
+    @GetMapping("/google/login")
+    fun googleLogin(
+
+    ): ResponseEntity.BodyBuilder {
+        return ResponseEntity.ok()
+    }
 
 }

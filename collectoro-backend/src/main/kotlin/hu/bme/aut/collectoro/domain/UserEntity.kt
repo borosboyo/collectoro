@@ -12,6 +12,8 @@ class UserEntity private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
+
+    val provider: Provider? = Provider.LOCAL,
     val firstName: String? = null,
     val lastName: String? = null,
     private val email: String? = null,
@@ -22,10 +24,15 @@ class UserEntity private constructor(
 
     @OneToMany
     @JoinColumn(name = "user_entity")
-    val tokens: List<Token> = ArrayList()
+    val tokens: List<Token> = ArrayList(),
+
+    @ManyToMany
+    @JoinColumn(name = "users")
+    val groupEntities: List<GroupEntity> = ArrayList()
+
 ) : UserDetails {
 
-    constructor() : this(0, null, null, null, null, Role.USER, ArrayList()) {
+    constructor() : this(0, Provider.LOCAL,null, null, null, null, Role.USER, ArrayList(),  ArrayList()) {
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
@@ -58,21 +65,25 @@ class UserEntity private constructor(
 
     data class Builder(
         var id: Long = 0,
+        var provider: Provider = Provider.LOCAL,
         var firstName: String? = null,
         var lastName: String? = null,
         var email: String? = null,
         var password: String? = null,
         var role: Role = Role.USER,
-        var tokens: List<Token> = ArrayList()
+        var tokens: List<Token> = ArrayList(),
+        var groupEntities: List<GroupEntity> = ArrayList()
     ) {
         fun id(id: Long) = apply { this.id = id }
+        fun provider(provider: Provider) = apply { this.provider = provider }
         fun firstName(firstName: String) = apply { this.firstName = firstName }
         fun lastName(lastName: String) = apply { this.lastName = lastName }
         fun email(email: String) = apply { this.email = email }
         fun password(password: String) = apply { this.password = password }
         fun role(role: Role) = apply { this.role = role }
         fun tokens(tokens: List<Token>) = apply { this.tokens = tokens }
-        fun build() = UserEntity(id, firstName, lastName, email, password, role, tokens)
+        fun groups(groupEntities: List<GroupEntity>) = apply { this.groupEntities = groupEntities }
+        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities)
     }
 
 }

@@ -1,4 +1,4 @@
-package hu.bme.aut.collectoro.dto
+package hu.bme.aut.collectoro.dto.auth
 
 class AuthenticationResp private constructor(
     var token: String? = null
