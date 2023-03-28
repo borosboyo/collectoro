@@ -17,7 +17,11 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutHandler
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.io.IOException
+import java.util.*
 
 
 @Configuration
@@ -37,9 +41,6 @@ class SecurityConfig(
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**").permitAll()
             .anyRequest().authenticated().and()
-            .oauth2Client().and()
-                .oauth2Login().loginPage("/api/auth/google/login")
-                .userInfoEndpoint().userService(CustomOAuth2UserService()).and().successHandler(this::onAuthenticationSuccess).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
@@ -51,14 +52,18 @@ class SecurityConfig(
         return http.build();
     }
 
-    @Throws(IOException::class, ServletException::class)
-    fun onAuthenticationSuccess(
-        request: HttpServletRequest?, response: HttpServletResponse,
-        authentication: Authentication
-    ) {
-        val oauthUser = authentication.principal as CustomOAuth2User
-        userService.processOAuthPostLogin(oauthUser.getEmail())
-        response.sendRedirect("http://localhost:8080/")
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource? {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins =
+            listOf("http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000")
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+        configuration.allowCredentials = true
+        configuration.allowedHeaders =
+            listOf("Authorization", "Cache-Control", "Content-Type", "X-Requested-With")
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 
 }

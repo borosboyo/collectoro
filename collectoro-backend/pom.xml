@@ -167,7 +167,7 @@
                         <configuration>
                             <inputSpec>${frontendDir}/swagger-json/swagger.json</inputSpec>
                             <language>typescript-axios</language>
-                            <output>${frontendDir}/webapp/swagger</output>
+                            <output>${frontendDir}/swagger</output>
                             <generateApiDocumentation>false</generateApiDocumentation>
                         </configuration>
                     </execution>

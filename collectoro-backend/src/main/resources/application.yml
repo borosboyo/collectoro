@@ -1,14 +1,4 @@
 spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            clientId: 409953552731-c9b85afj0jja8q8srnibc61r3p5vheqr.apps.googleusercontent.com
-            clientSecret: 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
-            scope:
-              - email
-              - profile
   banner:
     location:
       'classpath:banner.txt'

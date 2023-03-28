@@ -35,11 +35,4 @@ class AuthenticationController(
        return ResponseEntity.ok(authenticationService.authenticate(request))
    }
 
-    @GetMapping("/google/login")
-    fun googleLogin(
-
-    ): ResponseEntity.BodyBuilder {
-        return ResponseEntity.ok()
-    }
-
 }
