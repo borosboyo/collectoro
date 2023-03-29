@@ -1,14 +1,13 @@
 package hu.bme.aut.collectoro.service
 
-import hu.bme.aut.collectoro.domain.Role
-import hu.bme.aut.collectoro.domain.Token
-import hu.bme.aut.collectoro.domain.TokenType
-import hu.bme.aut.collectoro.domain.UserEntity
+import hu.bme.aut.collectoro.domain.*
 import hu.bme.aut.collectoro.dto.auth.AuthenticationReq
 import hu.bme.aut.collectoro.dto.auth.AuthenticationResp
+import hu.bme.aut.collectoro.dto.auth.GoogleAuthenticationReq
 import hu.bme.aut.collectoro.dto.auth.RegisterReq
 import hu.bme.aut.collectoro.repository.UserRepository
 import hu.bme.aut.collectoro.repository.TokenRepository
+import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -23,6 +22,7 @@ class AuthenticationService(
     private val authenticationManager: AuthenticationManager,
 ) {
 
+    @Transactional
     fun register(request: RegisterReq): AuthenticationResp? {
         val userEntity: UserEntity = UserEntity.Builder()
             .firstName(request.firstName)
@@ -30,6 +30,7 @@ class AuthenticationService(
             .email(request.email)
             .password(passwordEncoder.encode(request.password))
             .role(Role.USER)
+            .provider(Provider.LOCAL)
             .build()
         val savedUserEntity: UserEntity = userRepository.save(userEntity)
         val jwtToken: String = jwtService.generateToken(userEntity)
@@ -39,6 +40,7 @@ class AuthenticationService(
             .build()
     }
 
+    @Transactional
     fun authenticate(request: AuthenticationReq): AuthenticationResp? {
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
@@ -46,18 +48,18 @@ class AuthenticationService(
                 request.password
             )
         )
-        val userEntity: UserEntity? = userRepository.findByEmail(request.email)
+        val userEntity: UserEntity? = userRepository.findByEmailAndProvider(request.email, Provider.LOCAL)
         val jwtToken: String = jwtService.generateToken(userEntity)
         if (userEntity != null) {
             revokeAllUserTokens(userEntity)
-        }
-        if (userEntity != null) {
             saveUserToken(userEntity, jwtToken)
         }
+
         return AuthenticationResp.Builder()
             .token(jwtToken)
             .build()
     }
+
 
     private fun saveUserToken(userEntity: UserEntity, jwtToken: String) {
         val token: Token = Token.Builder()
@@ -78,6 +80,33 @@ class AuthenticationService(
             token?.revoked = true
         }
         tokenRepository.saveAll(validUserTokens as List<Token>)
+    }
+
+    @Transactional
+    fun authenticateGoogle(request: GoogleAuthenticationReq): AuthenticationResp? {
+        var userEntity: UserEntity? = userRepository.findByEmailAndProvider(request.email, Provider.GOOGLE)
+        val jwtToken: String?;
+        if(userEntity == null) {
+           userEntity = UserEntity.Builder()
+                .firstName(request.firstName)
+                .lastName(request.lastName)
+                .email(request.email)
+                .role(Role.USER)
+                .provider(Provider.GOOGLE)
+                .build()
+            userRepository.save(userEntity)
+            jwtToken= jwtService.generateToken(userEntity)
+            revokeAllUserTokens(userEntity)
+            saveUserToken(userEntity, jwtToken)
+        } else {
+            jwtToken= jwtService.generateToken(userEntity)
+            revokeAllUserTokens(userEntity)
+            saveUserToken(userEntity, jwtToken)
+        }
+
+        return AuthenticationResp.Builder()
+            .token(jwtToken)
+            .build()
     }
 
 

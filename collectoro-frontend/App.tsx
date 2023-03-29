@@ -4,11 +4,11 @@ import * as Google from 'expo-auth-session/providers/google';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import {AuthSessionResult, makeRedirectUri, TokenResponse} from "expo-auth-session";
 import axios from "axios";
+import LoginComponent from "./src/app/core/login/login.component";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-  const [accessToken, setAccessToken] = React.useState('');
   const [user, setUser] = React.useState(null);
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: "409953552731-ntvvsac4l7puqt3vnke3b61o9jp3mbn3.apps.googleusercontent.com",
@@ -23,39 +23,10 @@ export default function App() {
   });
 
 
-  function fetchUserInfo(accessToken: string | undefined) {
-    console.log(accessToken);
-    let response = axios.get("https://www.googleapis.com/userinfo/v2/me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    }).then((response) => {
-        console.log(response)
-    });
-  }
-
-
 
   return (
       <View style={styles.container}>
-        {user === null &&
-            <>
-              <Text style={{fontSize: 35, fontWeight: 'bold'}}>Welcome</Text>
-              <Text style={{fontSize: 25, fontWeight: 'bold', marginBottom: 20, color: 'gray'}}>Please login</Text>
-              <TouchableOpacity
-                  disabled={!request}
-                  onPress={() => {
-                    promptAsync().then(
-                        (result: AuthSessionResult) => {
-                            if (result.type === "success") {
-                              fetchUserInfo(result.authentication?.accessToken);
-                            }
-                        }
-                    );
-                  }}
-              >
-                <Image source={require("./assets/btn.png")} style={{width: 300, height: 40}} />
-              </TouchableOpacity>
-            </>
-        }
+        <LoginComponent/>
       </View>
   );
 }
