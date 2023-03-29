@@ -1,11 +1,10 @@
 import {AuthSessionResult, makeRedirectUri} from "expo-auth-session";
 import axios, {AxiosResponse} from "axios";
-import * as Google from "expo-auth-session/providers/google";
 import {
     AuthenticationControllerApiFactory, AuthenticationResp,
     GoogleAuthenticationReq
 } from "../../../../swagger";
-import {axiosConfig} from "../../shared/axios-config";
+import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginService = {
@@ -22,12 +21,10 @@ const LoginService = {
                 firstName: response.data.given_name,
                 lastName: response.data.family_name,
             }
+            console.log(req);
 
-            this.authenticationController.authenticateGoogle().then((response: AxiosResponse<AuthenticationResp>) => {
-                AsyncStorage.setItem("token", response.data.token!!).then(() => {
-                    console.log("Token saved!");
-                    console.log(AsyncStorage.getItem("token"));
-                });
+            this.authenticationController.authenticateGoogle(req, baseOptions).then(async (response: AxiosResponse<AuthenticationResp>) => {
+                await AsyncStorage.setItem("token", response.data.token!!);
             })
         });
     },
@@ -40,6 +37,10 @@ const LoginService = {
                 }
             }
         );
+    },
+
+    loginWithEmail: function() {
+        // TODO
     }
 
 }
