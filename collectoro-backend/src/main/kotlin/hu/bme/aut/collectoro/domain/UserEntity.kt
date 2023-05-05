@@ -16,8 +16,8 @@ class UserEntity private constructor(
     val provider: Provider? = Provider.LOCAL,
     val firstName: String? = null,
     val lastName: String? = null,
-    private val email: String? = null,
-    private val password: String? = null,
+    private var email: String? = null,
+    private var password: String? = null,
 
     @Enumerated(EnumType.STRING)
     val role: Role = Role.USER,
@@ -28,9 +28,11 @@ class UserEntity private constructor(
 
     @ManyToMany
     @JoinColumn(name = "users")
-    val groupEntities: List<GroupEntity> = ArrayList()
+    val groupEntities: List<GroupEntity> = ArrayList(),
 
-) : UserDetails {
+    var enabled: Boolean? = false,
+
+    ) : UserDetails {
 
     constructor() : this(0, Provider.LOCAL,null, null, null, null, Role.USER, ArrayList(),  ArrayList()) {
     }
@@ -45,6 +47,14 @@ class UserEntity private constructor(
 
     override fun getUsername(): String {
         return email!!
+    }
+
+    fun getEmail(): String {
+        return email!!
+    }
+
+    fun setPassword(password: String) {
+        this.password = password
     }
 
     override fun isAccountNonExpired(): Boolean {
@@ -72,7 +82,8 @@ class UserEntity private constructor(
         var password: String? = null,
         var role: Role = Role.USER,
         var tokens: List<Token> = ArrayList(),
-        var groupEntities: List<GroupEntity> = ArrayList()
+        var groupEntities: List<GroupEntity> = ArrayList(),
+        var enabled: Boolean? = false
     ) {
         fun id(id: Long) = apply { this.id = id }
         fun provider(provider: Provider) = apply { this.provider = provider }
@@ -83,7 +94,8 @@ class UserEntity private constructor(
         fun role(role: Role) = apply { this.role = role }
         fun tokens(tokens: List<Token>) = apply { this.tokens = tokens }
         fun groups(groupEntities: List<GroupEntity>) = apply { this.groupEntities = groupEntities }
-        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities)
+        fun enabled(enabled: Boolean) = apply { this.enabled = enabled }
+        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities, enabled)
     }
 
 }

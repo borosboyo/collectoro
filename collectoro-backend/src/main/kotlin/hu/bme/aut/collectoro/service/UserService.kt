@@ -2,6 +2,8 @@ package hu.bme.aut.collectoro.service
 
 import hu.bme.aut.collectoro.domain.Provider
 import hu.bme.aut.collectoro.domain.UserEntity
+import hu.bme.aut.collectoro.dto.user.DeleteUserByIdResp
+import hu.bme.aut.collectoro.dto.user.DeleteUserByIdReq
 import hu.bme.aut.collectoro.dto.user.GetUserByIdTsReq
 import hu.bme.aut.collectoro.dto.user.GetUserByIdTsResp
 import hu.bme.aut.collectoro.repository.UserRepository
@@ -29,6 +31,12 @@ class UserService(private val userRepository: UserRepository) {
             }
         }
 
+    }
+
+    @Transactional
+    fun deleteUserById(req: DeleteUserByIdReq): DeleteUserByIdResp {
+        userRepository.deleteById(req.userId)
+        return DeleteUserByIdResp()
     }
 
 }

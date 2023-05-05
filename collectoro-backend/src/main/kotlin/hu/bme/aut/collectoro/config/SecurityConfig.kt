@@ -1,9 +1,6 @@
 package hu.bme.aut.collectoro.config
 
-import hu.bme.aut.collectoro.domain.CustomOAuth2User
-import hu.bme.aut.collectoro.service.CustomOAuth2UserService
 import hu.bme.aut.collectoro.service.UserService
-import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
@@ -20,8 +17,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import java.io.IOException
-import java.util.*
 
 
 @Configuration

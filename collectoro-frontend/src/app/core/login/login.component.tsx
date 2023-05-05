@@ -2,11 +2,6 @@ import * as Google from "expo-auth-session/providers/google";
 import {AuthSessionResult, makeRedirectUri} from "expo-auth-session";
 import {Button, Image, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
-import {useEffect} from "react";
-import axios, {AxiosResponse} from "axios";
-import {AuthenticationControllerApiFactory, AuthenticationResp, GoogleAuthenticationReq} from "../../../../swagger";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {axiosConfig} from "../../shared/axios-config";
 import LoginService from "./login.service";
 
 export default function LoginComponent() {

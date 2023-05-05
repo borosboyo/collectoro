@@ -20,4 +20,16 @@ class GroupEntity (
     val transactions: List<Transaction> = ArrayList()
 
 ) {
+    data class Builder(
+        var id: Long = 0,
+        var name: String? = null,
+        var users: List<UserEntity> = ArrayList(),
+        var transactions: List<Transaction> = ArrayList()
+    ) {
+        fun id(id: Long) = apply { this.id = id }
+        fun name(name: String?) = apply { this.name = name }
+        fun users(users: List<UserEntity>) = apply { this.users = users }
+        fun transactions(transactions: List<Transaction>) = apply { this.transactions = transactions }
+        fun build() = GroupEntity(id, name, users, transactions)
+    }
 }
