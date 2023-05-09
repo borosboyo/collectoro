@@ -2,10 +2,7 @@ package hu.bme.aut.collectoro.service
 
 import hu.bme.aut.collectoro.domain.Provider
 import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.dto.user.DeleteUserByIdResp
-import hu.bme.aut.collectoro.dto.user.DeleteUserByIdReq
-import hu.bme.aut.collectoro.dto.user.GetUserByIdTsReq
-import hu.bme.aut.collectoro.dto.user.GetUserByIdTsResp
+import hu.bme.aut.collectoro.dto.user.*
 import hu.bme.aut.collectoro.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -39,4 +36,9 @@ class UserService(private val userRepository: UserRepository) {
         return DeleteUserByIdResp()
     }
 
+    //UserDto átalakítás valahogy
+    @Transactional
+    fun getUsersByGroupId(req: GetUsersByGroupIdReq): GetUsersByGroupIdResp {
+        return GetUsersByGroupIdResp()
+    }
 }

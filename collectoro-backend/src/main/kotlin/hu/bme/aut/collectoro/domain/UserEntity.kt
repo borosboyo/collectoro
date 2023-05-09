@@ -1,6 +1,7 @@
 package hu.bme.aut.collectoro.domain
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Fetch
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

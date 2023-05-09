@@ -26,10 +26,10 @@ class SecurityConfig(
     private val jwtAuthFilter: JWTAuthenticationFilter,
     private val userService: UserService,
     private val logoutHandler: LogoutHandler
-)  {
+) {
 
     @Bean
-    fun filterChain(http: HttpSecurity) : SecurityFilterChain {
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .cors().and()
             .csrf().disable()
@@ -40,11 +40,11 @@ class SecurityConfig(
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
             .logout()
-                .logoutUrl("/api/auth/logout")
-                .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler { request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication? -> SecurityContextHolder.clearContext() }
+            .logoutUrl("/api/auth/logout")
+            .addLogoutHandler(logoutHandler)
+            .logoutSuccessHandler { request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication? -> SecurityContextHolder.clearContext() }
 
-        return http.build();
+        return http.build()
     }
 
     @Bean

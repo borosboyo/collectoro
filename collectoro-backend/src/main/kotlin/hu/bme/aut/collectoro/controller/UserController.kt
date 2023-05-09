@@ -26,7 +26,12 @@ class UserController(private val userService: UserService) {
     @Path("/getUserById")
     @Produces("application/json")
     @ApiOperation(value = "getUserById", response = GetUserByIdTsResp::class)
-    fun getUserById(@RequestBody @NotNull @ApiParam(required = false, value = "GetUserByIdTsReq") req: GetUserByIdTsReq): GetUserByIdTsResp {
+    fun getUserById(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "GetUserByIdTsReq"
+        ) req: GetUserByIdTsReq
+    ): GetUserByIdTsResp {
         return userService.getUserById(req)
     }
 }

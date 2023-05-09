@@ -26,10 +26,12 @@ class GroupService(
     @Transactional
     fun createGroup(req: CreateGroupReq): CreateGroupResp {
         val user = userRepository.findById(req.userId).get()
-        val group = groupRepository.save(GroupEntity.Builder()
-            .name(req.name)
-            .users(mutableListOf(user))
-            .build())
+        val group = groupRepository.save(
+            GroupEntity.Builder()
+                .name(req.name)
+                .users(mutableListOf(user))
+                .build()
+        )
 
         return CreateGroupResp(group)
     }
@@ -45,7 +47,7 @@ class GroupService(
     fun joinGroup(req: JoinGroupReq): JoinGroupResp {
         val group = groupRepository.findByJoinLink(req.joinLink)
         val user = userRepository.findById(req.userId).get()
-        if(group !== null) {
+        if (group !== null) {
             group.users.add(user)
             groupRepository.save(group)
             user.groupEntities.add(group)

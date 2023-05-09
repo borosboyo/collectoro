@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class JWTAuthenticationFilter (
+class JWTAuthenticationFilter(
     private val jwtService: JWTService,
     private val userDetailsService: UserDetailsService,
     private val tokenRepository: TokenRepository
@@ -35,7 +35,7 @@ class JWTAuthenticationFilter (
         if (SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(userEmail)
             val isTokenValid: Boolean? = tokenRepository.findByToken(jwt)
-                ?.map { t -> !t?.expired!! && !t.revoked && t.tokenType == TokenType.BEARER}
+                ?.map { t -> !t?.expired!! && !t.revoked && t.tokenType == TokenType.BEARER }
                 ?.orElse(false)
 
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid == true) {

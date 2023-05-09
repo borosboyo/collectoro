@@ -10,9 +10,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler
 import org.springframework.stereotype.Service
 
 @Service
-class LogoutService (
+class LogoutService(
     private val tokenRepository: TokenRepository
-)  : LogoutHandler {
+) : LogoutHandler {
 
     @Override
     override fun logout(

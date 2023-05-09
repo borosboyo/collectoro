@@ -11,11 +11,9 @@ class Wallet(
 
     @OneToMany
     @JoinColumn(name = "wallet")
-    val balances : MutableList<Balance> = ArrayList(),
+    val balances: MutableList<Balance> = ArrayList(),
 
     @OneToOne
     @JoinColumn(name = "wallet")
     val userEntity: UserEntity? = null
-) {
-
-}
+)

@@ -23,9 +23,7 @@ class Token private constructor(
     @JoinColumn(name = "user_entity_id")
     var userEntity: UserEntity? = null
 ) {
-    constructor() : this(null, null, TokenType.BEARER, false, false, null) {
-
-    }
+    constructor() : this(null, null, TokenType.BEARER, false, false, null)
 
     data class Builder(
         var id: Long? = null,

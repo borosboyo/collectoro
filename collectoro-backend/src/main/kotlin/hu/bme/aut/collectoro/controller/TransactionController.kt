@@ -1,7 +1,5 @@
 package hu.bme.aut.collectoro.controller
 
-import hu.bme.aut.collectoro.dto.auth.AuthenticationResp
-import hu.bme.aut.collectoro.dto.auth.RegisterReq
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionResp
 import hu.bme.aut.collectoro.service.TransactionService

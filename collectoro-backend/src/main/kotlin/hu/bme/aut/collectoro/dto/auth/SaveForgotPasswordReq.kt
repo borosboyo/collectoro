@@ -1,7 +1,6 @@
 package hu.bme.aut.collectoro.dto.auth
 
-class SaveForgotPasswordReq (
+class SaveForgotPasswordReq(
     val token: String,
     val newPassword: String
-) {
-}
+)

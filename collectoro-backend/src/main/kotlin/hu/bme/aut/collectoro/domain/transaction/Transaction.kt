@@ -8,21 +8,21 @@ import java.time.LocalDateTime
 open class Transaction(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-    val purpose: String = "",
-    val date: LocalDateTime = LocalDateTime.now(),
-    val currency: Currency = Currency.HUF,
-    val type: TransactionType = TransactionType.EXPENSE,
+    open val id: Long = 0,
+    open val purpose: String = "",
+    open val date: LocalDateTime = LocalDateTime.now(),
+    open val currency: Currency = Currency.HUF,
+    open val type: TransactionType? = TransactionType.EXPENSE,
 
     @ElementCollection
-    val who: HashMap<Long, Double> = HashMap<Long, Double>(),
+    open val who: HashMap<Long, Double> = HashMap<Long, Double>(),
 
     @ElementCollection
-    val forWhom: HashMap<Long, Double> = HashMap<Long, Double>(),
+    open val forWhom: HashMap<Long, Double> = HashMap<Long, Double>(),
 
     @ManyToOne
     @JoinColumn(name = "transactions")
-    val groupEntity: GroupEntity = GroupEntity()
+    open val groupEntity: GroupEntity = GroupEntity()
 ) {
 
     data class Builder(
@@ -39,7 +39,7 @@ open class Transaction(
         fun purpose(purpose: String) = apply { this.purpose = purpose }
         fun date(date: LocalDateTime) = apply { this.date = date }
         fun currency(currency: Currency) = apply { this.currency = currency }
-        fun type(type: TransactionType) = apply { this.type = type }
+        fun type(type: TransactionType?) = apply { this.type = type }
         fun who(who: HashMap<Long, Double>) = apply { this.who = who }
         fun forWhom(forWhom: HashMap<Long, Double>) = apply { this.forWhom = forWhom }
         fun groupEntity(groupEntity: GroupEntity) = apply { this.groupEntity = groupEntity }

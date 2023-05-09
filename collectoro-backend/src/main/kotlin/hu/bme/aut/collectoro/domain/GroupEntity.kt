@@ -4,11 +4,10 @@ import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Entity
 @Table(name = "group_entity")
-class GroupEntity (
+class GroupEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -26,7 +25,7 @@ class GroupEntity (
 
     val currency: Currency = Currency.HUF,
 
-) {
+    ) {
     data class Builder(
         var id: Long = 0,
         var name: String? = null,
