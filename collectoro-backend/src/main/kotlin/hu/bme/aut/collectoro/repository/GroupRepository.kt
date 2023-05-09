@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GroupRepository : JpaRepository<GroupEntity, Long> {
     fun findByUsers(user: UserEntity): List<GroupEntity>
+
+    fun findByJoinLink(joinLink: String): GroupEntity?
+    fun save(group: GroupEntity): GroupEntity
 }

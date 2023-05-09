@@ -26,7 +26,6 @@ import javax.ws.rs.Produces
 @RequestMapping("/api/auth")
 class AuthenticationController(
     private val authenticationService: AuthenticationService,
-    private val logger: Logger = LoggerFactory.getLogger(AuthenticationController::class.java)
 ) {
 
     @POST

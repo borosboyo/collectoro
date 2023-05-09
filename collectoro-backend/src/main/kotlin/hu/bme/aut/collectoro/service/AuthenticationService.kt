@@ -170,7 +170,8 @@ class AuthenticationService(
             (SecurityContextHolder.getContext().authentication.principal as UserEntity).getEmail().let {
                 userRepository.findByEmail(it)
             }
-        if (user != null) {
+
+        if (user != null && passwordEncoder.matches(req.oldPassword, user.password)) {
             changeUserPassword(user, req.newPassword)
         }
         return UpdatePasswordResp()

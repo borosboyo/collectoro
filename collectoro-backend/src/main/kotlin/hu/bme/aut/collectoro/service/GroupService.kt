@@ -28,7 +28,7 @@ class GroupService(
         val user = userRepository.findById(req.userId).get()
         val group = groupRepository.save(GroupEntity.Builder()
             .name(req.name)
-            .users(listOf(user))
+            .users(mutableListOf(user))
             .build())
 
         return CreateGroupResp(group)
@@ -38,6 +38,21 @@ class GroupService(
     fun deleteGroup(req: DeleteGroupReq): DeleteGroupResp {
         groupRepository.deleteById(req.groupId)
         return DeleteGroupResp()
+    }
+
+
+    @Transactional
+    fun joinGroup(req: JoinGroupReq): JoinGroupResp {
+        val group = groupRepository.findByJoinLink(req.joinLink)
+        val user = userRepository.findById(req.userId).get()
+        if(group !== null) {
+            group.users.add(user)
+            groupRepository.save(group)
+            user.groupEntities.add(group)
+            //user.wallets.add(group.wallet)
+            userRepository.save(user)
+        }
+        return JoinGroupResp()
     }
 
 

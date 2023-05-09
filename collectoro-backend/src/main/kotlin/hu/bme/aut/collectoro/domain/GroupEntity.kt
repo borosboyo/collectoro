@@ -1,7 +1,10 @@
 package hu.bme.aut.collectoro.domain
 
+import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity
 @Table(name = "group_entity")
@@ -13,23 +16,31 @@ class GroupEntity (
 
     @ManyToMany
     @JoinColumn(name = "group_entities")
-    val users: List<UserEntity> = ArrayList(),
+    val users: MutableList<UserEntity> = ArrayList(),
 
     @OneToMany
     @JoinColumn(name = "group_entities")
-    val transactions: List<Transaction> = ArrayList()
+    val transactions: MutableList<Transaction> = ArrayList(),
+
+    val joinLink: String? = UUID.randomUUID().toString(),
+
+    val currency: Currency = Currency.HUF,
 
 ) {
     data class Builder(
         var id: Long = 0,
         var name: String? = null,
-        var users: List<UserEntity> = ArrayList(),
-        var transactions: List<Transaction> = ArrayList()
+        var users: MutableList<UserEntity> = ArrayList(),
+        var transactions: MutableList<Transaction> = ArrayList(),
+        var joinLink: String? = UUID.randomUUID().toString(),
+        var currency: Currency = Currency.HUF,
     ) {
         fun id(id: Long) = apply { this.id = id }
         fun name(name: String?) = apply { this.name = name }
-        fun users(users: List<UserEntity>) = apply { this.users = users }
-        fun transactions(transactions: List<Transaction>) = apply { this.transactions = transactions }
-        fun build() = GroupEntity(id, name, users, transactions)
+        fun users(users: MutableList<UserEntity>) = apply { this.users = users }
+        fun transactions(transactions: MutableList<Transaction>) = apply { this.transactions = transactions }
+        fun joinLink(joinLink: String?) = apply { this.joinLink = joinLink }
+        fun currency(currency: Currency) = apply { this.currency = currency }
+        fun build() = GroupEntity(id, name, users, transactions, joinLink, currency)
     }
 }

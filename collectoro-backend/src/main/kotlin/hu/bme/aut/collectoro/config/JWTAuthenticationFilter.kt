@@ -1,5 +1,6 @@
 package hu.bme.aut.collectoro.config
 
+import hu.bme.aut.collectoro.domain.TokenType
 import hu.bme.aut.collectoro.repository.TokenRepository
 import hu.bme.aut.collectoro.service.JWTService
 import jakarta.servlet.FilterChain
@@ -34,7 +35,7 @@ class JWTAuthenticationFilter (
         if (SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(userEmail)
             val isTokenValid: Boolean? = tokenRepository.findByToken(jwt)
-                ?.map { t -> !t?.expired!! && !t.revoked }
+                ?.map { t -> !t?.expired!! && !t.revoked && t.tokenType == TokenType.BEARER}
                 ?.orElse(false)
 
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid == true) {
