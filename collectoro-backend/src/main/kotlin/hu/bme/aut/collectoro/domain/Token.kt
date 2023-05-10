@@ -1,9 +1,13 @@
 package hu.bme.aut.collectoro.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "token")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class Token private constructor(
     @Id
     @GeneratedValue
@@ -19,8 +23,9 @@ class Token private constructor(
 
     var expired: Boolean = false,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_entity_id")
+    @JsonManagedReference
     var userEntity: UserEntity? = null
 ) {
     constructor() : this(null, null, TokenType.BEARER, false, false, null)

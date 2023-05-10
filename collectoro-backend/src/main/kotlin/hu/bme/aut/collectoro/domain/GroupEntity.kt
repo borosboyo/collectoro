@@ -1,24 +1,31 @@
 package hu.bme.aut.collectoro.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
+import org.springframework.context.annotation.Lazy
 import java.util.*
 
 @Entity
 @Table(name = "group_entity")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class GroupEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     val name: String? = null,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_entities")
+    @JsonManagedReference
     val users: MutableList<UserEntity> = ArrayList(),
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_entities")
+    @JsonManagedReference
     val transactions: MutableList<Transaction> = ArrayList(),
 
     val joinLink: String? = UUID.randomUUID().toString(),

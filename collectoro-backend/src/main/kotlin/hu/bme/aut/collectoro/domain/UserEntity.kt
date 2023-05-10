@@ -1,7 +1,11 @@
 package hu.bme.aut.collectoro.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import jakarta.persistence.*
 import org.hibernate.annotations.Fetch
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -9,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
 @Table(name = "user_entity")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class UserEntity private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +28,22 @@ class UserEntity private constructor(
     @Enumerated(EnumType.STRING)
     val role: Role = Role.USER,
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_entity")
+    @JsonManagedReference
     val tokens: MutableList<Token> = ArrayList(),
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "users")
+    @JsonManagedReference
     val groupEntities: MutableList<GroupEntity> = ArrayList(),
 
     var enabled: Boolean? = false,
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_entity")
-    val wallet: Wallet? = null
+    @JsonManagedReference
+    var wallet: Wallet? = null
 
     ) : UserDetails {
 
@@ -87,7 +95,8 @@ class UserEntity private constructor(
         var role: Role = Role.USER,
         var tokens: MutableList<Token> = ArrayList(),
         var groupEntities: MutableList<GroupEntity> = ArrayList(),
-        var enabled: Boolean? = false
+        var enabled: Boolean? = false,
+        var wallet: Wallet? = null
     ) {
         fun id(id: Long) = apply { this.id = id }
         fun provider(provider: Provider) = apply { this.provider = provider }
@@ -99,7 +108,8 @@ class UserEntity private constructor(
         fun tokens(tokens: MutableList<Token>) = apply { this.tokens = tokens }
         fun groups(groupEntities: MutableList<GroupEntity>) = apply { this.groupEntities = groupEntities }
         fun enabled(enabled: Boolean) = apply { this.enabled = enabled }
-        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities, enabled)
+        fun wallet(wallet: Wallet) = apply { this.wallet = wallet }
+        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities, enabled, wallet)
     }
 
 }

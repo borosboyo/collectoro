@@ -1,10 +1,14 @@
 package hu.bme.aut.collectoro.domain.transaction
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.GroupEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 open class Transaction(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +24,9 @@ open class Transaction(
     @ElementCollection
     open val forWhom: HashMap<Long, Double> = HashMap<Long, Double>(),
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transactions")
+    @JsonManagedReference
     open val groupEntity: GroupEntity = GroupEntity()
 ) {
 

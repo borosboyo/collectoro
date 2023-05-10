@@ -6,6 +6,7 @@ import hu.bme.aut.collectoro.dto.user.EnableReq
 import hu.bme.aut.collectoro.dto.user.EnableResp
 import hu.bme.aut.collectoro.repository.TokenRepository
 import hu.bme.aut.collectoro.repository.UserRepository
+import hu.bme.aut.collectoro.repository.WalletRepository
 import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,7 +22,8 @@ class AuthenticationService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JWTService,
     private val authenticationManager: AuthenticationManager,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val walletRepository: WalletRepository
 ) {
 
     @Transactional
@@ -34,19 +36,23 @@ class AuthenticationService(
             .password(passwordEncoder.encode(request.password))
             .role(Role.USER)
             .provider(Provider.LOCAL)
-            .enabled(false)
+            .enabled(true)
             .build()
+        val wallet = Wallet()
+        wallet.userEntity = userEntity
+        walletRepository.save(wallet)
+        userEntity.wallet = wallet
         val savedUserEntity: UserEntity = userRepository.save(userEntity)
         val verificationToken: String = jwtService.generateToken(savedUserEntity)
         saveUserToken(savedUserEntity, verificationToken, TokenType.VERIFICATION)
 
         //Send verification token via email
-        val mail: Mail = emailService.createMail(
-            savedUserEntity.getEmail(),
-            EmailType.CONFIRM_REGISTRATION,
-            Map.of("token", verificationToken)
-        )
-        emailService.sendMail(mail)
+        //val mail: Mail = emailService.createMail(
+        //    savedUserEntity.getEmail(),
+        //    EmailType.CONFIRM_REGISTRATION,
+        //    Map.of("token", verificationToken)
+        //)
+        //emailService.sendMail(mail)
 
         return AuthenticationResp.Builder()
             .message("User registered successfully")

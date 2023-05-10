@@ -1,5 +1,7 @@
 package hu.bme.aut.collectoro.controller
 
+import hu.bme.aut.collectoro.dto.group.CreateGroupReq
+import hu.bme.aut.collectoro.dto.group.CreateGroupResp
 import hu.bme.aut.collectoro.dto.group.JoinGroupReq
 import hu.bme.aut.collectoro.dto.group.JoinGroupResp
 import hu.bme.aut.collectoro.service.GroupService
@@ -36,5 +38,19 @@ class GroupController(
         ) request: JoinGroupReq
     ): ResponseEntity<JoinGroupResp> {
         return ResponseEntity.ok(groupService.joinGroup(request))
+    }
+
+    @POST
+    @PostMapping("/createGroup")
+    @Path("/createGroup")
+    @Produces("application/json")
+    @ApiOperation(value = "createGroup", response = CreateGroupResp::class)
+    fun createGroup(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "CreateGroupReq"
+        ) request: CreateGroupReq
+    ): ResponseEntity<CreateGroupResp> {
+        return ResponseEntity.ok(groupService.createGroup(request))
     }
 }
