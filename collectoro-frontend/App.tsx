@@ -1,41 +1,47 @@
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import {AuthSessionResult, makeRedirectUri, TokenResponse} from "expo-auth-session";
-import axios from "axios";
+import React from "react";
+import { NativeBaseProvider, ColorMode } from "native-base";
+import type { StorageManager } from "native-base";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from "expo-web-browser";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginComponent from "./src/app/core/login/login.component";
+import RegisterComponent from "./src/app/core/register/register.component";
+import ForgotPasswordComponent from "./src/app/core/forgot-password/forgot-password";
+import SaveForgottenPasswordComponent from "./src/app/core/save-forgotten-password/save-forgotten-password";
 
 WebBrowser.maybeCompleteAuthSession();
+const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const [user, setUser] = React.useState(null);
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: "409953552731-ntvvsac4l7puqt3vnke3b61o9jp3mbn3.apps.googleusercontent.com",
-    iosClientId: "409953552731-balks0c557np9556tlqdl69llpkgtogd.apps.googleusercontent.com",
-    androidClientId: "409953552731-si4ntgth3u05eroseo5k2d4du8q9gpq7.apps.googleusercontent.com",
-    redirectUri: makeRedirectUri(
-        {
-          scheme: "collectoro-frontend"
-        }
-    ),
-    scopes: ["profile", "email"],
-  });
-
-
-
-  return (
-      <View style={styles.container}>
-        <LoginComponent/>
-      </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default ({ children, theme }: any) => {
+    const colorModeManager: StorageManager = {
+        get: async () => {
+            try {
+                let val = await AsyncStorage.getItem("@my-app-color-mode");
+                return val === "dark" ? "dark" : "light";
+            } catch (e) {
+                console.log(e);
+                return "light";
+            }
+        },
+        set: async (value: ColorMode) => {
+            try {
+                await AsyncStorage.setItem("@my-app-color-mode", value as string);
+            } catch (e) {
+                console.log(e);
+            }
+        },
+    };
+    return (
+            <NativeBaseProvider theme={theme} colorModeManager={colorModeManager}>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName="Login">
+                        <Stack.Screen name="Login" component={LoginComponent} options={{ headerShown: false }} />
+                        <Stack.Screen name="Register" component={RegisterComponent} options={{ headerShown: false }} />
+                        <Stack.Screen name={"ForgotPassword"} component={ForgotPasswordComponent} options={{ headerShown: false }} />
+                        <Stack.Screen name={"SaveForgottenPassword"} component={SaveForgottenPasswordComponent} options={{ headerShown: false }} />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </NativeBaseProvider>
+    );
+};

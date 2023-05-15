@@ -1,9 +1,7 @@
 package hu.bme.aut.collectoro.service
 
 import hu.bme.aut.collectoro.domain.Balance
-import hu.bme.aut.collectoro.domain.transaction.SubTransaction
-import hu.bme.aut.collectoro.domain.transaction.Transaction
-import hu.bme.aut.collectoro.domain.transaction.TransactionType
+import hu.bme.aut.collectoro.domain.transaction.*
 import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionResp
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
@@ -41,21 +39,23 @@ class TransactionService(
         return ProcessTransactionResp()
     }
 
-    private fun calculateNumberOfParticiapnts(req: ProcessTransactionReq): Pair<Int, Int> {
+    private fun calculateNumberOfParticipants(req: ProcessTransactionReq): Pair<Int, Int> {
         var numberOfPeopleWho: Int = 0
         var numberOfPeopleForWhom: Int = 0
-        for ((userId, amount) in req.who) {
-            if (amount != 0.0) numberOfPeopleWho++
-            if (req.forWhom[userId] != 0.0) numberOfPeopleForWhom++
+        for (userWithAmount in req.who) {
+            if (userWithAmount.amount != 0.0) numberOfPeopleWho++
+        }
+        for (userWithAmount in req.forWhom) {
+            if (userWithAmount.amount != 0.0) numberOfPeopleForWhom++
         }
         return Pair(numberOfPeopleWho, numberOfPeopleForWhom)
     }
 
     private fun processExpense(req: ProcessTransactionReq) {
         calculateSubTransactionsForExpense(req)
-        for ((userId, amount) in req.who) {
-            val balanceDelta = amount - req.forWhom[userId]!!
-            val userWallet = userRepository.findById(userId).get().wallet
+        for (userWithAmount in req.who) {
+            val balanceDelta = userWithAmount.amount - req.forWhom.find { it.userId == userWithAmount.userId }!!.amount
+            val userWallet = userRepository.findById(userWithAmount.userId).get().wallet
             val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
             balance.amount += balanceDelta
             balanceRepository.save(balance)
@@ -64,16 +64,16 @@ class TransactionService(
     }
 
     private fun calculateSubTransactionsForExpense(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticiapnts(req)
-        for ((whoUserId, whoAmount) in req.who) {
-            if (whoAmount != 0.0) {
-                val transactionAmountPerPerson = whoAmount / numberOfPeopleForWhom
-                for ((forWhomUserId, forWhomAmount) in req.forWhom) {
-                    if (forWhomAmount != 0.0) {
+        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
+        for (userWithWhoAmount in req.who) {
+            if (userWithWhoAmount.amount != 0.0) {
+                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
+                for (userWithForWhomAmount in req.forWhom) {
+                    if (userWithForWhomAmount.amount != 0.0) {
                         val subTransaction = SubTransaction.Builder()
                             .amount(transactionAmountPerPerson)
-                            .fromId(whoUserId)
-                            .toId(forWhomUserId)
+                            .fromId(userWithWhoAmount.userId)
+                            .toId(userWithForWhomAmount.userId)
                             .build()
                         subTransactionRepository.save(subTransaction)
                         break
@@ -85,9 +85,9 @@ class TransactionService(
 
     private fun processIncome(req: ProcessTransactionReq) {
         calculateSubTransactionsForIncome(req)
-        for ((userId, amount) in req.who) {
-            val balanceDelta = amount - req.forWhom[userId]!!
-            val userWallet = userRepository.findById(userId).get().wallet
+        for (userWithAmount in req.who) {
+            val balanceDelta = userWithAmount.amount - req.forWhom.find { it.userId == userWithAmount.userId }!!.amount
+            val userWallet = userRepository.findById(userWithAmount.userId).get().wallet
             val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
             balance.amount -= balanceDelta
             balanceRepository.save(balance)
@@ -95,18 +95,19 @@ class TransactionService(
     }
 
     private fun calculateSubTransactionsForIncome(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticiapnts(req)
-        for ((whoUserId, whoAmount) in req.who) {
-            if (whoAmount != 0.0) {
-                val transactionAmountPerPerson = whoAmount / numberOfPeopleForWhom
-                for ((forWhomUserId, forWhomAmount) in req.forWhom) {
-                    if (forWhomAmount != 0.0) {
+        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
+        for (userWithWhoAmount in req.who) {
+            if (userWithWhoAmount.amount != 0.0) {
+                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
+                for (userWithForWhomAmount in req.forWhom) {
+                    if (userWithForWhomAmount.amount != 0.0) {
                         val subTransaction = SubTransaction.Builder()
                             .amount(-transactionAmountPerPerson)
-                            .fromId(whoUserId)
-                            .toId(forWhomUserId)
+                            .fromId(userWithWhoAmount.userId)
+                            .toId(userWithForWhomAmount.userId)
                             .build()
                         subTransactionRepository.save(subTransaction)
+                        break
                     }
                 }
             }
@@ -114,33 +115,34 @@ class TransactionService(
     }
 
     private fun processTransfer(req: ProcessTransactionReq) {
-        for ((userId, amount) in req.who) {
-            val userWallet = userRepository.findById(userId).get().wallet
+        for (userWithWhoAmount in req.who) {
+            val userWallet = userRepository.findById(userWithWhoAmount.userId).get().wallet
             val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
-            balance.amount += amount
+            balance.amount += userWithWhoAmount.amount
             balanceRepository.save(balance)
         }
-        for ((userId, amount) in req.forWhom) {
-            val userWallet = userRepository.findById(userId).get().wallet
+        for (userWithForWhomAmount in req.forWhom) {
+            val userWallet = userRepository.findById(userWithForWhomAmount.userId).get().wallet
             val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
-            balance.amount -= amount
+            balance.amount -= userWithForWhomAmount.amount
             balanceRepository.save(balance)
         }
     }
 
     private fun calculateSubTransactionsForTransfer(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticiapnts(req)
-        for ((whoUserId, whoAmount) in req.who) {
-            if (whoAmount != 0.0) {
-                val transactionAmountPerPerson = whoAmount / numberOfPeopleForWhom
-                for ((forWhomUserId, forWhomAmount) in req.forWhom) {
-                    if (forWhomAmount != 0.0) {
+        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
+        for (userWithWhoAmount in req.who) {
+            if (userWithWhoAmount.amount != 0.0) {
+                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
+                for (userWithForWhomAmount in req.forWhom) {
+                    if (userWithForWhomAmount.amount != 0.0) {
                         val subTransaction = SubTransaction.Builder()
                             .amount(transactionAmountPerPerson)
-                            .fromId(whoUserId)
-                            .toId(forWhomUserId)
+                            .fromId(userWithWhoAmount.userId)
+                            .toId(userWithForWhomAmount.userId)
                             .build()
                         subTransactionRepository.save(subTransaction)
+                        break
                     }
                 }
             }
@@ -157,5 +159,21 @@ class TransactionService(
     @Transactional
     fun balanceOutBalances() {
 
+    }
+
+    @Transactional
+    fun test() : ProcessTransactionReq {
+        var userWithAmount = UserWithAmount.Builder()
+            .userId(1)
+            .amount(100.0)
+            .build()
+        return ProcessTransactionReq.Builder()
+            .purpose("req.purpose")
+            .currency(Currency.HUF)
+            .type(TransactionType.EXPENSE)
+            .who(mutableListOf(userWithAmount,userWithAmount,userWithAmount))
+            .forWhom(mutableListOf(userWithAmount,userWithAmount,userWithAmount))
+            .groupEntityId(1)
+            .build()
     }
 }

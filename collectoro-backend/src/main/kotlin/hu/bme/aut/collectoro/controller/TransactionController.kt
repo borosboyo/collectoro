@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import org.jetbrains.annotations.NotNull
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -36,6 +37,11 @@ class TransactionController(
         ) request: ProcessTransactionReq
     ): ResponseEntity<ProcessTransactionResp> {
         return ResponseEntity.ok(transactionService.processTransaction(request))
+    }
+
+    @GetMapping("/test")
+    fun test(): ProcessTransactionReq {
+        return transactionService.test();
     }
 
 }

@@ -18,11 +18,11 @@ open class Transaction(
     open val currency: Currency = Currency.HUF,
     open val type: TransactionType? = TransactionType.EXPENSE,
 
-    @ElementCollection
-    open val who: HashMap<Long, Double> = HashMap<Long, Double>(),
+    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var who: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
-    @ElementCollection
-    open val forWhom: HashMap<Long, Double> = HashMap<Long, Double>(),
+    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var forWhom: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transactions")
@@ -36,8 +36,8 @@ open class Transaction(
         var date: LocalDateTime = LocalDateTime.now(),
         var currency: Currency = Currency.HUF,
         var type: TransactionType? = TransactionType.EXPENSE,
-        var who: HashMap<Long, Double> = HashMap<Long, Double>(),
-        var forWhom: HashMap<Long, Double> = HashMap<Long, Double>(),
+        var who: MutableList<UserWithAmount>  = ArrayList<UserWithAmount>(),
+        var forWhom: MutableList<UserWithAmount>  = ArrayList<UserWithAmount>(),
         var groupEntity: GroupEntity = GroupEntity()
     ) {
         fun id(id: Long) = apply { this.id = id }
@@ -45,8 +45,8 @@ open class Transaction(
         fun date(date: LocalDateTime) = apply { this.date = date }
         fun currency(currency: Currency) = apply { this.currency = currency }
         fun type(type: TransactionType?) = apply { this.type = type }
-        fun who(who: HashMap<Long, Double>) = apply { this.who = who }
-        fun forWhom(forWhom: HashMap<Long, Double>) = apply { this.forWhom = forWhom }
+        fun who(who: MutableList<UserWithAmount>) = apply { this.who = who }
+        fun forWhom(forWhom: MutableList<UserWithAmount>) = apply { this.forWhom = forWhom }
         fun groupEntity(groupEntity: GroupEntity) = apply { this.groupEntity = groupEntity }
         fun build() = Transaction(id, purpose, date, currency, type, who, forWhom, groupEntity)
     }
