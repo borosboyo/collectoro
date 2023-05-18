@@ -8,7 +8,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginComponent from "./src/app/core/login/login.component";
 import RegisterComponent from "./src/app/core/register/register.component";
 import ForgotPasswordComponent from "./src/app/core/forgot-password/forgot-password";
-import SaveForgottenPasswordComponent from "./src/app/core/save-forgotten-password/save-forgotten-password";
+import SaveForgottenPasswordComponent from "./src/app/core/save-forgotten-password/save-forgotten-password.component";
+import HomeComponent from "./src/app/core/home/home.component";
+import SidebarComponent from "./src/app/core/sidebar/sidebar.component";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator();
@@ -35,11 +37,13 @@ export default ({ children, theme }: any) => {
     return (
             <NativeBaseProvider theme={theme} colorModeManager={colorModeManager}>
                 <NavigationContainer>
-                    <Stack.Navigator initialRouteName="Login">
+                    <Stack.Navigator initialRouteName="Home">
                         <Stack.Screen name="Login" component={LoginComponent} options={{ headerShown: false }} />
                         <Stack.Screen name="Register" component={RegisterComponent} options={{ headerShown: false }} />
                         <Stack.Screen name={"ForgotPassword"} component={ForgotPasswordComponent} options={{ headerShown: false }} />
                         <Stack.Screen name={"SaveForgottenPassword"} component={SaveForgottenPasswordComponent} options={{ headerShown: false }} />
+                        <Stack.Screen name={"Home"} component={HomeComponent} options={{ headerShown: false }} />
+                        <Stack.Screen name={"Sidebar"} component={SidebarComponent} options={{ headerShown: false }} />
                     </Stack.Navigator>
                 </NavigationContainer>
             </NativeBaseProvider>
