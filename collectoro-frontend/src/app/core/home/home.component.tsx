@@ -8,14 +8,19 @@ import {
     Slide,
     Text,
     useBreakpointValue, useColorModeValue,
-    useDisclose,
-    NativeBaseProvider, StatusBar
+    useDisclose, StatusBar, Fab, Icon, VStack, Avatar, Divider, Button, View,
 } from "native-base";
 import {HomeNavigationProps} from "./home-navigation.props";
-import {Dimensions, Platform, useWindowDimensions} from "react-native";
-import SidebarComponent from "../sidebar/sidebar.component";
+import {Dimensions,  useWindowDimensions} from "react-native";
 import { Animated } from "react-native";
 import { TabView, SceneMap } from 'react-native-tab-view';
+import {StyleSheet} from 'react-native';
+import {MaterialIcons} from "@expo/vector-icons";
+import {
+    BarChart, LineChart,
+} from "react-native-chart-kit";
+import {AbstractChartConfig} from "react-native-chart-kit/dist/AbstractChart";
+import {DataSet} from "native-base/lib/typescript/utils/useResponsiveQuery";
 
 export default function HomeComponent({navigation}: HomeNavigationProps) {
     const { isOpen, onOpen, onClose } = useDisclose();
@@ -27,74 +32,161 @@ export default function HomeComponent({navigation}: HomeNavigationProps) {
         lg: true,
     });
 
-    return (
-        <ScrollView
-            flex="1"
-            nativeID="scrollview"
-            _contentContainerStyle={{
-                height: "100%",
-            }}
-        >
-            <Box
-                flex="1"
-                bg={{ base: "white", lg: "trueGray.100" }}
-                nativeID="parentView"
-            >
-                <HStack>
-
-                </HStack>
-                <HStack p="4" zIndex="2" bg="black">
-                        <Pressable onPress={() => setSidebar(!isSidebar)}>
-                            <HamburgerIcon color="white" />
-                        </Pressable>
-                </HStack>
-                <Box safeAreaTop flexDir="row" flex="1">
-                        <Box w="300" bg="white" display={isSidebar ? "flex" : "none"}>
-                            <SidebarComponent navigation={navigation} />
-                        </Box>
-                    <HomeTabViews/>
-                </Box>
-                    <Slide in={isSlideOpen} placement="left" w={width} h="100">
-                        <HStack w="100%" h="100%">
-                            <Box w={{ base: "80%", lg: "25%" }} bg="white">
-                                <SidebarComponent navigation={navigation} />
-                            </Box>
-                            <Pressable
-                                w={{ base: "20%", lg: "75%" }}
-                                onPress={() => setSlideOpen(false)}
-                                opacity="0.5"
-                                bg="black"
-                            ></Pressable>
-                        </HStack>
-                    </Slide>
-                </Box>
-        </ScrollView>);
+    return (<HomeTabViews/>);
 }
 
-const FirstRoute = () => <Center flex={1} my="4">
-    This is Tab 1
-</Center>;
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 70,
+        right: 40,
+        backgroundColor: "#26653A",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        padding: 10,
+        borderRadius: 25,
+        width: 50,
+        height: 50,
+    },
+    title: {
+        fontSize: 18,
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    fab: {
+        left: '50%',
+        marginBottom: 10,
+    },
+});
 
-const SecondRoute = () => <Center flex={1} my="4">
-    This is Tab 2
-</Center>;
 
-const ThirdRoute = () => <Center flex={1} my="4">
-    This is Tab 3
-</Center>;
 
-const FourthRoute = () => <Center flex={1} my="4">
-    This is Tab 4{' '}
-</Center>;
+const ThirdRoute = () =>
+    <Box flex={1}>
+        <BarChart
+            data={{
+                labels: ["January", "February", "March", "April", "May", "June"],
+                datasets: [
+                    {
+                        data: [
+                            Math.random() * -1000,
+                            Math.random() * 100,
+                            Math.random() * 100,
+                            Math.random() * 100,
+                            Math.random() * 100,
+                            Math.random() * 100
+                        ],
+                    }
+                ]
+            }}
+            width={Dimensions.get("window").width} // from react-native
+            height={220}
+            yAxisLabel="$"
+            fromZero
+            yAxisSuffix="k"
+            yAxisInterval={1} // optional, defaults to 1
+            chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                    borderRadius: 16
+                },
+                propsForDots: {
+                    r: "6",
+                    strokeWidth: "2",
+                    stroke: "#ffa726"
+                }
+            }}
+            style={{
+                marginVertical: 8,
+                borderRadius: 16
+            }}
+        />
+        <ScrollView>
+            <VStack space={4} alignItems="left" mt={10}>
+                <Text fontSize="lg" bold>
+                    Transactions
+                </Text>
+                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                    <Avatar bg="gray.300">GG</Avatar>
+                    <VStack>
+                        <Text fontSize="md" fontWeight="bold" color="black">
+                            Debt settlement
+                        </Text>
+                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                            <Text fontSize="xs">
+                                2021-09-01 23:59
+                            </Text>
+                            <Avatar bg="gray.300" size='xs'>GG</Avatar>
+                        </HStack>
+                        <Text>From Alice to Bob</Text>
+                    </VStack>
+                </HStack>
+                <Text fontSize="lg" bold>
+                    Settle debts
+                </Text>
+                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                    <Avatar bg="gray.300">GG</Avatar>
+                    <VStack>
+                        <Text fontSize="md" fontWeight="bold" color="black">
+                            Farkas
+                        </Text>
+                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                            <Text fontSize="xs" fontWeight="bold">
+                                25000 HUF
+                            </Text>
+                        </HStack>
+                    </VStack>
+                    <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl" />
+                    <Avatar bg="gray.300">GG</Avatar>
+                </HStack>
+                <Text fontSize="lg" bold>
+                    Total spent
+                </Text>
+                <HStack alignItems="center" space="3" px="4" bgColor='gray.250' divider={<Divider thickness={"0.0"}/>}>
+                    <Icon color="black" as={MaterialIcons} name="attach-money" size="2xl" />
+                    <Text fontSize="lg" bold>25 expenses</Text>
+                    <Text fontSize="lg" bold>150 000 HUF</Text>
+                </HStack>
+                <Text fontSize="lg" bold>
+                    Recent activity
+                </Text>
+                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                    <Avatar bg="gray.300">GG</Avatar>
+                    <VStack>
+                        <Text fontSize="md" fontWeight="bold" color="black">
+                            2021-09-01 23:59
+                        </Text>
+                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                            <Text fontSize="s">
+                                Valami egészen hosszú szöveg.
+                            </Text>
+                        </HStack>
+                    </VStack>
+                </HStack>
+            </VStack>
+        </ScrollView>
+        <Center flex={1} style={styles.fab}>
+            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm" icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}/>
+        </Center>;
+    </Box>
+
+
+
 
 const initialLayout = {
     width: Dimensions.get('window').width
 };
+
 const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
     third: ThirdRoute,
-    fourth: FourthRoute,
+    fourth: ThirdRoute,
 });
 
 function HomeTabViews() {
@@ -107,24 +199,26 @@ function HomeTabViews() {
         title: 'Tab 4'
     }]);
 
-    const renderTabBar = (props: { navigationState: { routes: any[]; }; position: { interpolate: (arg0: { inputRange: any; outputRange: any; }) => any; }; }) => {
-        const inputRange = props.navigationState.routes.map((x: any, i: any) => i);
+    const renderTabBar = props => {
+        const inputRange = props.navigationState.routes.map((x, i) => i);
         return <Box flexDirection="row">
-            {props.navigationState.routes.map((route: { title: string | number | boolean | Animated.Value | Animated.AnimatedInterpolation<string | number> | Animated.WithAnimatedObject<React.ReactElement<any, string | React.JSXElementConstructor<any>>> | Animated.WithAnimatedObject<React.ReactFragment> | Animated.WithAnimatedObject<React.ReactPortal> | null | undefined; }, i: React.SetStateAction<number>) => {
+            {props.navigationState.routes.map((route, i) => {
                 const opacity = props.position.interpolate({
                     inputRange,
-                    outputRange: inputRange.map((inputIndex: any) => inputIndex === i ? 1 : 0.5)
+                    outputRange: inputRange.map(inputIndex => inputIndex === i ? 1 : 0.5)
                 });
                 const color = index === i ? useColorModeValue('#000', '#e5e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
                 const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
-                return <Pressable borderBottomWidth="3" borderColor={borderColor} flex={1} alignItems="center" p="3" onPress={() => {
+                return <Box key={i} borderBottomWidth="3" borderColor={borderColor} flex={1} alignItems="center" p="3">
+                    <Pressable onPress={() => {
                         console.log(i);
                         setIndex(i);
                     }}>
                         <Animated.Text style={{
                             color
                         }}>{route.title}</Animated.Text>
-                    </Pressable>;
+                    </Pressable>
+                </Box>;
             })}
         </Box>;
     };
