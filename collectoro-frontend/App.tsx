@@ -14,6 +14,7 @@ import {RootStackParamList} from "./src/app/shared/root-stack-param-list";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import SidebarComponent from "./src/app/core/sidebar/sidebar.component";
 import { Header } from "@react-navigation/stack";
+import TransactionEditorComponent from "./src/app/core/transaction-editor/transaction-editor.component";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,7 +54,7 @@ export default ({ children, theme }: any) => {
 
     const ProtectedStack = () => (
             <Stack.Navigator>
-                <Stack.Screen name={"Home"} component={HomeComponent}/>
+                <Stack.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
             </Stack.Navigator>
     );
 

@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import {
     Box, Center,
-    HamburgerIcon,
     HStack,
     Pressable,
     ScrollView,
-    Slide,
     Text,
     useBreakpointValue, useColorModeValue,
     useDisclose, StatusBar, Fab, Icon, VStack, Avatar, Divider, Button, View,
@@ -19,8 +17,6 @@ import {MaterialIcons} from "@expo/vector-icons";
 import {
     BarChart, LineChart,
 } from "react-native-chart-kit";
-import {AbstractChartConfig} from "react-native-chart-kit/dist/AbstractChart";
-import {DataSet} from "native-base/lib/typescript/utils/useResponsiveQuery";
 
 export default function HomeComponent({navigation}: HomeNavigationProps) {
     const { isOpen, onOpen, onClose } = useDisclose();
@@ -61,54 +57,68 @@ const styles = StyleSheet.create({
     },
 });
 
-
-
-const ThirdRoute = () =>
-    <Box flex={1}>
-        <BarChart
-            data={{
-                labels: ["January", "February", "March", "April", "May", "June"],
-                datasets: [
-                    {
-                        data: [
-                            Math.random() * -1000,
-                            Math.random() * 100,
-                            Math.random() * 100,
-                            Math.random() * 100,
-                            Math.random() * 100,
-                            Math.random() * 100
-                        ],
-                    }
-                ]
-            }}
-            width={Dimensions.get("window").width} // from react-native
-            height={220}
-            yAxisLabel="$"
-            fromZero
-            yAxisSuffix="k"
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 2, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                    borderRadius: 16
-                },
-                propsForDots: {
-                    r: "6",
-                    strokeWidth: "2",
-                    stroke: "#ffa726"
-                }
-            }}
-            style={{
-                marginVertical: 8,
-                borderRadius: 16
-            }}
-        />
+const ThirdRoute = () => {
+    let greenColor = (opacity = 1) => `#26653A`;
+    let redColor = (opacity = 1) => `#FF0000`;
+    return <Box flex={1}>
         <ScrollView>
+            <BarChart
+                data={{
+                    labels: ["1", "2", "3", "4", "5"],
+                    datasets: [
+                        {
+                            data: [1, 2, 4, -1, -2], // dataset
+                            colors: [
+                                greenColor,
+                                greenColor,
+                                greenColor,
+                                redColor,
+                                redColor
+                            ]
+                        },
+                        {
+                            data: [0],
+                            withDots: false
+                        },
+                        {
+                            data: [10],
+                            withDots: false
+                        },
+                    ],
+                }}
+                width={Dimensions.get("window").width} // from react-native
+                height={220}
+                yAxisLabel=""
+                showBarTops={false}
+                showValuesOnTopOfBars={true}
+                fromZero
+                withCustomBarColorFromData={true}
+                flatColor={true}
+                yAxisSuffix="Ft"
+                yAxisInterval={1} // optional, defaults to 1
+                chartConfig={{
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#ffffff",
+                    backgroundGradientTo: "#ffffff",
+                    backgroundGradientFromOpacity: 0,
+                    backgroundGradientToOpacity: 0,
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
+                    style: {
+                        borderRadius: 16
+                    },
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        stroke: "#000000"
+                    }
+                }}
+                style={{
+                    marginVertical: 8,
+                    borderRadius: 16
+                }}
+            />
             <VStack space={4} alignItems="left" mt={10}>
                 <Text fontSize="lg" bold>
                     Transactions
@@ -143,14 +153,14 @@ const ThirdRoute = () =>
                             </Text>
                         </HStack>
                     </VStack>
-                    <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl" />
+                    <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl"/>
                     <Avatar bg="gray.300">GG</Avatar>
                 </HStack>
                 <Text fontSize="lg" bold>
                     Total spent
                 </Text>
                 <HStack alignItems="center" space="3" px="4" bgColor='gray.250' divider={<Divider thickness={"0.0"}/>}>
-                    <Icon color="black" as={MaterialIcons} name="attach-money" size="2xl" />
+                    <Icon color="black" as={MaterialIcons} name="attach-money" size="2xl"/>
                     <Text fontSize="lg" bold>25 expenses</Text>
                     <Text fontSize="lg" bold>150 000 HUF</Text>
                 </HStack>
@@ -173,11 +183,11 @@ const ThirdRoute = () =>
             </VStack>
         </ScrollView>
         <Center flex={1} style={styles.fab}>
-            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm" icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}/>
+            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
+                 icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}/>
         </Center>;
-    </Box>
-
-
+    </Box>;
+}
 
 
 const initialLayout = {
