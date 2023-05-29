@@ -2,13 +2,21 @@ package hu.bme.aut.collectoro.service
 
 import hu.bme.aut.collectoro.domain.Balance
 import hu.bme.aut.collectoro.domain.transaction.*
+import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionResp
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionResp
-import hu.bme.aut.collectoro.repository.*
+import hu.bme.aut.collectoro.repository.BalanceRepository
+import hu.bme.aut.collectoro.repository.GroupRepository
+import hu.bme.aut.collectoro.repository.TransactionRepository
+import hu.bme.aut.collectoro.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.Collections
+import kotlin.math.abs
 
 @Service
 class TransactionService(
@@ -16,11 +24,12 @@ class TransactionService(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
     private val balanceRepository: BalanceRepository,
-    private val subTransactionRepository: SubTransactionRepository
 ) {
+    private val parm: MutableMap<Long, Double> = mutableMapOf()
 
     @Transactional
     fun processTransaction(req: ProcessTransactionReq): ProcessTransactionResp {
+        var resp = ProcessTransactionResp()
         val transaction: Transaction = Transaction.Builder()
             .purpose(req.purpose)
             .currency(req.currency)
@@ -31,90 +40,56 @@ class TransactionService(
             .build()
         transactionRepository.save(transaction)
         when (req.type) {
-            TransactionType.TRANSFER -> processTransfer(req)
-            TransactionType.INCOME -> processIncome(req)
-            TransactionType.EXPENSE -> processExpense(req)
+            TransactionType.TRANSFER -> processTransfer(req, resp)
+            TransactionType.INCOME -> processIncome(req, resp)
+            TransactionType.EXPENSE -> processExpense(req, resp)
         }
-
-        return ProcessTransactionResp()
+        return resp
     }
 
-    private fun calculateNumberOfParticipants(req: ProcessTransactionReq): Pair<Int, Int> {
-        var numberOfPeopleWho: Int = 0
-        var numberOfPeopleForWhom: Int = 0
+    private fun processExpense(req: ProcessTransactionReq, resp: ProcessTransactionResp) {
         for (userWithAmount in req.who) {
-            if (userWithAmount.amount != 0.0) numberOfPeopleWho++
-        }
-        for (userWithAmount in req.forWhom) {
-            if (userWithAmount.amount != 0.0) numberOfPeopleForWhom++
-        }
-        return Pair(numberOfPeopleWho, numberOfPeopleForWhom)
-    }
-
-    private fun processExpense(req: ProcessTransactionReq) {
-        calculateSubTransactionsForExpense(req)
-        for (userWithAmount in req.who) {
-            val balanceDelta = userWithAmount.amount - req.forWhom.find { it.userId == userWithAmount.userId }!!.amount
+            val userWithAmountInForWhom = req.forWhom.find { it.userId == userWithAmount.userId }
+            var balanceDelta = userWithAmount.amount
+            if (userWithAmountInForWhom != null) {
+                balanceDelta -= userWithAmountInForWhom.amount
+            }
             val userWallet = userRepository.findById(userWithAmount.userId).get().wallet
-            val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
+            val balance: Balance = userWallet?.balances?.find { it.groupId == req.groupEntityId }!!
             balance.amount += balanceDelta
             balanceRepository.save(balance)
         }
-
-    }
-
-    private fun calculateSubTransactionsForExpense(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
-        for (userWithWhoAmount in req.who) {
-            if (userWithWhoAmount.amount != 0.0) {
-                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
-                for (userWithForWhomAmount in req.forWhom) {
-                    if (userWithForWhomAmount.amount != 0.0) {
-                        val subTransaction = SubTransaction.Builder()
-                            .amount(transactionAmountPerPerson)
-                            .fromId(userWithWhoAmount.userId)
-                            .toId(userWithForWhomAmount.userId)
-                            .build()
-                        subTransactionRepository.save(subTransaction)
-                        break
-                    }
-                }
-            }
+        for (userWithAmountInForWhom in req.forWhom) {
+            val userWallet = userRepository.findById(userWithAmountInForWhom.userId).get().wallet
+            val balance: Balance = userWallet?.balances?.find { it.groupId == req.groupEntityId }!!
+            balance.amount -= userWithAmountInForWhom.amount
+            balanceRepository.save(balance)
         }
+        resp.debtBalanceResult = balanceOutBalances(req.groupEntityId)
     }
 
-    private fun processIncome(req: ProcessTransactionReq) {
-        calculateSubTransactionsForIncome(req)
+    private fun processIncome(req: ProcessTransactionReq, resp: ProcessTransactionResp) {
         for (userWithAmount in req.who) {
-            val balanceDelta = userWithAmount.amount - req.forWhom.find { it.userId == userWithAmount.userId }!!.amount
+            val userWithAmountInForWhom = req.forWhom.find { it.userId == userWithAmount.userId }
+            var balanceDelta = userWithAmount.amount
+            if (userWithAmountInForWhom != null) {
+                balanceDelta += userWithAmountInForWhom.amount
+            }
             val userWallet = userRepository.findById(userWithAmount.userId).get().wallet
-            val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
+            val balance: Balance = userWallet?.balances?.find { it.groupId == req.groupEntityId }!!
             balance.amount -= balanceDelta
             balanceRepository.save(balance)
         }
-    }
-
-    private fun calculateSubTransactionsForIncome(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
-        for (userWithWhoAmount in req.who) {
-            if (userWithWhoAmount.amount != 0.0) {
-                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
-                for (userWithForWhomAmount in req.forWhom) {
-                    if (userWithForWhomAmount.amount != 0.0) {
-                        val subTransaction = SubTransaction.Builder()
-                            .amount(-transactionAmountPerPerson)
-                            .fromId(userWithWhoAmount.userId)
-                            .toId(userWithForWhomAmount.userId)
-                            .build()
-                        subTransactionRepository.save(subTransaction)
-                        break
-                    }
-                }
-            }
+        for (userWithAmountInForWhom in req.forWhom) {
+            val userWallet = userRepository.findById(userWithAmountInForWhom.userId).get().wallet
+            val balance: Balance = userWallet?.balances?.find { it.groupId == req.groupEntityId }!!
+            balance.amount += userWithAmountInForWhom.amount
+            balanceRepository.save(balance)
         }
+        resp.debtBalanceResult = balanceOutBalances(req.groupEntityId)
     }
 
-    private fun processTransfer(req: ProcessTransactionReq) {
+    private fun processTransfer(req: ProcessTransactionReq, resp: ProcessTransactionResp) {
         for (userWithWhoAmount in req.who) {
             val userWallet = userRepository.findById(userWithWhoAmount.userId).get().wallet
             val balance: Balance = balanceRepository.findBalanceByGroupIdAndWallet(req.groupEntityId, userWallet!!)
@@ -127,27 +102,81 @@ class TransactionService(
             balance.amount -= userWithForWhomAmount.amount
             balanceRepository.save(balance)
         }
+        resp.debtBalanceResult = balanceOutBalances(req.groupEntityId)
     }
 
-    private fun calculateSubTransactionsForTransfer(req: ProcessTransactionReq) {
-        val (numberOfPeopleWho, numberOfPeopleForWhom) = calculateNumberOfParticipants(req)
-        for (userWithWhoAmount in req.who) {
-            if (userWithWhoAmount.amount != 0.0) {
-                val transactionAmountPerPerson = userWithWhoAmount.amount / numberOfPeopleForWhom
-                for (userWithForWhomAmount in req.forWhom) {
-                    if (userWithForWhomAmount.amount != 0.0) {
-                        val subTransaction = SubTransaction.Builder()
-                            .amount(transactionAmountPerPerson)
-                            .fromId(userWithWhoAmount.userId)
-                            .toId(userWithForWhomAmount.userId)
-                            .build()
-                        subTransactionRepository.save(subTransaction)
-                        break
-                    }
-                }
+
+    private fun balanceOutBalances(groupId: Long): MutableList<Debt>? {
+        val balances: List<Balance> = balanceRepository.findBalancesByGroupId(groupId)
+        val details: MutableMap<Long, Double> = mutableMapOf()
+        for (balance in balances) {
+            balance.wallet?.userEntity?.id?.let { details.put(it, balance.amount) }
+        }
+        return findPath(details)
+    }
+
+    @Transactional
+    fun test(): ProcessTransactionReq {
+
+        findPath(this.parm)
+        return ProcessTransactionReq.Builder()
+            .purpose("req.purpose")
+            .currency(Currency.HUF)
+            .type(TransactionType.EXPENSE)
+            .who(mutableListOf(UserWithAmount.Builder().userId(2).amount(100.0).build()))
+            .forWhom(mutableListOf(UserWithAmount.Builder().userId(3).amount(100.0).build()))
+            .groupEntityId(7)
+            .build()
+    }
+
+    fun findPath(details: MutableMap<Long, Double>): MutableList<Debt>? {
+        var debtBalanceResult: MutableList<Debt> = mutableListOf()
+        val maxValue = Collections.max(details.values) as Double
+        val minValue = Collections.min(details.values) as Double
+        if (maxValue != minValue) {
+            val maxKey: Long? = getKeyFromValue(details, maxValue)
+            val minKey: Long? = getKeyFromValue(details, minValue)
+            if (maxKey == null || minKey == null) return null
+            var result = maxValue + minValue
+            result = round(result, 1)
+            if (result >= 0.0) {
+                debtBalanceResult.add(
+                    Debt.Builder().fromUserId(minKey).toUserId(maxKey).amount(round(abs(minValue), 2)).build()
+                )
+                details.remove(maxKey)
+                details.remove(minKey)
+                details[maxKey] = result
+                details[minKey] = 0.0
+            } else {
+                debtBalanceResult.add(
+                    Debt.Builder().fromUserId(minKey).toUserId(maxKey).amount(round(abs(maxValue), 2)).build()
+                )
+                details.remove(maxKey)
+                details.remove(minKey)
+                details[maxKey] = 0.0
+                details[minKey] = result
+            }
+            findPath(details)
+        }
+        return debtBalanceResult
+    }
+
+    fun getKeyFromValue(hm: MutableMap<Long, Double>, value: Double): Long? {
+        for (o in hm.keys) {
+            if (hm[o] == value) {
+                return o
             }
         }
+        return null
     }
+
+    fun round(value: Double, places: Int): Double {
+        require(places >= 0)
+        var bd = BigDecimal(value)
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toDouble()
+    }
+
 
     @Transactional
     fun deleteTransaction(req: DeleteTransactionReq): DeleteTransactionResp {
@@ -155,25 +184,4 @@ class TransactionService(
         return DeleteTransactionResp()
     }
 
-
-    @Transactional
-    fun balanceOutBalances() {
-
-    }
-
-    @Transactional
-    fun test() : ProcessTransactionReq {
-        var userWithAmount = UserWithAmount.Builder()
-            .userId(1)
-            .amount(100.0)
-            .build()
-        return ProcessTransactionReq.Builder()
-            .purpose("req.purpose")
-            .currency(Currency.HUF)
-            .type(TransactionType.EXPENSE)
-            .who(mutableListOf(userWithAmount,userWithAmount,userWithAmount))
-            .forWhom(mutableListOf(userWithAmount,userWithAmount,userWithAmount))
-            .groupEntityId(1)
-            .build()
-    }
 }

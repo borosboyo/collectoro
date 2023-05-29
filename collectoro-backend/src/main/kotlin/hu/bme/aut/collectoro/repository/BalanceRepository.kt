@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface BalanceRepository : JpaRepository<Balance, Long> {
     fun findBalanceByGroupIdAndWallet(groupId: Long, wallet: Wallet): Balance
+    fun findBalancesByGroupId(groupId: Long): List<Balance>
 }
