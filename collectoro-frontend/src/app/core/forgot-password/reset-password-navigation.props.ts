@@ -1,11 +1,11 @@
 import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParamList} from "../../shared/root-stack-param-list";
 
-export type ForgotPasswordNavigation = StackNavigationProp<
+export type ResetPasswordNavigation = StackNavigationProp<
     RootStackParamList,
     'Login'
 >;
 
-export type ForgotPasswordNavigationProps = {
-    navigation: ForgotPasswordNavigation;
+export type ResetPasswordNavigationProps = {
+    navigation: ResetPasswordNavigation;
 };

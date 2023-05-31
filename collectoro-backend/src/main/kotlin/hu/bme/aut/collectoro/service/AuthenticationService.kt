@@ -28,6 +28,9 @@ class AuthenticationService(
 
     @Transactional
     fun register(request: RegisterReq): AuthenticationResp? {
+        if(userRepository.findByEmail(request.email) != null) {
+            throw Exception("User already exists")
+        }
         //Create User And Token
         val userEntity: UserEntity = UserEntity.Builder()
             .firstName(request.firstName)
@@ -47,12 +50,14 @@ class AuthenticationService(
         saveUserToken(savedUserEntity, verificationToken, TokenType.VERIFICATION)
 
         //Send verification token via email
-        //val mail: Mail = emailService.createMail(
-        //    savedUserEntity.getEmail(),
-        //    EmailType.CONFIRM_REGISTRATION,
-        //    Map.of("token", verificationToken)
-        //)
+        val mail: Mail = emailService.createMail(
+            savedUserEntity.getEmail(),
+            EmailType.CONFIRM_REGISTRATION,
+            Map.of("token", verificationToken)
+        )
         //emailService.sendMail(mail)
+
+        println(verificationToken)
 
         return AuthenticationResp.Builder()
             .message("User registered successfully")
@@ -64,12 +69,16 @@ class AuthenticationService(
         if (userRepository.findByEmail(request.email)?.isEnabled == false) {
             throw Exception("User is not enabled")
         } else {
-            authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(
-                    request.email,
-                    request.password
+            try {
+                authenticationManager.authenticate(
+                    UsernamePasswordAuthenticationToken(
+                        request.email,
+                        request.password
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                throw Exception(e.message)
+            }
             val userEntity: UserEntity? = userRepository.findByEmailAndProvider(request.email, Provider.LOCAL)
             val jwtToken: String = jwtService.generateToken(userEntity)
             if (userEntity != null) {

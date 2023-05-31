@@ -1,9 +1,10 @@
 import * as React from "react";
-import {ForgotPasswordNavigationProps} from "./forgot-password-navigation.props";
+import {ResetPasswordNavigationProps} from "./reset-password-navigation.props";
 import {Box, Button, Center, FormControl, Heading, Input, VStack} from "native-base";
-import LoginService from "../login/login.service";
+import resetPasswordService from "./reset-password.service";
 
-export default function ForgotPasswordComponent({navigation}: ForgotPasswordNavigationProps) {
+export default function ResetPasswordComponent({navigation}: ResetPasswordNavigationProps) {
+    const [email, setEmail] = React.useState("");
     return (<Center w="100%">
         <Box safeArea p="2" w="90%" maxW="290" py="8">
             <Heading size="lg" color="coolGray.800" _dark={{
@@ -19,11 +20,13 @@ export default function ForgotPasswordComponent({navigation}: ForgotPasswordNavi
             <VStack space={3} mt="5">
                 <FormControl>
                     <FormControl.Label>Email</FormControl.Label>
-                    <Input />
+                    <Input onChangeText={newText => setEmail(newText)}/>
                 </FormControl>
                 <Button mt="2" colorScheme="indigo"
                         onPress={() => {
-                            navigation.navigate("SaveForgottenPassword");
+                            resetPasswordService.resetPassword(email).then(() => {
+                                navigation.navigate('Home');
+                            });
                         }}>
                     Send email
                 </Button>

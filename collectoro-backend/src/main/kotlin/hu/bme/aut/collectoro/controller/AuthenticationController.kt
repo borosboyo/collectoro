@@ -8,8 +8,6 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import org.jetbrains.annotations.NotNull
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -56,7 +54,7 @@ class AuthenticationController(
         return ResponseEntity.ok(authenticationService.authenticate(request))
     }
 
-    @PUT
+    @POST
     @PostMapping("/enable")
     @Path("/enable")
     @Produces("application/json")

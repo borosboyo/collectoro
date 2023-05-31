@@ -3,7 +3,8 @@ import {RootStackParamList} from "../../shared/root-stack-param-list";
 
 export type RegisterNavigation = StackNavigationProp<
     RootStackParamList,
-    'Login'
+    'Login',
+    'EnableAccount'
 >;
 
 export type RegisterNavigationProps = {

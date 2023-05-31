@@ -17,8 +17,15 @@ import {
 } from "native-base";
 import LoginService from "./login.service";
 import {LoginNavigationProps} from "./login-navigation.props";
+import loginService from "./login.service";
+import {useContext} from "react";
+import { AppContext } from "../../../../App";
+
 
 export default function LoginComponent({navigation}: LoginNavigationProps) {
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const { setIsLoggedIn } = useContext(AppContext)
     const [request, response, promptAsync] = Google.useAuthRequest({
         clientId: "409953552731-ntvvsac4l7puqt3vnke3b61o9jp3mbn3.apps.googleusercontent.com",
         iosClientId: "409953552731-balks0c557np9556tlqdl69llpkgtogd.apps.googleusercontent.com",
@@ -45,11 +52,11 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
             <VStack space={3} mt="5">
                 <FormControl>
                     <FormControl.Label>Email ID</FormControl.Label>
-                    <Input/>
+                    <Input onChangeText={newText => setEmail(newText)}/>
                 </FormControl>
                 <FormControl>
                     <FormControl.Label>Password</FormControl.Label>
-                    <Input type="password"/>
+                    <Input type="password" onChangeText={newText => setPassword(newText)}/>
                     <Link _text={{
                         fontSize: "xs", fontWeight: "500", color: "indigo.500"
                     }} alignSelf="flex-end" mt="1"
@@ -59,7 +66,16 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                         Forget Password?
                     </Link>
                 </FormControl>
-                <Button mt="2" colorScheme="indigo">
+                <Button mt="2" colorScheme="indigo"
+                        onPress={() => {
+                            loginService.loginWithEmail(email,password)
+                                .then(() => {
+                                setIsLoggedIn(true);
+                            })
+                                .catch(error => {
+                                    console.log(error);
+                                });
+                        }}>
                     Sign in
                 </Button>
                 <HStack mt="6" justifyContent="center">
@@ -72,7 +88,6 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                         _text={{
                             color: "indigo.500", fontWeight: "medium", fontSize: "sm"
                         }}
-
                         onPress={() => {
                             navigation.navigate('Register');
                         }}>
@@ -82,9 +97,11 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                 <Pressable
                     mt="6"
                     onPress={() => {
-                        LoginService.loginWithGoogle(promptAsync);
+                        LoginService.loginWithGoogle(promptAsync).then(() => {
+                            navigation.navigate('Home');
+                        });
                     }}>
-                    <Image source={require("../../../assets/btn.png")} style={{width: 300, height: 40}}/>
+                    <Image alt="google" source={require("../../../assets/btn.png")} style={{width: 300, height: 40}}/>
                 </Pressable>
             </VStack>
         </Box>
