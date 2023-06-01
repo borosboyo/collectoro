@@ -139,6 +139,10 @@ class AuthenticationService(
                 .provider(Provider.GOOGLE)
                 .enabled(true)
                 .build()
+            val wallet = Wallet()
+            wallet.userEntity = userEntity
+            walletRepository.save(wallet)
+            userEntity.wallet = wallet
             userRepository.save(userEntity)
             jwtToken = jwtService.generateToken(userEntity)
             revokeAllUserTokens(userEntity)
@@ -161,12 +165,14 @@ class AuthenticationService(
         saveUserToken(user, resetPasswordToken, TokenType.RESET_PASSWORD)
 
         //Send verification token via email
-        val mail: Mail = emailService.createMail(
-            user.getEmail(),
-            EmailType.CONFIRM_REGISTRATION,
-            Map.of("token", resetPasswordToken)
-        )
-        emailService.sendMail(mail)
+        //val mail: Mail = emailService.createMail(
+        //    user.getEmail(),
+        //    EmailType.CONFIRM_REGISTRATION,
+        //    Map.of("token", resetPasswordToken)
+        //)
+        //emailService.sendMail(mail)
+
+        println(resetPasswordToken)
 
         return ResetPasswordResp()
     }

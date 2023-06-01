@@ -7,7 +7,6 @@ import {AxiosResponse} from "axios";
 
 const RegisterService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),
-    email: '',
 
     register: function(email: string, password: string, firstName: string, lastName: string): Promise<any> {
         return this.authenticationController.register({

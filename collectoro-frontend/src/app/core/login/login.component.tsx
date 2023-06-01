@@ -89,7 +89,6 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                             color: "indigo.500", fontWeight: "medium", fontSize: "sm"
                         }}
                         onPress={() => {
-                            navigation.navigate('Register');
                         }}>
                         Sign Up
                     </Link>
@@ -98,10 +97,10 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                     mt="6"
                     onPress={() => {
                         LoginService.loginWithGoogle(promptAsync).then(() => {
-                            navigation.navigate('Home');
+                            setIsLoggedIn(true);
                         });
                     }}>
-                    <Image alt="google" source={require("../../../assets/btn.png")} style={{width: 300, height: 40}}/>
+                    <Image alt="google" source={require("../../../../assets/btn.png")} style={{width: 300, height: 40}}/>
                 </Pressable>
             </VStack>
         </Box>

@@ -25,7 +25,7 @@ export default function ResetPasswordComponent({navigation}: ResetPasswordNaviga
                 <Button mt="2" colorScheme="indigo"
                         onPress={() => {
                             resetPasswordService.resetPassword(email).then(() => {
-                                navigation.navigate('Home');
+                                navigation.navigate('SaveForgotPassword');
                             });
                         }}>
                     Send email

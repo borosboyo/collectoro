@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
+import org.jetbrains.annotations.NotNull
 import org.springframework.context.annotation.Lazy
 import java.util.*
 
 @Entity
 @Table(name = "group_entity")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class GroupEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

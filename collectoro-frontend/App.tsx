@@ -8,7 +8,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginComponent from "./src/app/core/login/login.component";
 import RegisterComponent from "./src/app/core/register/register.component";
 import ResetPasswordComponent from "./src/app/core/forgot-password/reset-password.component";
-import SaveForgottenPasswordComponent from "./src/app/core/save-forgotten-password/save-forgotten-password.component";
+import SaveForgotPasswordComponent from "./src/app/core/save-forgotten-password/save-forgot-password.component";
 import HomeComponent from "./src/app/core/home/home.component";
 import {RootStackParamList} from "./src/app/shared/root-stack-param-list";
 import {createDrawerNavigator} from "@react-navigation/drawer";
@@ -25,7 +25,7 @@ export const AppContext = React.createContext({
 });
 
 export default ({children, theme}: any) => {
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(true);
 
     const colorModeManager: StorageManager = {
         get: async () => {
@@ -52,47 +52,35 @@ export default ({children, theme}: any) => {
             <Stack.Screen name={"Login"} component={LoginComponent} options={{headerShown: false}}/>
             <Stack.Screen name={"Register"} component={RegisterComponent} options={{headerShown: false}}/>
             <Stack.Screen name={"ForgotPassword"} component={ResetPasswordComponent} options={{headerShown: false}}/>
-            <Stack.Screen name={"SaveForgottenPassword"} component={SaveForgottenPasswordComponent}
-                          options={{headerShown: false}}/>
+            <Stack.Screen name={"SaveForgotPassword"} component={SaveForgotPasswordComponent} options={{headerShown: false}}/>
             <Stack.Screen name={"EnableAccount"} component={EnableAccountComponent} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 
     const ProtectedStack = () => (
-        <Stack.Navigator>
-            <Stack.Screen name={"Home"} component={HomeComponent}/>
-            <Stack.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
-        </Stack.Navigator>
+        <Drawer.Navigator screenOptions={{
+            drawerStyle: {
+                backgroundColor: "black",
+            },
+            drawerPosition: "right",
+            headerShown: true,
+            swipeEnabled: isLoggedIn,
+        }}
+                          drawerContent={(props) => <SidebarComponent {...props} />}>
+            <Drawer.Screen name={"Home"} component={HomeComponent}/>
+            <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
+        </Drawer.Navigator>
     );
 
     return (
         <AppContext.Provider value={{isLoggedIn, setIsLoggedIn}}>
             <NativeBaseProvider theme={theme} colorModeManager={colorModeManager}>
                 <NavigationContainer>
-                    <Drawer.Navigator
-                        screenOptions={{
-                            drawerStyle: {
-                                backgroundColor: "black",
-                                zIndex: 100,
-                            },
-                            drawerPosition: "right",
-                            headerShown: false,
-                        }}
-                        useLegacyImplementation
-                        drawerContent={(props) => <SidebarComponent {...props} />}
-                    >
                         {isLoggedIn ? (
-                            <Drawer.Screen
-                                name="ProtectedStack"
-                                component={ProtectedStack}
-                            />
+                            ProtectedStack()
                         ) : (
-                            <Drawer.Screen
-                                name="PublicStack"
-                                component={PublicStack}
-                            />
+                            PublicStack()
                         )}
-                    </Drawer.Navigator>
                 </NavigationContainer>
             </NativeBaseProvider>
         </AppContext.Provider>

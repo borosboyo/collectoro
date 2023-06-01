@@ -18,9 +18,10 @@ export default function SidebarComponent(props: DrawerContentComponentProps) {
             label: "About",
         }
     ];
+
     return (
         <DrawerContentScrollView {...props} style={{display: 'flex'}}>
-            <Box flex="1" bg="black" mt="0">
+            <Box bg="black" mt="0">
                 <VStack
                     bg="black"
                     space="4"

@@ -13,13 +13,14 @@ const LoginService = {
     fetchUserInfo: function(accessToken: any) {
         axios.get("https://www.googleapis.com/userinfo/v2/me", {
             headers: {Authorization: `Bearer ${accessToken}`}
-        }).then((response) => {
+        }).then((googleResponse) => {
             this.authenticationController.authenticateGoogle({
-                email: response.data.email,
-                firstName: response.data.given_name,
-                lastName: response.data.family_name,
-            }, baseOptions).then(async (response: AxiosResponse<AuthenticationResp>) => {
-                await AsyncStorage.setItem("token", response.data.token!!);
+                email: googleResponse.data.email,
+                firstName: googleResponse.data.given_name,
+                lastName: googleResponse.data.family_name,
+            }, baseOptions).then(async (backendResponse: AxiosResponse<AuthenticationResp>) => {
+                await AsyncStorage.setItem("token", backendResponse.data.token!!);
+                await AsyncStorage.setItem("email", googleResponse.data.email!!);
             })
         });
     },
@@ -40,6 +41,7 @@ const LoginService = {
             password: password
         }, baseOptions).then(async (response: AxiosResponse<AuthenticationResp>) => {
             await AsyncStorage.setItem("token", response.data.token!!);
+            await AsyncStorage.setItem("email", email);
         })
     },
 

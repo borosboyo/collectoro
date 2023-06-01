@@ -1,5 +1,5 @@
 package hu.bme.aut.collectoro.dto.user
 
-class GetUserByIdTsReq {
+class GetUserByIdReq {
     var id: Long? = null
 }
