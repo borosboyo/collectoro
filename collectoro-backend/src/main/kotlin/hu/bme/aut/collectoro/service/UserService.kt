@@ -50,4 +50,9 @@ class UserService(
         val groups = groupRepository.findGroupEntitiesByUser(user)
         return GetHomepageByUserEmailResp(user, groups)
     }
+
+    @Transactional
+    fun getProfileByUserEmail(req: GetProfileByUserEmailReq): GetProfileByUserEmailResp {
+        return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!)!!)
+    }
 }

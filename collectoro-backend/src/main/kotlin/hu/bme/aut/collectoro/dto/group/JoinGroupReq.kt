@@ -1,7 +1,7 @@
 package hu.bme.aut.collectoro.dto.group
 
 class JoinGroupReq(
-    val userId: Long,
+    val userEmail: String,
     val joinLink: String
 ) {
 }

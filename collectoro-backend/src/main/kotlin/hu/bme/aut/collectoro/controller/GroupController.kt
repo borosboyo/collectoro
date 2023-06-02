@@ -1,9 +1,6 @@
 package hu.bme.aut.collectoro.controller
 
-import hu.bme.aut.collectoro.dto.group.CreateGroupReq
-import hu.bme.aut.collectoro.dto.group.CreateGroupResp
-import hu.bme.aut.collectoro.dto.group.JoinGroupReq
-import hu.bme.aut.collectoro.dto.group.JoinGroupResp
+import hu.bme.aut.collectoro.dto.group.*
 import hu.bme.aut.collectoro.service.GroupService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -55,4 +52,20 @@ class GroupController(
     ): ResponseEntity<CreateGroupResp> {
         return ResponseEntity.ok(groupService.createGroup(request))
     }
+
+
+    @PUT
+    @PutMapping("/leaveGroup")
+    @Path("/leaveGroup")
+    @Produces("application/json")
+    @ApiOperation(value = "leaveGroup", response = LeaveGroupResp::class)
+    fun leaveGroup(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "LeaveGroupReq"
+        ) request: LeaveGroupReq
+    ): ResponseEntity<LeaveGroupResp> {
+        return ResponseEntity.ok(groupService.leaveGroup(request))
+    }
+
 }

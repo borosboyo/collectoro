@@ -6,9 +6,8 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Animated, Dimensions, StatusBar, StyleSheet} from 'react-native';
 import {Route, SceneMap, TabView} from 'react-native-tab-view';
-import {Box, Center, Fab, Icon, Pressable, useColorModeValue} from "native-base";
+import {Box, Center, Fab, Heading, Icon, Pressable, useColorModeValue} from "native-base";
 import {MaterialIcons} from "@expo/vector-icons";
-
 
 type HomeComponentState = {
     homePage: GetHomepageByUserEmailResp | undefined; routes: Route[]; scenes: { [key: string]: any }; index: number; inputRange: any[];
@@ -17,7 +16,6 @@ type HomeComponentState = {
 class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
     constructor(props: HomeNavigationProps) {
         super(props);
-
         this.state = {
             homePage: undefined, routes: [], scenes: {}, index: 1, inputRange: [],
         };
@@ -25,13 +23,10 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
 
     componentDidMount() {
         const {homePage} = this.state;
-        if (homePage === undefined) {
-            HomeService.getHomepageByUserEmail('asd@asd.com').then((response) => {
-                this.setState({homePage: response.data}, this.updateRoutesAndScenes);
-            });
-        } else {
-            this.updateRoutesAndScenes();
-        }
+        HomeService.getHomepageByUserEmail('asd@asd.hu').then((response) => {
+            this.setState({homePage: response.data}, this.updateRoutesAndScenes);
+        });
+        this.updateRoutesAndScenes();
     }
 
     updateRoutesAndScenes = () => {
@@ -77,8 +72,8 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
             width: Dimensions.get('window').width,
         };
         let renderScene = SceneMap(scenes);
-
-        if (inputRange.length <= 1) {
+        if (inputRange.length == 0) return (<Heading>Join a group!</Heading>);
+        if (inputRange.length == 1) {
             return (<TabPageComponent></TabPageComponent>);
         } else {
             return (

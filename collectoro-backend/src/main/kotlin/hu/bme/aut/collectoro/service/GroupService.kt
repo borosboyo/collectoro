@@ -38,6 +38,15 @@ class GroupService(
                     .users(mutableListOf(user))
                     .build()
             )
+            val balance = balanceRepository.save(Balance.Builder()
+                .groupId(group.id)
+                .wallet(user.wallet)
+                .currency(Currency.HUF)
+                .amount(0.0)
+                .build())
+            user.groupEntities.add(group)
+            user.wallet?.balances?.add(balance)
+            userRepository.save(user)
             return CreateGroupResp(group)
         } else {
             return CreateGroupResp()
@@ -54,7 +63,7 @@ class GroupService(
     @Transactional
     fun joinGroup(req: JoinGroupReq): JoinGroupResp {
         var group = groupRepository.findByJoinLink(req.joinLink)
-        var user = userRepository.findById(req.userId).get()
+        var user = userRepository.findByEmail(req.userEmail)
         if(group != null) {
             group.users.add(user)
             groupRepository.save(group)
@@ -71,5 +80,14 @@ class GroupService(
         return JoinGroupResp()
     }
 
-
+    @Transactional
+    fun leaveGroup(req: LeaveGroupReq): LeaveGroupResp {
+        var group = groupRepository.findById(req.groupId).get()
+        var user = userRepository.findByEmail(req.userEmail)
+        group.users.remove(user)
+        groupRepository.save(group)
+        user.groupEntities.remove(group)
+        userRepository.save(user)
+        return LeaveGroupResp()
+    }
 }

@@ -15,6 +15,7 @@ import {createDrawerNavigator} from "@react-navigation/drawer";
 import SidebarComponent from "./src/app/core/sidebar/sidebar.component";
 import TransactionEditorComponent from "./src/app/core/transaction-editor/transaction-editor.component";
 import EnableAccountComponent from "./src/app/core/register/enable-account/enable-account.component";
+import HomeHolderComponent from "./src/app/core/home/home-holder.component";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,7 +47,6 @@ export default ({children, theme}: any) => {
         },
     };
 
-
     const PublicStack = () => (
         <Stack.Navigator initialRouteName="Login">
             <Stack.Screen name={"Login"} component={LoginComponent} options={{headerShown: false}}/>
@@ -65,7 +65,7 @@ export default ({children, theme}: any) => {
             drawerPosition: "left",
             swipeEnabled: isLoggedIn,
         }}
-                          drawerContent={(props) => <SidebarComponent {...props} />}>
+                          drawerContent={(props) => <SidebarComponent {...props}/>}>
             <Drawer.Screen name={"Home"} component={HomeComponent}/>
             <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
         </Drawer.Navigator>

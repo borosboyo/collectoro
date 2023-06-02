@@ -8,3 +8,4 @@ export type HomeNavigation = StackNavigationProp<
 export type HomeNavigationProps = {
     navigation: HomeNavigation;
 };
+

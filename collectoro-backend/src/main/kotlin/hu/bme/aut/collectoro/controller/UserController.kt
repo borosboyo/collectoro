@@ -46,4 +46,20 @@ class UserController(private val userService: UserService) {
         return userService.getHomepageByUserEmail(req)
     }
 
+
+    @PUT
+    @PutMapping("/getProfileByUserEmail")
+    @Path("/getProfileByUserEmail")
+    @Produces("application/json")
+    @ApiOperation(value = "getProfileByUserEmail", response = GetProfileByUserEmailResp::class)
+    fun getProfileByUserEmail(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "GetHomePageByUserEmailReq"
+        ) req: GetProfileByUserEmailReq
+    ): GetProfileByUserEmailResp {
+        return userService.getProfileByUserEmail(req)
+    }
+
+
 }
