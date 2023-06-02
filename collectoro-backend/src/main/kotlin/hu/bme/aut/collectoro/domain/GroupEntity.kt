@@ -18,7 +18,7 @@ class GroupEntity(
     val id: Long = 0,
     val name: String? = null,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_entities")
     @JsonManagedReference
     val users: MutableList<UserEntity> = ArrayList(),

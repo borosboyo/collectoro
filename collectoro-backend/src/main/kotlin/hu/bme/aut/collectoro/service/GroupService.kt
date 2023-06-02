@@ -53,15 +53,19 @@ class GroupService(
 
     @Transactional
     fun joinGroup(req: JoinGroupReq): JoinGroupResp {
-        val group = groupRepository.findByJoinLink(req.joinLink)
-        val user = userRepository.findById(req.userId).get()
-        if (group !== null) {
+        var group = groupRepository.findByJoinLink(req.joinLink)
+        var user = userRepository.findById(req.userId).get()
+        if(group != null) {
             group.users.add(user)
             groupRepository.save(group)
+            val balance = balanceRepository.save(Balance.Builder()
+                .groupId(group.id)
+                .wallet(user.wallet)
+                .currency(Currency.HUF)
+                .amount(0.0)
+                .build())
             user.groupEntities.add(group)
-            val balance = Balance.Builder().groupId(group.id).amount(0.0).currency(Currency.HUF).build()
-            val savedBalance = balanceRepository.save(balance)
-            user.wallet?.balances?.add(savedBalance)
+            user.wallet?.balances?.add(balance)
             userRepository.save(user)
         }
         return JoinGroupResp()

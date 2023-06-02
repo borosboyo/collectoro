@@ -89,6 +89,7 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                             color: "indigo.500", fontWeight: "medium", fontSize: "sm"
                         }}
                         onPress={() => {
+                            navigation.navigate('Register');
                         }}>
                         Sign Up
                     </Link>

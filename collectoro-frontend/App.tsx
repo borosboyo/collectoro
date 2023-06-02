@@ -62,8 +62,7 @@ export default ({children, theme}: any) => {
             drawerStyle: {
                 backgroundColor: "black",
             },
-            drawerPosition: "right",
-            headerShown: true,
+            drawerPosition: "left",
             swipeEnabled: isLoggedIn,
         }}
                           drawerContent={(props) => <SidebarComponent {...props} />}>

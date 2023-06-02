@@ -4,7 +4,7 @@ import {Dimensions, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import React from "react";
 
-export const TabPageComponent = () => {
+export function TabPageComponent() {
     let greenColor = (opacity = 1) => `#26653A`;
     let redColor = (opacity = 1) => `#FF0000`;
     return <Box flex={1}>
@@ -31,7 +31,7 @@ export const TabPageComponent = () => {
                 fromZero
                 withCustomBarColorFromData={true}
                 flatColor={true}
-                yAxisSuffix="Ft"
+                yAxisSuffix=" Ft"
                 yAxisInterval={1} // optional, defaults to 1
                 chartConfig={{
                     backgroundColor: "#ffffff",
@@ -116,10 +116,6 @@ export const TabPageComponent = () => {
                 </HStack>
             </VStack>
         </ScrollView>
-        <Center flex={1} style={styles.fab}>
-            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
-                 icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}/>
-        </Center>;
     </Box>;
 }
 
