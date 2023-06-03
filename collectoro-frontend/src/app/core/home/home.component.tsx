@@ -6,8 +6,8 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Animated, Dimensions, StatusBar, StyleSheet} from 'react-native';
 import {Route, SceneMap, TabView} from 'react-native-tab-view';
-import {Box, Center, Fab, Heading, Icon, Pressable, useColorModeValue} from "native-base";
-import {MaterialIcons} from "@expo/vector-icons";
+import {Box, Heading, Pressable, useColorModeValue} from "native-base";
+import {render} from "react-dom";
 
 type HomeComponentState = {
     homePage: GetHomepageByUserEmailResp | undefined; routes: Route[]; scenes: { [key: string]: any }; index: number; inputRange: any[];
@@ -37,7 +37,7 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
         homePage?.groups?.forEach((group: GroupEntity) => {
             if (group.id !== undefined && group.name !== undefined && group.joinLink !== undefined) {
                 newRoutes.push({key: group.id.toString(), title: group.name});
-                newScenes[group.id] = <TabPageComponent/>;
+                newScenes[group.id] = <TabPageComponent group={group} navigation={this.props.navigation}/>;
             }
         });
 
@@ -67,33 +67,36 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
     };
 
     render() {
+        this.state.homePage?.groups?.forEach((group) => {
+            group.users?.forEach((user) => {
+                if(user == this.state.homePage?.user?.id){
+                    group.users?.splice(group.users.indexOf(user), 1, this.state.homePage?.user);
+                }
+            })
+        })
         const {index, routes, scenes, inputRange} = this.state;
         const initialLayout = {
             width: Dimensions.get('window').width,
         };
-        let renderScene = SceneMap(scenes);
         if (inputRange.length == 0) return (<Heading>Join a group!</Heading>);
-        if (inputRange.length == 1) {
-            return (<TabPageComponent></TabPageComponent>);
+        if (inputRange.length == 1 && this.state.homePage?.groups?.at(0) != undefined) {
+            return (<TabPageComponent group={this.state.homePage?.groups.at(0)} navigation={this.props.navigation}></TabPageComponent>);
         } else {
             return (
                 <Box flex={1}>
                     <TabView
+                        {...this.props}
                         navigationState={this.state}
                         renderTabBar={this.renderTabBar}
-                        renderScene={({route}) => {
-                            return scenes[route.key]
+                        renderScene={({ route }) => {
+                            return scenes[route.key];
                         }}
-                        onIndexChange={(i: number) => this.setState({index: i})}
+                        onIndexChange={(i: number) => this.setState({ index: i })}
                         initialLayout={initialLayout}
                         style={{
-                            marginTop: StatusBar.length
-                        }}>
-                    </TabView>
-                    <Center style={styles.fab}>
-                        <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
-                             icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}/>
-                    </Center>;
+                            marginTop: StatusBar.length,
+                        }}
+                    />
                 </Box>);
         }
     }
@@ -119,6 +122,6 @@ const styles = StyleSheet.create({
     }, title: {
         fontSize: 18, color: "#fff", fontWeight: "bold",
     }, fab: {
-        left: '50%', marginBottom: 10, position: 'absolute', bottom: 0, zIndex: 100,
+        left: '50%', marginBottom: 10, position: 'absolute', zIndex: 100,
     },
 });

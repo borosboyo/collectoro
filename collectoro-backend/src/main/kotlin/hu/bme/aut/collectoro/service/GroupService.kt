@@ -3,6 +3,7 @@ package hu.bme.aut.collectoro.service
 import hu.bme.aut.collectoro.domain.Balance
 import hu.bme.aut.collectoro.domain.GroupEntity
 import hu.bme.aut.collectoro.domain.transaction.Currency
+import hu.bme.aut.collectoro.domain.transaction.TransactionType
 import hu.bme.aut.collectoro.dto.group.*
 import hu.bme.aut.collectoro.repository.BalanceRepository
 import hu.bme.aut.collectoro.repository.GroupRepository
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Service
 class GroupService(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
-    private val balanceRepository: BalanceRepository
+    private val balanceRepository: BalanceRepository,
+    private val transactionService: TransactionService
 ) {
 
     @Transactional
@@ -44,7 +46,7 @@ class GroupService(
                 .currency(Currency.HUF)
                 .amount(0.0)
                 .build())
-            user.groupEntities.add(group)
+            user.groups.add(group)
             user.wallet?.balances?.add(balance)
             userRepository.save(user)
             return CreateGroupResp(group)
@@ -73,7 +75,7 @@ class GroupService(
                 .currency(Currency.HUF)
                 .amount(0.0)
                 .build())
-            user.groupEntities.add(group)
+            user.groups.add(group)
             user.wallet?.balances?.add(balance)
             userRepository.save(user)
         }
@@ -86,8 +88,22 @@ class GroupService(
         var user = userRepository.findByEmail(req.userEmail)
         group.users.remove(user)
         groupRepository.save(group)
-        user.groupEntities.remove(group)
+        user.groups.remove(group)
         userRepository.save(user)
         return LeaveGroupResp()
+    }
+
+    @Transactional
+    fun getGroupPageAdditionalData(req: GetGroupPageAdditionalDataReq): GetGroupPageAdditionalDataResp {
+        val group = groupRepository.findById(req.groupId).get()
+        val expenseTransactions = group.transactions
+            .filter { it.type == TransactionType.EXPENSE }
+
+        val totalSpent = expenseTransactions
+            .flatMap { it.who }
+            .sumOf { it.amount }
+
+        val debtList = transactionService.balanceOutBalances(req.groupId)
+        return GetGroupPageAdditionalDataResp(totalSpent, expenseTransactions.size, debtList)
     }
 }

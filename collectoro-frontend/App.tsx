@@ -67,7 +67,7 @@ export default ({children, theme}: any) => {
         }}
                           drawerContent={(props) => <SidebarComponent {...props}/>}>
             <Drawer.Screen name={"Home"} component={HomeComponent}/>
-            <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
+            <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent} />
         </Drawer.Navigator>
     );
 

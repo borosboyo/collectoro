@@ -2,23 +2,42 @@ import {Avatar, Box, Center, Divider, Fab, Heading, HStack, Icon, ScrollView, Te
 import {BarChart} from "react-native-chart-kit";
 import {Dimensions, StyleSheet} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
-import React from "react";
+import React, {useEffect} from "react";
+import {HomeNavigation} from "./home-navigation.props";
+import {Debt, GroupEntity} from "../../../../swagger";
+import HomeService from "./home.service";
 
-export function TabPageComponent() {
+export function TabPageComponent({group, navigation}: { group: GroupEntity | undefined, navigation: HomeNavigation }) {
     let greenColor = (opacity = 1) => `#26653A`;
     let redColor = (opacity = 1) => `#FF0000`;
+    const [additionalData, setAdditionalData] = React.useState<any>(null);
+
+    const labels = group?.users?.map((user) => user.lastName + " " + user.firstName);
+    const balances = group?.users?.map((user) => {
+        return user.wallet?.balances?.find((balance) => balance.groupId == group?.id)?.amount!;
+    });
+    const colors = balances?.map((balance) => balance > 0 ? greenColor : redColor);
+
+    useEffect(() => {
+        if (group != undefined && group.id != undefined) {
+            HomeService.getGroupPageAdditionalData(group.id).then((response) => {
+                setAdditionalData(response.data);
+            });
+        }
+    }, [])
+
     return <Box flex={1}>
         <ScrollView>
             <Center>
-                <Heading style={styles.heading}>group.name</Heading>
+                <Heading style={styles.heading}>{group?.name}</Heading>
             </Center>
             <BarChart
                 data={{
-                    labels: ["1", "2", "3", "4", "5"], datasets: [{
-                        data: [1, 2, 4, -1, -2], // dataset
-                        colors: [greenColor, greenColor, greenColor, redColor, redColor]
+                    labels: labels!, datasets: [{
+                        data: balances!, // dataset
+                        colors: colors!
                     }, {
-                        data: [0], withDots: false
+                        data: [-10], withDots: false
                     }, {
                         data: [10], withDots: false
                     },],
@@ -53,69 +72,89 @@ export function TabPageComponent() {
                     marginVertical: 8, borderRadius: 16
                 }}
             />
+            <Text fontSize="lg" bold>
+                Transactions
+            </Text>
             <VStack space={4} alignItems="left" mt={10}>
-                <Text fontSize="lg" bold>
-                    Transactions
-                </Text>
-                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
-                    <Avatar bg="gray.300">GG</Avatar>
-                    <VStack>
-                        <Text fontSize="md" fontWeight="bold" color="black">
-                            Debt settlement
-                        </Text>
-                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
-                            <Text fontSize="xs">
-                                2021-09-01 23:59
-                            </Text>
-                            <Avatar bg="gray.300" size='xs'>GG</Avatar>
+                {group?.transactions?.map((transaction) => {
+                    return <Box>
+                        <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                            <Avatar bg="gray.300">GG</Avatar>
+                            <VStack>
+                                <Text fontSize="md" fontWeight="bold" color="black">
+                                    {transaction.purpose}
+                                </Text>
+                                <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                                    <Text fontSize="xs">
+                                        {transaction.date?.toString()}
+                                    </Text>
+                                    <Avatar bg="gray.300" size='xs'>GG</Avatar>
+                                </HStack>
+                                <Text>From {transaction.who?.map((who) => {
+                                    return <Text>{who.lastName}</Text>
+                                })} to {transaction.forWhom?.map((forWhom) => {
+                                    return <Text>{forWhom.lastName}</Text>
+                                })}</Text>
+                            </VStack>
                         </HStack>
-                        <Text>From Alice to Bob</Text>
-                    </VStack>
-                </HStack>
+                    </Box>
+                })}
                 <Text fontSize="lg" bold>
                     Settle debts
                 </Text>
-                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
-                    <Avatar bg="gray.300">GG</Avatar>
-                    <VStack>
-                        <Text fontSize="md" fontWeight="bold" color="black">
-                            Farkas
-                        </Text>
-                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
-                            <Text fontSize="xs" fontWeight="bold">
-                                25000 HUF
+                {additionalData?.debtList.map((debt: Debt) => {
+                    return <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                        <Avatar bg="gray.300">GG</Avatar>
+                        <VStack>
+                            <Text fontSize="md" fontWeight="bold" color="black">
+                                {debt.fromUserLastName}
                             </Text>
-                        </HStack>
-                    </VStack>
-                    <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl"/>
-                    <Avatar bg="gray.300">GG</Avatar>
-                </HStack>
+                            <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                                <Text fontSize="xs" fontWeight="bold">
+                                    {debt.amount} HUF
+                                </Text>
+                            </HStack>
+                        </VStack>
+                        <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl"/>
+                        <Text fontSize="md" fontWeight="bold" color="black">
+                            {debt.toUserLastName}
+                        </Text>
+                        <Avatar bg="gray.300">GG</Avatar>
+                    </HStack>
+                })}
                 <Text fontSize="lg" bold>
                     Total spent
                 </Text>
                 <HStack alignItems="center" space="3" px="4" bgColor='gray.250' divider={<Divider thickness={"0.0"}/>}>
                     <Icon color="black" as={MaterialIcons} name="attach-money" size="2xl"/>
-                    <Text fontSize="lg" bold>25 expenses</Text>
-                    <Text fontSize="lg" bold>150 000 HUF</Text>
+                    <Text fontSize="lg" bold>{additionalData?.numberOfExpenses} expenses</Text>
+                    <Text fontSize="lg" bold>{additionalData?.totalSpent} HUF</Text>
                 </HStack>
+                {/*
                 <Text fontSize="lg" bold>
                     Recent activity
                 </Text>
-                <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
-                    <Avatar bg="gray.300">GG</Avatar>
-                    <VStack>
-                        <Text fontSize="md" fontWeight="bold" color="black">
-                            2021-09-01 23:59
-                        </Text>
-                        <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
-                            <Text fontSize="s">
-                                Valami egészen hosszú szöveg.
+                    <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                        <Avatar bg="gray.300">GG</Avatar>
+                        <VStack>
+                            <Text fontSize="md" fontWeight="bold" color="black">
+                                2021-09-01 23:59
                             </Text>
-                        </HStack>
-                    </VStack>
-                </HStack>
+                            <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
+                                <Text fontSize="s">
+                                    Valami egészen hosszú szöveg.
+                                </Text>
+                            </HStack>
+                        </VStack>
+                    </HStack>
+            */}
             </VStack>
         </ScrollView>
+        <Center style={styles.fab}>
+            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
+                 icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}
+                 onPress={() => navigation.navigate('TransactionEditor')}/>
+        </Center>;
     </Box>;
 }
 
@@ -136,8 +175,7 @@ const styles = StyleSheet.create({
     }, title: {
         fontSize: 18, color: "#fff", fontWeight: "bold",
     }, heading: {
-        marginTop: 10,
-        fontSize: 18,
+        marginTop: 10, fontSize: 18,
     }, fab: {
         left: '50%', marginBottom: 10,
     },

@@ -10,6 +10,12 @@ const HomeService = {
             email: email
         }, baseOptions)
     },
+
+    getGroupPageAdditionalData: function(groupId: number): Promise<any> {
+        return this.groupController.getGroupPageAdditionalData({
+            groupId: groupId
+        }, baseOptions)
+    }
 }
 
 export default HomeService;

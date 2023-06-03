@@ -105,8 +105,7 @@ class TransactionService(
         resp.debtBalanceResult = balanceOutBalances(req.groupEntityId)
     }
 
-
-    private fun balanceOutBalances(groupId: Long): MutableList<Debt>? {
+    fun balanceOutBalances(groupId: Long): MutableList<Debt>? {
         val balances: List<Balance> = balanceRepository.findBalancesByGroupId(groupId)
         val details: MutableMap<Long, Double> = mutableMapOf()
         for (balance in balances) {
@@ -123,8 +122,8 @@ class TransactionService(
             .purpose("req.purpose")
             .currency(Currency.HUF)
             .type(TransactionType.EXPENSE)
-            .who(mutableListOf(UserWithAmount.Builder().userId(2).amount(100.0).build()))
-            .forWhom(mutableListOf(UserWithAmount.Builder().userId(3).amount(100.0).build()))
+            .who(mutableListOf(UserWithAmount.Builder().userId(2).lastName("Test2").amount(100.0).build()))
+            .forWhom(mutableListOf(UserWithAmount.Builder().userId(3).lastName("Test3").amount(100.0).build()))
             .groupEntityId(7)
             .build()
     }
@@ -141,7 +140,10 @@ class TransactionService(
             result = round(result, 1)
             if (result >= 0.0) {
                 debtBalanceResult.add(
-                    Debt.Builder().fromUserId(minKey).toUserId(maxKey).amount(round(abs(minValue), 2)).build()
+                    Debt.Builder()
+                        .fromUserId(minKey).fromUserLastName(userRepository.findById(minKey).get().lastName)
+                        .toUserId(maxKey).toUserLastName(userRepository.findById(maxKey).get().lastName)
+                        .amount(round(abs(minValue), 2)).build()
                 )
                 details.remove(maxKey)
                 details.remove(minKey)
@@ -149,7 +151,10 @@ class TransactionService(
                 details[minKey] = 0.0
             } else {
                 debtBalanceResult.add(
-                    Debt.Builder().fromUserId(minKey).toUserId(maxKey).amount(round(abs(maxValue), 2)).build()
+                    Debt.Builder()
+                        .fromUserId(minKey).fromUserLastName(userRepository.findById(minKey).get().lastName)
+                        .toUserId(maxKey).toUserLastName(userRepository.findById(maxKey).get().lastName)
+                        .amount(round(abs(maxValue), 2)).build()
                 )
                 details.remove(maxKey)
                 details.remove(minKey)

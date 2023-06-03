@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, Platform } from "react-native";
 
 export default ({ onPress, text, size, theme }) => {
     const buttonStyles = [styles.button];
@@ -22,15 +22,16 @@ export default ({ onPress, text, size, theme }) => {
     );
 };
 
-// set dimmenstion
+// set dimension
 const screen = Dimensions.get("window");
-const buttonWidth = screen.width / 10 ;
+const isWeb = Platform.OS === "web";
+const buttonWidth = isWeb ? screen.width / 12 : screen.width / 10;
 
 const styles = StyleSheet.create({
     button: {
         backgroundColor: "#333333",
-        flex: 1,
-        height: Math.floor(buttonWidth - 100),
+        flex: isWeb ? 0.9 : 1,
+        height: Math.floor(buttonWidth - 50),
         alignItems: "center",
         justifyContent: "center",
         borderRadius: Math.floor(buttonWidth - 0),
@@ -38,16 +39,16 @@ const styles = StyleSheet.create({
     },
     text: {
         color: "#fff",
-        fontSize: 24,
+        fontSize: isWeb ? 24 : 36,
     },
     textSecondary: {
         color: "#060606",
     },
     buttonDouble: {
-        width: screen.width / 10,
-        flex: 1,
+        width: isWeb ? screen.width / 12 : screen.width / 10,
+        flex: isWeb ? 1.8 : 1,
         alignItems: "flex-start",
-        paddingLeft: 40,
+        paddingLeft: isWeb ? 30 : 40,
     },
     buttonSecondary: {
         backgroundColor: "#a6a6a6",
