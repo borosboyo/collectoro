@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import jakarta.persistence.*
-import org.hibernate.annotations.Fetch
-import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -36,7 +34,7 @@ class UserEntity private constructor(
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "users")
     @JsonManagedReference
-    val groupEntities: MutableList<GroupEntity> = ArrayList(),
+    val groups: MutableList<GroupEntity> = ArrayList(),
 
     var enabled: Boolean? = false,
 
@@ -94,7 +92,7 @@ class UserEntity private constructor(
         var password: String? = null,
         var role: Role = Role.USER,
         var tokens: MutableList<Token> = ArrayList(),
-        var groupEntities: MutableList<GroupEntity> = ArrayList(),
+        var groups: MutableList<GroupEntity> = ArrayList(),
         var enabled: Boolean? = false,
         var wallet: Wallet? = null
     ) {
@@ -106,10 +104,10 @@ class UserEntity private constructor(
         fun password(password: String) = apply { this.password = password }
         fun role(role: Role) = apply { this.role = role }
         fun tokens(tokens: MutableList<Token>) = apply { this.tokens = tokens }
-        fun groups(groupEntities: MutableList<GroupEntity>) = apply { this.groupEntities = groupEntities }
+        fun groups(groups: MutableList<GroupEntity>) = apply { this.groups = groups }
         fun enabled(enabled: Boolean) = apply { this.enabled = enabled }
         fun wallet(wallet: Wallet) = apply { this.wallet = wallet }
-        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groupEntities, enabled, wallet)
+        fun build() = UserEntity(id, provider, firstName, lastName, email, password, role, tokens, groups, enabled, wallet)
     }
 
 }

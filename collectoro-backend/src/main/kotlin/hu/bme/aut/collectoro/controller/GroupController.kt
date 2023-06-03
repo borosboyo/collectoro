@@ -68,4 +68,18 @@ class GroupController(
         return ResponseEntity.ok(groupService.leaveGroup(request))
     }
 
+    @PUT
+    @PutMapping("/getGroupPageAdditionalData")
+    @Path("/getGroupPageAdditionalData")
+    @Produces("application/json")
+    @ApiOperation(value = "getGroupPageAdditionalData", response = GetGroupPageAdditionalDataResp::class)
+    fun getGroupPageAdditionalData(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "GetGroupPageAdditionalDataReq"
+        ) request: GetGroupPageAdditionalDataReq
+    ): ResponseEntity<GetGroupPageAdditionalDataResp> {
+        return ResponseEntity.ok(groupService.getGroupPageAdditionalData(request))
+    }
+
 }

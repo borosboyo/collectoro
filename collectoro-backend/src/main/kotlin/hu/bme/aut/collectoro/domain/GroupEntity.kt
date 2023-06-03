@@ -1,13 +1,9 @@
 package hu.bme.aut.collectoro.domain
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
-import org.jetbrains.annotations.NotNull
-import org.springframework.context.annotation.Lazy
 import java.util.*
 
 @Entity
@@ -19,7 +15,7 @@ class GroupEntity(
     val name: String? = null,
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_entities")
+    @JoinColumn(name = "groups")
     @JsonManagedReference
     val users: MutableList<UserEntity> = ArrayList(),
 
