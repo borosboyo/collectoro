@@ -43,7 +43,7 @@ class Token private constructor(
         fun tokenType(tokenType: TokenType) = apply { this.tokenType = tokenType }
         fun revoked(revoked: Boolean) = apply { this.revoked = revoked }
         fun expired(expired: Boolean) = apply { this.expired = expired }
-        fun user(userEntity: UserEntity?) = apply { this.userEntity = userEntity }
+        fun userEntity(userEntity: UserEntity?) = apply { this.userEntity = userEntity }
         fun build() = Token(id, token, tokenType, revoked, expired, userEntity)
     }
 

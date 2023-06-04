@@ -19,7 +19,7 @@ class Balance(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "balances")
     @JsonManagedReference
-    val wallet: Wallet? = null
+    var wallet: Wallet? = null
 ) {
     data class Builder(
         var id: Long = 0,

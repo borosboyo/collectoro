@@ -14,5 +14,5 @@ interface TokenRepository : JpaRepository<Token, Long>
     @Query(value = "SELECT * FROM token WHERE user_entity_id = ?1 AND revoked = false AND expired = false", nativeQuery = true)
     fun findAllNotExpiredOrRevokedTokenByUserEntityAnAndTokenType(id: Long?, tokenType: TokenType): List<Token?>?
 
-    fun findByToken(token: String?): Optional<Token?>?
+    fun findByToken(token: String?): Optional<Token>
 }

@@ -25,7 +25,7 @@ class UserController(private val userService: UserService) {
     fun getUserById(
         @RequestBody @NotNull @ApiParam(
             required = false,
-            value = "GetUserByIdTsReq"
+            value = "GetUserByIdReq"
         ) req: GetUserByIdReq
     ): GetUserByIdResp {
         return userService.getUserById(req)

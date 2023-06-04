@@ -106,7 +106,7 @@ class AuthenticationService(
 
     private fun saveUserToken(userEntity: UserEntity, token: String, tokenType: TokenType) {
         val builtToken: Token = Token.Builder()
-            .user(userEntity)
+            .userEntity(userEntity)
             .token(token)
             .tokenType(tokenType)
             .expired(false)
