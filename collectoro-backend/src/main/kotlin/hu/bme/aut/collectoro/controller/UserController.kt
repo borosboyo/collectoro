@@ -62,4 +62,19 @@ class UserController(private val userService: UserService) {
     }
 
 
+    @PUT
+    @PutMapping("/getUsersByIds")
+    @Path("/getUsersByIds")
+    @Produces("application/json")
+    @ApiOperation(value = "getUsersByIds", response = GetUsersByIdsResp::class)
+    fun getUsersByIds(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "GetUsersByIdsReq"
+        ) req: GetUsersByIdsReq
+    ): GetUsersByIdsResp {
+        return userService.getUsersByIds(req)
+    }
+
+
 }

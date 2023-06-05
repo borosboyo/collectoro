@@ -1,17 +1,31 @@
 import {GroupControllerApiFactory, UserControllerApiFactory} from "../../../../swagger";
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SidebarService = {
     userController: UserControllerApiFactory(axiosConfig),
     groupController: GroupControllerApiFactory(axiosConfig),
 
-    getProfileByUserEmail: function(email: string): Promise<any> {
+    getProfileByUserEmail: async function(email: string): Promise<any> {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
         return this.userController.getProfileByUserEmail({
             email: email
         }, baseOptions)
     },
 
-    createGroup: function (name: string, email: string | null ): Promise<any> {
+    createGroup: async function (name: string, email: string | null ): Promise<any> {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
         if(email != null) {
             return this.groupController.createGroup({
                 name: name,
@@ -22,7 +36,13 @@ const SidebarService = {
         }
     },
 
-    joinGroup: function (joinLink: string, email: string | null ): Promise<any> {
+    joinGroup: async function (joinLink: string, email: string | null ): Promise<any> {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
         if(email != null) {
             return this.groupController.joinGroup({
                 userEmail: email,
@@ -33,7 +53,13 @@ const SidebarService = {
         }
     },
 
-    leaveGroup: function (groupId: number | undefined, email: string | null ): Promise<any> {
+    leaveGroup: async function (groupId: number | undefined, email: string | null ): Promise<any> {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
         if(email != null && groupId != null) {
             return this.groupController.leaveGroup({
                 userEmail: email,
@@ -42,6 +68,17 @@ const SidebarService = {
         } else {
             throw new Error("Email is undefined");
         }
+    },
+
+    logout: async function () {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        axios.get("http://localhost:8080/api/auth/logout", baseOptions).then((response) => {
+        })
     }
 }
 export default SidebarService;

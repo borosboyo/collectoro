@@ -1,6 +1,8 @@
 package hu.bme.aut.collectoro.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.transaction.Currency
 import hu.bme.aut.collectoro.domain.transaction.Transaction
 import jakarta.persistence.*
@@ -14,14 +16,10 @@ class GroupEntity(
     var id: Long = 0,
     val name: String? = null,
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "groups")
-    @JsonManagedReference
+    @ManyToMany(mappedBy = "groups")
     val users: MutableList<UserEntity> = ArrayList(),
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_entities")
-    @JsonManagedReference
+    @OneToMany(mappedBy = "groupEntity")
     val transactions: MutableList<Transaction> = ArrayList(),
 
     val joinLink: String? = UUID.randomUUID().toString(),

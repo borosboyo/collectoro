@@ -7,10 +7,7 @@ import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionResp
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionResp
-import hu.bme.aut.collectoro.repository.BalanceRepository
-import hu.bme.aut.collectoro.repository.GroupRepository
-import hu.bme.aut.collectoro.repository.TransactionRepository
-import hu.bme.aut.collectoro.repository.UserRepository
+import hu.bme.aut.collectoro.repository.*
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -24,6 +21,7 @@ class TransactionService(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
     private val balanceRepository: BalanceRepository,
+    private val userWithAmountRepository: UserWithAmountRepository
 ) {
     private val parm: MutableMap<Long, Double> = mutableMapOf()
 
@@ -38,7 +36,15 @@ class TransactionService(
             .forWhom(req.forWhom)
             .groupEntity(groupRepository.findById(req.groupEntityId).get())
             .build()
-        transactionRepository.save(transaction)
+        val savedTransaction = transactionRepository.save(transaction)
+        req.who.forEach {
+            it.transaction = savedTransaction
+            userWithAmountRepository.save(it)
+        }
+        req.forWhom.forEach {
+            it.transaction = savedTransaction
+            userWithAmountRepository.save(it)
+        }
         when (req.type) {
             TransactionType.TRANSFER -> processTransfer(req, resp)
             TransactionType.INCOME -> processIncome(req, resp)

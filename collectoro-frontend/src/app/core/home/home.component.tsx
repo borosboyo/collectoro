@@ -6,8 +6,8 @@ import * as React from 'react';
 import {Component} from 'react';
 import {Animated, Dimensions, StatusBar, StyleSheet} from 'react-native';
 import {Route, SceneMap, TabView} from 'react-native-tab-view';
-import {Box, Heading, Pressable, useColorModeValue} from "native-base";
-import {render} from "react-dom";
+import {Box, Heading, Pressable, useColorModeValue, View} from "native-base";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomeComponentState = {
     homePage: GetHomepageByUserEmailResp | undefined; routes: Route[]; scenes: { [key: string]: any }; index: number; inputRange: any[];
@@ -23,10 +23,12 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
 
     componentDidMount() {
         const {homePage} = this.state;
-        HomeService.getHomepageByUserEmail('asd@asd.hu').then((response) => {
-            this.setState({homePage: response.data}, this.updateRoutesAndScenes);
-        });
-        this.updateRoutesAndScenes();
+        AsyncStorage.getItem('email').then((email) => {
+            HomeService.getHomepageByUserEmail(email!).then((response) => {
+                this.setState({homePage: response.data}, this.updateRoutesAndScenes);
+            });
+            this.updateRoutesAndScenes();
+        })
     }
 
     updateRoutesAndScenes = () => {
@@ -67,18 +69,20 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
     };
 
     render() {
-        this.state.homePage?.groups?.forEach((group) => {
-            group.users?.forEach((user) => {
-                if(user == this.state.homePage?.user?.id){
-                    group.users?.splice(group.users.indexOf(user), 1, this.state.homePage?.user);
-                }
-            })
-        })
+        console.log(this.state.homePage);
         const {index, routes, scenes, inputRange} = this.state;
         const initialLayout = {
             width: Dimensions.get('window').width,
         };
-        if (inputRange.length == 0) return (<Heading>Join a group!</Heading>);
+        if (inputRange.length == 0) return (<View style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}>
+            <Heading>
+                Join a group!
+            </Heading>
+        </View>);
         if (inputRange.length == 1 && this.state.homePage?.groups?.at(0) != undefined) {
             return (<TabPageComponent group={this.state.homePage?.groups.at(0)} navigation={this.props.navigation}></TabPageComponent>);
         } else {

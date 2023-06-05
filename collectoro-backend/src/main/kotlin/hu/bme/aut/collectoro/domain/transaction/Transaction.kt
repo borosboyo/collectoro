@@ -1,6 +1,7 @@
 package hu.bme.aut.collectoro.domain.transaction
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.domain.GroupEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -15,15 +16,17 @@ open class Transaction(
     open val currency: Currency = Currency.HUF,
     open val type: TransactionType? = TransactionType.EXPENSE,
 
-    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL])
     open var who: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
-    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL])
     open var forWhom: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transactions")
-    @JsonManagedReference
+    @JoinTable(name = "group_transaction",
+        joinColumns = [JoinColumn(name = "transaction_id")]
+    )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
     open val groupEntity: GroupEntity = GroupEntity()
 ) {
 
@@ -46,5 +49,9 @@ open class Transaction(
         fun forWhom(forWhom: MutableList<UserWithAmount>) = apply { this.forWhom = forWhom }
         fun groupEntity(groupEntity: GroupEntity) = apply { this.groupEntity = groupEntity }
         fun build() = Transaction(id, purpose, date, currency, type, who, forWhom, groupEntity)
+    }
+
+    override fun toString(): String {
+        return "Transaction(id=$id, purpose='$purpose', date=$date, currency=$currency, type=$type, who=$who, forWhom=$forWhom, groupEntity=$groupEntity)"
     }
 }

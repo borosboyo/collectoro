@@ -4,39 +4,78 @@ import CalculatorButton from "./button.component";
 import RowComponent from "./row.component";
 import calculatorUtil, { initialState } from "./calculator.util";
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list/index";
-import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack} from "native-base";
+import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack, VStack} from "native-base";
 import {Pressable, Text} from "native-base";
 import {TransactionEditorNavigationProps} from "./transaction-editor.props";
+import TransactionEditorService from "./transaction-editor.service";
+import {ProcessTransactionReqTypeEnum, UserWithAmountTypeEnum} from "../../../../swagger";
 
 type TransactionEditorState = {
 };
 
 export default class TransactionEditorComponent extends Component<TransactionEditorNavigationProps, TransactionEditorState>  {
     state = initialState;
-    selectedValue = null;
+    selectedType = ProcessTransactionReqTypeEnum;
     selectedWho = null;
     selectedForWhom = null;
-    data = [
-        { key: "1", value: "Expense" },
-        { key: "2", value: "Income" },
-        { key: "3", value: "Transfer" },
+    transactionType = [
+        { key: "1", value: ProcessTransactionReqTypeEnum.EXPENSE },
+        { key: "2", value: ProcessTransactionReqTypeEnum.INCOME },
+        { key: "3", value: ProcessTransactionReqTypeEnum.TRANSFER },
     ];
-    who = [
-        { key: "1", value: "Expense" },
-        { key: "2", value: "Income" },
-        { key: "3", value: "Transfer" },
-    ];
-    forWhom = [
-        { key: "1", value: "Expense" },
-        { key: "2", value: "Income" },
-        { key: "3", value: "Transfer" },
-    ];
+
+    who: any[] = []
+    whoReq: any[] = []
+    forWhom: any[] = []
+    forWhomReq: any[] = []
+    purpose = ""
+
+    constructor(props: TransactionEditorNavigationProps) {
+        super(props);
+        this.who = this.props.route.params.group.users.map((user) => {
+            return {key: user.id.toString(), value: user.lastName, amount: 0}
+        })
+        this.forWhom = this.props.route.params.group.users.map((user) => {
+            return {key: user.id.toString(), value: user.lastName, amount: 0}
+        })
+
+        this.whoReq = this.props.route.params.group.users.map((user) => {
+            return {id: 0, userId: user.id.toString(), lastName: user.lastName, amount: 0, transaction: null, type: UserWithAmountTypeEnum.WHO}
+        })
+
+        this.forWhomReq = this.props.route.params.group.users.map((user) => {
+            return {id: 0, userId: user.id.toString(), lastName: user.lastName, amount: 0, transaction: null, type: UserWithAmountTypeEnum.FORWHOM}
+        })    }
+
     // handle tap method
     HandleTap = (type, value) => {
-        this.setState((state) => calculatorUtil(type, value, state));
+        this.setState((calculatorState) => calculatorUtil(type, value, calculatorState));
     };
 
+    mapWho = () => {
+        //copy who amount to whoReq amounts
+        this.whoReq.forEach((userReq) => {
+            this.who.forEach((user) => {
+                if(userReq.userId === user.key) {
+                    userReq.amount = user.amount
+                }
+            })
+        })
+    }
+
+    mapForWhom = () => {
+        //copy forWhom amount to forWhomReq amounts
+        this.forWhomReq.forEach((userReq) => {
+            this.forWhom.forEach((user) => {
+                if(userReq.userId === user.key) {
+                    userReq.amount = user.amount
+                }
+            })
+        })
+    }
+
     render() {
+
         const containerStyle = Platform.OS === "web" ? styles.webContainer : styles.androidContainer;
 
         return (
@@ -47,29 +86,57 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                             onPress={() => this.props.navigation.goBack()}>
                             <ChevronLeftIcon size="sm" color="black"/>
                         </Pressable>
-                        <Text color="black" fontSize="md">Group name</Text>
+                        <Text color="black" fontSize="md">{this.props.route.params.group.name}</Text>
                     </HStack>
                     <Text style={styles.label}>Purpose:</Text>
-                    <TextInput style={styles.input} placeholder="Enter purpose" />
+                    <TextInput style={styles.input} onChangeText={newText => this.purpose = newText} placeholder="Enter purpose" />
 
                     <View style={styles.selectListContainer}>
                         <Text style={styles.label}>Type:</Text>
-                        <SelectList setSelected={(val) => (this.selectedValue = val)} data={this.data} save="value" />
+                        <SelectList setSelected={(val) => (this.selectedType = val)} data={this.transactionType} save="value" />
                     </View>
                     <View style={styles.selectListContainer}>
-                        <Text style={styles.label}>Who:</Text>
-                        <MultipleSelectList setSelected={(val) => (this.selectedWho = val)} data={this.who} save="value" />
+                        <VStack>
+                            <Text style={styles.label}>Who:</Text>
+                            {this.who.map((user) => {
+                                return (
+                                    <HStack key={user.key}>
+                                        <View>
+                                            <Text style={styles.userLastName}>{user.value}</Text>
+                                            <TextInput style={styles.input} onChangeText={newText => {
+                                                user.amount = parseFloat(newText);
+                                                this.mapWho();
+                                            }} placeholder="Enter amount" />
+                                        </View>
+                                    </HStack>
+                                )
+                            })}
+                        </VStack>
                     </View>
                     <View style={styles.selectListContainer}>
-                        <Text style={styles.label}>For Whom:</Text>
-                        <MultipleSelectList setSelected={(val) => (this.selectedWho = val)} data={this.who} save="value" />
+                        <VStack>
+                            <Text style={styles.label}>For Whom:</Text>
+                            {this.forWhom.map((user) => {
+                                return (
+                                    <HStack key={user.key}>
+                                        <View>
+                                            <Text style={styles.userLastName}>{user.value}</Text>
+                                            <TextInput style={styles.input} onChangeText={newText => {
+                                                user.amount = parseFloat(newText);
+                                                this.mapForWhom();
+                                            }} placeholder="Enter amount" />
+                                        </View>
+                                    </HStack>
+                                )
+                            })}
+                        </VStack>
                     </View>
                     <Divider thickness="5" />
                     <View style={styles.calculatorContainer}>
-                        <SafeAreaView>
+                        {/*<SafeAreaView>
                             <Text style={styles.value}>{parseFloat(this.state.currentValue).toLocaleString()}</Text>
 
-                            {/* Do create componentRow */}
+
                             <RowComponent>
                                 <CalculatorButton text="C" theme="secondary" onPress={() => this.HandleTap("clear")} />
                                 <CalculatorButton text="+/-" theme="secondary" onPress={() => this.HandleTap("posneg")} />
@@ -77,7 +144,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                 <CalculatorButton text="/" theme="accent" onPress={() => this.HandleTap("operator", "/")} />
                             </RowComponent>
 
-                            {/* Number */}
+
                             <RowComponent>
                                 <CalculatorButton text="7" onPress={() => this.HandleTap("number", 7)} />
                                 <CalculatorButton text="8" onPress={() => this.HandleTap("number", 8)} />
@@ -105,7 +172,12 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                 <CalculatorButton text="=" theme="primary" onPress={() => this.HandleTap("equal", "=")} />
                             </RowComponent>
                         </SafeAreaView>
-                        <Button>Add</Button>
+
+                        */}
+                    <Button onPress={() => {
+                            TransactionEditorService.processTransaction(this.purpose, this.whoReq, this.forWhomReq, this.props.route.params.group.id, Number(this.state.currentValue), this.selectedType).then(r =>
+                                this.props.navigation.goBack())
+                        }}>Save</Button>
                     </View>
                 </View>
             </ScrollView>
@@ -135,7 +207,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     label: {
+        fontSize: 16,
         marginRight: 10,
+        fontWeight: "bold",
+    },
+    userLastName: {
+        fontSize: 12,
     },
     heading: {
         fontSize: 18,

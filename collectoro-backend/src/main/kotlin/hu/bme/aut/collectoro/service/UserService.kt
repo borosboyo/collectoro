@@ -2,6 +2,7 @@ package hu.bme.aut.collectoro.service
 
 import hu.bme.aut.collectoro.domain.Provider
 import hu.bme.aut.collectoro.domain.UserEntity
+import hu.bme.aut.collectoro.domain.transaction.UserWithAmountType
 import hu.bme.aut.collectoro.dto.user.*
 import hu.bme.aut.collectoro.repository.GroupRepository
 import hu.bme.aut.collectoro.repository.UserRepository
@@ -46,13 +47,26 @@ class UserService(
 
     @Transactional
     fun getHomepageByUserEmail(req: GetHomepageByUserEmailReq): GetHomepageByUserEmailResp {
-        val user = userRepository.findByEmail(req.email!!)!!
+        val user = userRepository.findByEmail(req.email!!)
         val groups = groupRepository.findGroupEntitiesByUser(user)
+        for (group in groups) {
+            for (transaction in group.transactions) {
+                transaction.who.removeIf { it.type != UserWithAmountType.WHO }
+                transaction.forWhom.removeIf { it.type != UserWithAmountType.FORWHOM }
+            }
+        }
         return GetHomepageByUserEmailResp(user, groups)
     }
 
     @Transactional
     fun getProfileByUserEmail(req: GetProfileByUserEmailReq): GetProfileByUserEmailResp {
-        return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!)!!)
+        return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!))
+    }
+
+    @Transactional
+    fun getUsersByIds(req: GetUsersByIdsReq): GetUsersByIdsResp {
+        val resp = GetUsersByIdsResp()
+        resp.users = userRepository.findByIdIn(req.ids)
+        return resp
     }
 }

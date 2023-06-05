@@ -7,7 +7,6 @@ import hu.bme.aut.collectoro.domain.transaction.Currency
 import jakarta.persistence.*
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class Balance(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +17,7 @@ class Balance(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "balances")
-    @JsonManagedReference
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
     var wallet: Wallet? = null
 ) {
     data class Builder(

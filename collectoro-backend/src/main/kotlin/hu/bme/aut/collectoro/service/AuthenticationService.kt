@@ -28,9 +28,6 @@ class AuthenticationService(
 
     @Transactional
     fun register(request: RegisterReq): AuthenticationResp? {
-        if(userRepository.findByEmail(request.email) != null) {
-            throw Exception("User already exists")
-        }
         //Create User And Token
         val userEntity: UserEntity = UserEntity.Builder()
             .firstName(request.firstName)

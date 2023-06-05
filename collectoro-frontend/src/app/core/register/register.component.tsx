@@ -65,6 +65,12 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                 }}>
                     Sign up
                 </Button>
+                <Button mt="2" colorScheme="indigo"
+                        onPress={() => {
+                            navigation.goBack();
+                        }}>
+                    Back
+                </Button>
             </VStack>
         </Box>
     </Center>);

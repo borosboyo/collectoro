@@ -1,6 +1,5 @@
 package hu.bme.aut.collectoro.controller
 
-import hu.bme.aut.collectoro.domain.transaction.Transaction
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
 import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionResp
 import hu.bme.aut.collectoro.service.TransactionService
@@ -31,7 +30,7 @@ class TransactionController(
     @Path("/processTransaction")
     @Produces("application/json")
     @ApiOperation(value = "processTransaction", response = ProcessTransactionResp::class)
-    fun register(
+    fun processTransaction(
         @RequestBody @NotNull @ApiParam(
             required = false,
             value = "ProcessTransactionReq"

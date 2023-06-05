@@ -30,6 +30,12 @@ export default function ResetPasswordComponent({navigation}: ResetPasswordNaviga
                         }}>
                     Send email
                 </Button>
+                <Button mt="2" colorScheme="indigo"
+                        onPress={() => {
+                            navigation.goBack();
+                        }}>
+                    Back
+                </Button>
             </VStack>
         </Box>
     </Center>);

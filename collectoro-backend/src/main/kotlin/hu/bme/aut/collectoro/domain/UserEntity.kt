@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
 @Table(name = "user_entity")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class UserEntity private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +31,15 @@ class UserEntity private constructor(
     val tokens: MutableList<Token> = ArrayList(),
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users")
-    @JsonManagedReference
+    @JoinTable(name = "group_user",
+        joinColumns = [JoinColumn(name = "user_id")]
+    )
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
     val groups: MutableList<GroupEntity> = ArrayList(),
 
     var enabled: Boolean? = false,
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_entity")
-    @JsonManagedReference
+    @OneToOne(mappedBy = "userEntity")
     var wallet: Wallet? = null
 
     ) : UserDetails {

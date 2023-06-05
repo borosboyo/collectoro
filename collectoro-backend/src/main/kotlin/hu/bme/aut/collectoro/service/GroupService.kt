@@ -104,6 +104,7 @@ class GroupService(
             .sumOf { it.amount }
 
         val debtList = transactionService.balanceOutBalances(req.groupId)
-        return GetGroupPageAdditionalDataResp(totalSpent, expenseTransactions.size, debtList)
+        val users = userRepository.findByIdIn(group.users.map { it.id })
+        return GetGroupPageAdditionalDataResp(totalSpent, expenseTransactions.size, debtList, users)
     }
 }

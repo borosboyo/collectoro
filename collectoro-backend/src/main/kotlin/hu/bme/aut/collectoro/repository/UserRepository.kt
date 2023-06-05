@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository
 interface UserRepository : JpaRepository<UserEntity, Long> {
     fun findByEmail(email: String): UserEntity
     fun findByEmailAndProvider(email: String, provider: Provider): UserEntity?
+
+    //find users list based on array of ids
+    fun findByIdIn(ids: List<Long>): List<UserEntity>
 }

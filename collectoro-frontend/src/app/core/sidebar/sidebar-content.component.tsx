@@ -36,9 +36,11 @@ class SidebarContentComponent extends Component<SidebarContentComponentProps, Si
     }
 
     componentDidMount() {
-        SidebarService.getProfileByUserEmail('asd@asd.hu').then((response) => {
-            this.setState({profile: response.data});
-        });
+        AsyncStorage.getItem('email').then((email) => {
+            SidebarService.getProfileByUserEmail(email!).then((response) => {
+                this.setState({profile: response.data});
+            });
+        })
     }
 
     defaultScreen() {
@@ -85,8 +87,9 @@ class SidebarContentComponent extends Component<SidebarContentComponentProps, Si
                         flexDir="row"
                         justifyContent="space-between"
                         onPress={() => {
+                            SidebarService.logout();
                             setIsLoggedIn(false);
-                            AsyncStorage.removeItem('token').then(r => console.log(r))
+                            AsyncStorage.removeItem('token').then(r => {})
                         }}
                     >
                         <Text color="warmGray.100" fontSize="md">Logout</Text>
@@ -99,7 +102,7 @@ class SidebarContentComponent extends Component<SidebarContentComponentProps, Si
 
     myGroupsScreen() {
         return <VStack space="2" w="100%">
-            {this.state.profile?.user?.groupEntities?.map((group) => {
+            {this.state.profile?.user?.groups?.map((group) => {
                 return <Pressable
                     px="4"
                     pb="5"

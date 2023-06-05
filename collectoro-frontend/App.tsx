@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import type {StorageManager} from "native-base";
 import {ColorMode, NativeBaseProvider} from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,7 +26,28 @@ export const AppContext = React.createContext({
 });
 
 export default ({children, theme}: any) => {
-    const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [token, setToken] = React.useState<string | null>(null);
+
+    useEffect(() => {
+        // Check if user is already logged in (e.g., by verifying the JWT token in AsyncStorage)
+        // Set the isLoggedIn state to true if the user is logged in
+
+        const checkLoginStatus = async () => {
+            try {
+                // Retrieve the JWT token from AsyncStorage
+                const token = await AsyncStorage.getItem("token");
+                if (token) {
+                    setIsLoggedIn(true);
+                    setToken(token)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
 
     const colorModeManager: StorageManager = {
         get: async () => {

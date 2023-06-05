@@ -6,13 +6,14 @@ import React, {useEffect} from "react";
 import {HomeNavigation} from "./home-navigation.props";
 import {Debt, GroupEntity} from "../../../../swagger";
 import HomeService from "./home.service";
+import moment from "moment";
 
 export function TabPageComponent({group, navigation}: { group: GroupEntity | undefined, navigation: HomeNavigation }) {
     let greenColor = (opacity = 1) => `#26653A`;
     let redColor = (opacity = 1) => `#FF0000`;
     const [additionalData, setAdditionalData] = React.useState<any>(null);
 
-    const labels = group?.users?.map((user) => user.lastName + " " + user.firstName);
+    const labels = group?.users?.map((user) => user.lastName);
     const balances = group?.users?.map((user) => {
         return user.wallet?.balances?.find((balance) => balance.groupId == group?.id)?.amount!;
     });
@@ -26,10 +27,31 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
         }
     }, [])
 
+
+    const noTransactions = () => {
+        if (group?.transactions?.length == 0) {
+            return <Text>No transactions yet.</Text>
+        }
+    };
+
+    const noDebts = () => {
+        if (additionalData?.debtList?.length == 0) {
+            return <Text>No debts yet.</Text>
+        }
+    }
+
+    const formatDate = (date) => {
+        if(date.length == 7) {
+            date.pop()
+        }
+        return moment(date).format('YYYY-MM-DD HH:mm:ss');
+    }
+
     return <Box flex={1}>
         <ScrollView>
             <Center>
                 <Heading style={styles.heading}>{group?.name}</Heading>
+                <Text selectable={true} style={styles.heading}>Join code: {group?.joinLink}</Text>
             </Center>
             <BarChart
                 data={{
@@ -75,9 +97,10 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
             <Text fontSize="lg" bold>
                 Transactions
             </Text>
-            <VStack space={4} alignItems="left" mt={10}>
+            <VStack space={4} alignItems="left">
+                {noTransactions()}
                 {group?.transactions?.map((transaction) => {
-                    return <Box>
+                    return <Box key={transaction.id}>
                         <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
                             <Avatar bg="gray.300">GG</Avatar>
                             <VStack>
@@ -86,7 +109,10 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                                 </Text>
                                 <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
                                     <Text fontSize="xs">
-                                        {transaction.date?.toString()}
+                                        {formatDate(transaction?.date)}
+                                    </Text>
+                                    <Text fontSize="xs">
+                                        {transaction?.type}
                                     </Text>
                                     <Avatar bg="gray.300" size='xs'>GG</Avatar>
                                 </HStack>
@@ -102,8 +128,9 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 <Text fontSize="lg" bold>
                     Settle debts
                 </Text>
+                {noDebts()}
                 {additionalData?.debtList.map((debt: Debt) => {
-                    return <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                    return <HStack alignItems="center" space="3" px="4" bgColor='gray.250' key={debt.id}>
                         <Avatar bg="gray.300">GG</Avatar>
                         <VStack>
                             <Text fontSize="md" fontWeight="bold" color="black">
@@ -153,7 +180,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
         <Center style={styles.fab}>
             <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
                  icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}
-                 onPress={() => navigation.navigate('TransactionEditor')}/>
+                 onPress={() => navigation.navigate('TransactionEditor', {group: group})}/>
         </Center>;
     </Box>;
 }
