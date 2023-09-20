@@ -8,7 +8,6 @@ import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack, VStack}
 import {Pressable, Text} from "native-base";
 import {TransactionEditorNavigationProps} from "./transaction-editor.props";
 import TransactionEditorService from "./transaction-editor.service";
-import {ProcessTransactionReqTypeEnum, UserWithAmountTypeEnum} from "../../../../swagger";
 
 type TransactionEditorState = {
 };
@@ -79,7 +78,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
         const containerStyle = Platform.OS === "web" ? styles.webContainer : styles.androidContainer;
 
         return (
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView>
                 <View style={containerStyle}>
                     <HStack space="3">
                         <Pressable

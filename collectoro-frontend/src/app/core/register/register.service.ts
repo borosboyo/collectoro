@@ -1,6 +1,3 @@
-import {
-    AuthenticationControllerApiFactory, AuthenticationResp, EnableReq, EnableResp, GoogleAuthenticationReq,
-} from "../../../../swagger";
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AxiosResponse} from "axios";

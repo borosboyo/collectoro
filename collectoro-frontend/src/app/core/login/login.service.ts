@@ -1,8 +1,5 @@
 import {AuthSessionResult} from "expo-auth-session";
 import axios, {AxiosResponse} from "axios";
-import {
-    AuthenticationControllerApiFactory, AuthenticationResp,
-} from "../../../../swagger";
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -10,19 +7,26 @@ const LoginService = {
 
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),
 
-    fetchUserInfo: function(accessToken: any) {
-        axios.get("https://www.googleapis.com/userinfo/v2/me", {
+    fetchUserInfo: async function(accessToken: any) {
+        let resp : AxiosResponse<any>;
+        await axios.get("https://www.googleapis.com/userinfo/v2/me", {
             headers: {Authorization: `Bearer ${accessToken}`}
         }).then((googleResponse) => {
-            this.authenticationController.authenticateGoogle({
-                email: googleResponse.data.email,
-                firstName: googleResponse.data.given_name,
-                lastName: googleResponse.data.family_name,
-            }, baseOptions).then(async (backendResponse: AxiosResponse<AuthenticationResp>) => {
-                await AsyncStorage.setItem("token", backendResponse.data.token!!);
-                await AsyncStorage.setItem("email", googleResponse.data.email!!);
-            })
+            resp = googleResponse;
         });
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
+        await this.authenticationController.authenticateGoogle({
+            email: resp.data.email,
+            firstName: resp.data.given_name,
+            lastName: resp.data.family_name,
+        }, baseOptions).then(async (backendResponse: AxiosResponse<AuthenticationResp>) => {
+            await AsyncStorage.setItem("token", backendResponse.data.token!!);
+            await AsyncStorage.setItem("email", resp.data.email!!);
+        })
     },
 
      loginWithGoogle: function(promptAsync: any): Promise<any> {

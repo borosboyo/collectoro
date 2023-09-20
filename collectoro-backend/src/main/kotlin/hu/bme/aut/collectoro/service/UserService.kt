@@ -62,11 +62,4 @@ class UserService(
     fun getProfileByUserEmail(req: GetProfileByUserEmailReq): GetProfileByUserEmailResp {
         return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!))
     }
-
-    @Transactional
-    fun getUsersByIds(req: GetUsersByIdsReq): GetUsersByIdsResp {
-        val resp = GetUsersByIdsResp()
-        resp.users = userRepository.findByIdIn(req.ids)
-        return resp
-    }
 }

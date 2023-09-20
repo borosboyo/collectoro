@@ -134,6 +134,7 @@ class AuthenticationService(
                 .email(request.email)
                 .role(Role.USER)
                 .provider(Provider.GOOGLE)
+                .password("cheat")
                 .enabled(true)
                 .build()
             val wallet = Wallet()

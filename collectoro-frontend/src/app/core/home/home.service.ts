@@ -1,4 +1,3 @@
-import {GroupControllerApiFactory, UserControllerApiFactory} from "../../../../swagger";
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -13,6 +12,7 @@ const HomeService = {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
+        console.log(token)
         return this.userController.getHomePageByUserEmail({ email: email }, baseOptions);
     },
 

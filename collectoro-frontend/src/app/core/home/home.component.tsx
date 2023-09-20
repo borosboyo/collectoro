@@ -22,7 +22,7 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
     }
 
     componentDidMount() {
-        const {homePage} = this.state;
+        const {homePage} = this.state
         AsyncStorage.getItem('email').then((email) => {
             HomeService.getHomepageByUserEmail(email!).then((response) => {
                 this.setState({homePage: response.data}, this.updateRoutesAndScenes);
@@ -69,7 +69,6 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
     };
 
     render() {
-        console.log(this.state.homePage);
         const {index, routes, scenes, inputRange} = this.state;
         const initialLayout = {
             width: Dimensions.get('window').width,

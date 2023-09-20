@@ -28,6 +28,11 @@
     "web": {
       "favicon": "./src/assets/favicon.png"
     },
-    "scheme": "collectoro-frontend"
+    "scheme": "collectoro-frontend",
+    "extra": {
+      "eas": {
+        "projectId": "b5dcd8b0-b608-4fa4-add8-dbc418283038"
+      }
+    }
   }
 }

@@ -117,9 +117,9 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                                     <Avatar bg="gray.300" size='xs'>GG</Avatar>
                                 </HStack>
                                 <Text>From {transaction.who?.map((who) => {
-                                    return <Text>{who.lastName}</Text>
+                                    return <Text>{who.lastName} </Text>
                                 })} to {transaction.forWhom?.map((forWhom) => {
-                                    return <Text>{forWhom.lastName}</Text>
+                                    return <Text>{forWhom.lastName} </Text>
                                 })}</Text>
                             </VStack>
                         </HStack>

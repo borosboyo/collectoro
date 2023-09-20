@@ -20,6 +20,7 @@ import {LoginNavigationProps} from "./login-navigation.props";
 import loginService from "./login.service";
 import {useContext} from "react";
 import { AppContext } from "../../../../App";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function LoginComponent({navigation}: LoginNavigationProps) {
@@ -70,7 +71,8 @@ export default function LoginComponent({navigation}: LoginNavigationProps) {
                         onPress={() => {
                             loginService.loginWithEmail(email,password)
                                 .then(() => {
-                                setIsLoggedIn(true);
+                                    console.log(AsyncStorage.getItem("token"));
+                                    setIsLoggedIn(true);
                             })
                                 .catch(error => {
                                     console.log(error);

@@ -123,7 +123,8 @@ class TransactionService(
     @Transactional
     fun test(): ProcessTransactionReq {
 
-        findPath(this.parm)
+        val user = userRepository.findByEmail("borosgergo00@gmail.com");
+        println(user)
         return ProcessTransactionReq.Builder()
             .purpose("req.purpose")
             .currency(Currency.HUF)
