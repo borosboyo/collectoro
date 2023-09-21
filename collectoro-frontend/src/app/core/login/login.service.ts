@@ -2,6 +2,7 @@ import {AuthSessionResult} from "expo-auth-session";
 import axios, {AxiosResponse} from "axios";
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {AuthenticationControllerApiFactory} from "../../../../swagger";
 
 const LoginService = {
 

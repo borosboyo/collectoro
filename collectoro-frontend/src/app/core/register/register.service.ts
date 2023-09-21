@@ -1,6 +1,7 @@
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AxiosResponse} from "axios";
+import {AuthenticationControllerApiFactory} from "../../../../swagger";
 
 const RegisterService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),

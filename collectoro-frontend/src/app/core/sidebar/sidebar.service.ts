@@ -2,6 +2,7 @@
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {GroupControllerApiFactory, UserControllerApiFactory} from "../../../../swagger";
 
 const SidebarService = {
     userController: UserControllerApiFactory(axiosConfig),

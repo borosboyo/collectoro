@@ -1,5 +1,6 @@
 import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {GroupControllerApiFactory, UserControllerApiFactory} from "../../../../swagger";
 
 const HomeService = {
     userController: UserControllerApiFactory(axiosConfig),
