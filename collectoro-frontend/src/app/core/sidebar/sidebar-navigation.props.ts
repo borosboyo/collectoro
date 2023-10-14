@@ -1,5 +1,6 @@
 import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../../shared/root-stack-param-list";
+import {RootStackParamList} from "../../shared/config/root-stack-param-list";
+import {DrawerContentComponentProps} from "@react-navigation/drawer";
 
 export type SidebarNavigation = StackNavigationProp<
     RootStackParamList,
@@ -7,6 +8,7 @@ export type SidebarNavigation = StackNavigationProp<
     'TransactionEditor'
 >;
 
-export type SidebarNavigationProps = {
+export type SidebarNavigationProps = DrawerContentComponentProps & {
     navigation: SidebarNavigation;
-};
+}
+

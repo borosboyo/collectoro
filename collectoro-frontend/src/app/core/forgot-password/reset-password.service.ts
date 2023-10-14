@@ -1,5 +1,5 @@
-import {axiosConfig, baseOptions} from "../../shared/axios-config";
 import {AuthenticationControllerApiFactory} from "../../../../swagger";
+import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
 
 const ResetPasswordService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),

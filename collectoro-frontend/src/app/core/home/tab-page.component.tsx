@@ -40,7 +40,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
         }
     }
 
-    const formatDate = (date) => {
+    const formatDate = (date: any) => {
         if(date.length == 7) {
             date.pop()
         }
@@ -186,7 +186,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
 }
 
 const styles = StyleSheet.create({
-    container: {
+    textInputContainer: {
         justifyContent: "center",
         alignItems: "center",
         position: "absolute",

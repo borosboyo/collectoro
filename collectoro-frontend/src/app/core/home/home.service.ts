@@ -1,6 +1,6 @@
-import {axiosConfig, baseOptions} from "../../shared/axios-config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
 import {GroupControllerApiFactory, UserControllerApiFactory} from "../../../../swagger";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeService = {
     userController: UserControllerApiFactory(axiosConfig),
@@ -13,7 +13,6 @@ const HomeService = {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        console.log(token)
         return this.userController.getHomePageByUserEmail({ email: email }, baseOptions);
     },
 
@@ -28,18 +27,6 @@ const HomeService = {
             groupId: groupId
         }, baseOptions)
     },
-
-    getUsersByIds: async function(ids: any): Promise<any> {
-        const token = await AsyncStorage.getItem("token");
-        baseOptions.headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
-        return this.userController.getUsersByIds({
-            ids: ids
-        }, baseOptions)
-    }
 }
 
 export default HomeService;

@@ -1,8 +1,8 @@
 import {AuthSessionResult} from "expo-auth-session";
 import axios, {AxiosResponse} from "axios";
-import {axiosConfig, baseOptions} from "../../shared/axios-config";
+import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
+import {AuthenticationControllerApiFactory, AuthenticationResp} from "../../../../swagger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {AuthenticationControllerApiFactory} from "../../../../swagger";
 
 const LoginService = {
 
@@ -34,17 +34,23 @@ const LoginService = {
         return promptAsync().then(
             (result: AuthSessionResult) => {
                 if (result.type === "success") {
-                    this.fetchUserInfo(result.authentication?.accessToken);
+                    console.log(result)
+                    axios.get("https://www.googleapis.com/userinfo/v2/me", {
+                        headers: {Authorization: `Bearer ${result.authentication?.accessToken}`}
+                    }).then((googleResponse) => {
+                        console.log(googleResponse);
+                    });
                 }
             }
         );
     },
 
-    loginWithEmail: function(email: string, password: string): Promise<any> {
+    loginWithEmail: function (email: string, password: string): Promise<any> {
         return this.authenticationController.authenticate({
             email: email,
             password: password
         }, baseOptions).then(async (response: AxiosResponse<AuthenticationResp>) => {
+            console.log(response)
             await AsyncStorage.setItem("token", response.data.token!!);
             await AsyncStorage.setItem("email", email);
         })
