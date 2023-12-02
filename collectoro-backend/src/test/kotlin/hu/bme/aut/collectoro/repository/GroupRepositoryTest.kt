@@ -44,7 +44,7 @@ class GroupRepositoryTest {
         val foundGroups = groupRepository.findByUsers(user)
 
         // Assert that the found groups are not empty and contain the user
-        Assertions.assertFalse(foundGroups.isEmpty())
+        Assertions.assertFalse(!foundGroups.isEmpty())
         foundGroups.forEach { group ->
             Assertions.assertTrue(group.users.contains(user))
         }
@@ -112,7 +112,7 @@ class GroupRepositoryTest {
         val foundGroups = groupRepository.findGroupEntitiesByUser(user2)
 
         // Assert that the found groups are not empty and contain the user
-        Assertions.assertFalse(foundGroups.isEmpty())
+        Assertions.assertFalse(!foundGroups.isEmpty())
         foundGroups.forEach { group: GroupEntity ->
             Assertions.assertTrue(group.users.contains(user2))
         }

@@ -1,10 +1,7 @@
-import {
-    ProcessTransactionReqCurrencyEnum,
-    ProcessTransactionReqTypeEnum,
-    TransactionControllerApiFactory,
-} from "../../../../swagger";
-import {axiosConfig, baseOptions} from "../../shared/axios-config";
+
+import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {ProcessTransactionReqCurrencyEnum, TransactionControllerApiFactory} from "../../../../swagger";
 
 const TransactionEditorService = {
     transactionController: TransactionControllerApiFactory(axiosConfig),

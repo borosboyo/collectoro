@@ -5,28 +5,30 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import LoginComponent from "./src/app/core/login/login.component";
 import RegisterComponent from "./src/app/core/register/register.component";
 import ResetPasswordComponent from "./src/app/core/forgot-password/reset-password.component";
 import SaveForgotPasswordComponent from "./src/app/core/save-forgotten-password/save-forgot-password.component";
 import HomeComponent from "./src/app/core/home/home.component";
-import {RootStackParamList} from "./src/app/shared/root-stack-param-list";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import SidebarComponent from "./src/app/core/sidebar/sidebar.component";
 import TransactionEditorComponent from "./src/app/core/transaction-editor/transaction-editor.component";
 import EnableAccountComponent from "./src/app/core/register/enable-account/enable-account.component";
-import HomeHolderComponent from "./src/app/core/home/home-holder.component";
+import {RootStackParamList} from "./src/app/shared/config/root-stack-param-list";
+import GroupsComponent from "./src/app/core/groups/groups.component";
+import LoginComponent from "./src/app/core/login/login.component";
+import CalculatorComponent from "./src/app/core/transaction-editor/calculator";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
 export const AppContext = React.createContext({
-    isLoggedIn: false, setIsLoggedIn: (value: boolean) => {
+    isLoggedIn: false,
+    setIsLoggedIn: (value: boolean) => {
     }
 });
 
 export default ({children, theme}: any) => {
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(true);
     const [token, setToken] = React.useState<string | null>(null);
 
     useEffect(() => {
@@ -34,19 +36,19 @@ export default ({children, theme}: any) => {
         // Set the isLoggedIn state to true if the user is logged in
 
         const checkLoginStatus = async () => {
-            try {
-                // Retrieve the JWT token from AsyncStorage
-                const token = await AsyncStorage.getItem("token");
-                if (token) {
-                    setIsLoggedIn(true);
-                    setToken(token)
-                }
-            } catch (error) {
-                console.log(error);
-            }
+           try {
+               // Retrieve the JWT token from AsyncStorage
+               const token = await AsyncStorage.getItem("token");
+               if (token) {
+                   setIsLoggedIn(true);
+                   setToken(token)
+               }
+           } catch (error) {
+               console.log(error);
+           }
         };
-
-        checkLoginStatus();
+        setIsLoggedIn(true)
+        //checkLoginStatus();
     }, []);
 
     const colorModeManager: StorageManager = {
@@ -87,7 +89,7 @@ export default ({children, theme}: any) => {
             swipeEnabled: isLoggedIn,
         }}
                           drawerContent={(props) => <SidebarComponent {...props}/>}>
-            <Drawer.Screen name={"Home"} component={HomeComponent}/>
+            <Drawer.Screen name={"Calculator"} component={CalculatorComponent} options={{headerShown: false}}/>
             <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent} />
         </Drawer.Navigator>
     );

@@ -43,7 +43,9 @@ class SecurityConfig(
             .logout()
             .logoutUrl("/api/auth/logout")
             .addLogoutHandler(logoutHandler)
-            .logoutSuccessHandler { request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication? -> SecurityContextHolder.clearContext() }
+            .logoutSuccessHandler { request: HttpServletRequest?,
+                                    response: HttpServletResponse?,
+                                    authentication: Authentication? -> SecurityContextHolder.clearContext() }
 
         return http.build()
     }

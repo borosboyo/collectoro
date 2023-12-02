@@ -1,41 +1,42 @@
 import * as React from "react";
 import {ResetPasswordNavigationProps} from "./reset-password-navigation.props";
-import {Box, Button, Center, FormControl, Heading, Input, VStack} from "native-base";
+import {Box, Center, FormControl, Heading, HStack, Image, Text, VStack} from "native-base";
 import resetPasswordService from "./reset-password.service";
+import GradientButtonComponent from "../../shared/components/gradient-button.component";
+import {TextInput} from "react-native";
+import {styles} from "../../shared/components/styles";
+import {DynamicBackButtonComponent} from "../../shared/components/dynamic-back-button.component";
 
-export default function ResetPasswordComponent({navigation}: ResetPasswordNavigationProps) {
+export default function ResetPasswordComponent({props}: ResetPasswordNavigationProps) {
     const [email, setEmail] = React.useState("");
     return (<Center w="100%">
-        <Box safeArea p="2" w="90%" maxW="290" py="8">
-            <Heading size="lg" color="coolGray.800" _dark={{
-                color: "warmGray.50"
-            }} fontWeight="semibold">
-                Collectoro
-            </Heading>
-            <Heading mt="1" color="coolGray.600" _dark={{
-                color: "warmGray.200"
-            }} fontWeight="medium" size="xs">
-                Forgot password
-            </Heading>
-            <VStack space={3} mt="5">
-                <FormControl>
-                    <FormControl.Label>Email</FormControl.Label>
-                    <Input onChangeText={newText => setEmail(newText)}/>
+        <Box safeArea p="2" py="8" maxW="350">
+            <HStack mb="5" justifyContent="center">
+                <Image alt="logo" source={require("../../../assets/logo.png")} style={{width: 150, height: 150}}/>
+            </HStack>
+            <HStack mb="5" justifyContent="center">
+                <Heading size="lg" fontWeight="600" color="coolGray.600" _dark={{
+                    color: "warmGray.50"
+                }}>
+                    Forgot your password?
+                </Heading>
+            </HStack>
+            <HStack mb="5" justifyContent="center">
+                <Text>Enter the email associated with your account.</Text>
+            </HStack>
+            <VStack ml={3} space={3} justifyContent={"center"} maxW="290">
+                <FormControl style={styles.textInputContainer}>
+                    <TextInput style={styles.textInput} placeholder={"Email"} placeholderTextColor='#aaa'
+                               onChangeText={newText => setEmail(newText)}/>
                 </FormControl>
-                <Button mt="2" colorScheme="indigo"
-                        onPress={() => {
-                            resetPasswordService.resetPassword(email).then(() => {
-                                navigation.navigate('SaveForgotPassword');
-                            });
-                        }}>
-                    Send email
-                </Button>
-                <Button mt="2" colorScheme="indigo"
-                        onPress={() => {
-                            navigation.goBack();
-                        }}>
-                    Back
-                </Button>
+                <GradientButtonComponent text={"Reset password"} mt="2"
+                                         onPress={() => {
+                                    resetPasswordService.resetPassword(email).then(() => {
+                                        navigation.navigate('SaveForgotPassword');
+                                    });
+                                }}>
+                </GradientButtonComponent>
+                <DynamicBackButtonComponent/>
             </VStack>
         </Box>
     </Center>);

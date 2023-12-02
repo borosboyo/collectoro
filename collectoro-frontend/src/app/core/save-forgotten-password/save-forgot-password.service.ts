@@ -1,7 +1,5 @@
-import {
-    AuthenticationControllerApiFactory,
-} from "../../../../swagger";
-import {axiosConfig, baseOptions} from "../../shared/axios-config";
+import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
+import {AuthenticationControllerApiFactory} from "../../../../swagger";
 
 const SaveForgotPasswordService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),

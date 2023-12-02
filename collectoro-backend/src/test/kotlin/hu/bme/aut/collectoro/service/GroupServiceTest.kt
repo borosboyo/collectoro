@@ -92,7 +92,6 @@ class GroupServiceTest {
 
         `when`(userRepository.findByEmail(userEmail)).thenReturn(user)
         `when`(groupRepository.save(any())).thenReturn(groupEntity)
-
         `when`(balanceRepository.save(any())).thenReturn(balance)
 
         // Act

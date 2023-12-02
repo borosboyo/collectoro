@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import { SafeAreaView, StyleSheet, View, Platform, ScrollView, TextInput} from "react-native";
-import CalculatorButton from "./button.component";
-import RowComponent from "./row.component";
 import calculatorUtil, { initialState } from "./calculator.util";
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list/index";
 import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack, VStack} from "native-base";
 import {Pressable, Text} from "native-base";
 import {TransactionEditorNavigationProps} from "./transaction-editor.props";
 import TransactionEditorService from "./transaction-editor.service";
-import {ProcessTransactionReqTypeEnum, UserWithAmountTypeEnum} from "../../../../swagger";
+import {ProcessTransactionReqTypeEnum} from "../../../../swagger";
 
 type TransactionEditorState = {
 };
@@ -79,7 +77,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
         const containerStyle = Platform.OS === "web" ? styles.webContainer : styles.androidContainer;
 
         return (
-            <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView>
                 <View style={containerStyle}>
                     <HStack space="3">
                         <Pressable
@@ -89,7 +87,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                         <Text color="black" fontSize="md">{this.props.route.params.group.name}</Text>
                     </HStack>
                     <Text style={styles.label}>Purpose:</Text>
-                    <TextInput style={styles.input} onChangeText={newText => this.purpose = newText} placeholder="Enter purpose" />
+                    <TextInput style={styles.textInput} onChangeText={newText => this.purpose = newText} placeholder="Enter purpose" />
 
                     <View style={styles.selectListContainer}>
                         <Text style={styles.label}>Type:</Text>
@@ -103,7 +101,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput style={styles.input} onChangeText={newText => {
+                                            <TextInput style={styles.textInput} onChangeText={newText => {
                                                 user.amount = parseFloat(newText);
                                                 this.mapWho();
                                             }} placeholder="Enter amount" />
@@ -121,7 +119,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput style={styles.input} onChangeText={newText => {
+                                            <TextInput style={styles.textInput} onChangeText={newText => {
                                                 user.amount = parseFloat(newText);
                                                 this.mapForWhom();
                                             }} placeholder="Enter amount" />
@@ -187,7 +185,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
 
 // create styles of app
 const styles = StyleSheet.create({
-    container: {
+    textInputContainer: {
         flexGrow: 1,
         justifyContent: "flex-end",
         backgroundColor: "#fff",
@@ -221,7 +219,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
     },
-    input: {
+    textInput: {
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 5,

@@ -1,19 +1,12 @@
-package hu.bme.aut.collectoro.core.auth
+package hu.bme.aut.collectoro.service
 
-import hu.bme.aut.collectoro.core.auth.dto.*
-import hu.bme.aut.collectoro.core.mail.EmailService
-import hu.bme.aut.collectoro.core.mail.EmailType
-import hu.bme.aut.collectoro.core.mail.Mail
-import hu.bme.aut.collectoro.core.token.Token
-import hu.bme.aut.collectoro.core.token.TokenRepository
-import hu.bme.aut.collectoro.core.token.util.TokenType
-import hu.bme.aut.collectoro.core.transaction.util.Wallet
-import hu.bme.aut.collectoro.core.transaction.util.WalletRepository
-import hu.bme.aut.collectoro.core.user.UserEntity
-import hu.bme.aut.collectoro.core.user.UserRepository
-import hu.bme.aut.collectoro.core.user.dto.EnableReq
-import hu.bme.aut.collectoro.core.user.dto.EnableResp
-import hu.bme.aut.collectoro.shared.provider.Provider
+import hu.bme.aut.collectoro.domain.*
+import hu.bme.aut.collectoro.dto.auth.*
+import hu.bme.aut.collectoro.dto.user.EnableReq
+import hu.bme.aut.collectoro.dto.user.EnableResp
+import hu.bme.aut.collectoro.repository.TokenRepository
+import hu.bme.aut.collectoro.repository.UserRepository
+import hu.bme.aut.collectoro.repository.WalletRepository
 import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

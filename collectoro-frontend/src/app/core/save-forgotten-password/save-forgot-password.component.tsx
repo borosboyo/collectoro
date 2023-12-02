@@ -1,41 +1,48 @@
 import * as React from "react";
 import {SaveForgotPasswordNavigationProps} from "./save-forgot-password-navigation.props";
-import {Box, Button, Center, FormControl, Heading, Input, VStack} from "native-base";
+import {Box, Center, FormControl, Heading, HStack, Image, VStack} from "native-base";
 import saveForgotPasswordService from "./save-forgot-password.service";
+import {styles} from "../../shared/components/styles";
+import {TextInput} from "react-native";
+import GradientButtonComponent from "../../shared/components/gradient-button.component";
 
-export default function SaveForgotPasswordComponent ({navigation}: SaveForgotPasswordNavigationProps) {
+export default function SaveForgotPasswordComponent({navigation}: SaveForgotPasswordNavigationProps) {
     const [verificationCode, setVerificationCode] = React.useState("");
     const [newPassword, setNewPassword] = React.useState("");
     const [newPasswordAgain, setNewPasswordAgain] = React.useState("");
     return (<Center w="100%">
         <Box safeArea p="2" w="90%" maxW="290" py="8">
-            <Heading size="lg" color="coolGray.800" _dark={{
-                color: "warmGray.50"
-            }} fontWeight="semibold">
-                Collectoro
-            </Heading>
-            <Heading mt="1" color="coolGray.600" _dark={{
-                color: "warmGray.200"
-            }} fontWeight="medium" size="xs">
-                Save forgotten password
-            </Heading>
-            <VStack space={3} mt="5">
-                <FormControl>
-                    <FormControl.Label>Verification code</FormControl.Label>
-                    <Input onChangeText={newText => setVerificationCode(newText)}/>
-                    <FormControl.Label>New password</FormControl.Label>
-                    <Input type="password" onChangeText={newText => setNewPassword(newText)}/>
-                    <FormControl.Label>New password again</FormControl.Label>
-                    <Input type="password" onChangeText={newText => setNewPasswordAgain(newText)}/>
-                </FormControl>
-                <Button mt="2" colorScheme="indigo"
-                onPress={() => {
-                    saveForgotPasswordService.saveForgotPassword(verificationCode, newPasswordAgain).then(() => {
-                        navigation.navigate('Login');
-                    });
+            <HStack mb="5" justifyContent="center">
+                <Image alt="logo" source={require("../../../assets/logo.png")} style={{width: 150, height: 150}}/>
+            </HStack>
+            <HStack mb="5" justifyContent="center">
+                <Heading textAlign={"center"} size="md" fontWeight="600" color="coolGray.600" _dark={{
+                    color: "warmGray.50"
                 }}>
-                    Change password
-                </Button>
+                    Check your mails for your token to change your password.
+                </Heading>
+            </HStack>
+            <VStack space={3} mt="5">
+                <FormControl style={styles.textInputContainer}>
+                    <TextInput style={styles.textInput} placeholder={"Token"} placeholderTextColor="#aaa"
+                               onChangeText={newText => setVerificationCode(newText)}/>
+                </FormControl>
+                <FormControl style={styles.textInputContainer}>
+                    <TextInput style={styles.textInput} placeholder={"Password"} placeholderTextColor="#aaa"
+                               onChangeText={newText => setNewPassword(newText)}/>
+                </FormControl>
+                <FormControl style={styles.textInputContainer}>
+                    <TextInput style={styles.textInput} placeholder={"Confirm password"} placeholderTextColor="#aaa"
+                               onChangeText={newText => setNewPasswordAgain(newText)}/>
+                </FormControl>
+                <GradientButtonComponent
+                    onPress={() => {
+                        saveForgotPasswordService.saveForgotPassword(verificationCode, newPasswordAgain).then(() => {
+                            navigation.navigate('Login');
+                        });
+                    }}
+                    text={"Change password"}>
+                </GradientButtonComponent>
             </VStack>
         </Box>
     </Center>);

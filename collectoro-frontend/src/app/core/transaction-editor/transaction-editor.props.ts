@@ -1,4 +1,4 @@
-import {RootStackParamList} from "../../shared/root-stack-param-list";
+import {RootStackParamList} from "../../shared/config/root-stack-param-list";
 import {DrawerNavigationProp} from "@react-navigation/drawer";
 
 export type TransactionEditorNavigation = DrawerNavigationProp<
