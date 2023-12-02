@@ -1,9 +1,9 @@
 package hu.bme.aut.collectoro.repository
 
 import hu.bme.aut.collectoro.RepositoryTestConfig
-import hu.bme.aut.collectoro.domain.Token
-import hu.bme.aut.collectoro.domain.TokenType
-import hu.bme.aut.collectoro.domain.UserEntity
+import hu.bme.aut.collectoro.core.token.Token
+import hu.bme.aut.collectoro.core.token.util.TokenType
+import hu.bme.aut.collectoro.core.user.UserEntity
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

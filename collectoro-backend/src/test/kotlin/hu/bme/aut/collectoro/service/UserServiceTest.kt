@@ -1,10 +1,10 @@
 package hu.bme.aut.collectoro.service
 
-import hu.bme.aut.collectoro.domain.Provider
-import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.dto.user.*
-import hu.bme.aut.collectoro.repository.GroupRepository
-import hu.bme.aut.collectoro.repository.UserRepository
+import hu.bme.aut.collectoro.core.group.GroupRepository
+import hu.bme.aut.collectoro.core.user.UserService
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.core.user.UserRepository
+import hu.bme.aut.collectoro.core.user.dto.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.transaction.annotation.Transactional
 
+//TODO
 @SpringBootTest
 @Transactional
 class UserServiceTest {
@@ -33,11 +34,12 @@ class UserServiceTest {
         req.id = 1L
 
         // Create a mock UserEntity and set up the mock UserRepository behavior
-        val user = UserEntity.Builder()
-            .id(req.id!!)
-            .firstName("John")
-            .lastName("Doe")
-            .build()
+        val user = UserEntity(
+            id = req.id!!,
+            firstName = "John",
+            lastName = "Doe",
+            email = "email"
+        )
         `when`(userRepository.findById(req.id!!)).thenReturn(java.util.Optional.of(user))
 
         // Call the service method
@@ -103,9 +105,12 @@ class UserServiceTest {
         val req = GetHomepageByUserEmailReq(email = "john.doe@example.com")
 
         // Create a mock UserEntity and set up the mock UserRepository behavior
-        val user = UserEntity.Builder()
-            .email(req.email!!)
-            .build()
+        val user = UserEntity(
+            id = 1L,
+            firstName = "John",
+            lastName = "Doe",
+            email = req.email!!
+        )
         `when`(userRepository.findByEmail(req.email!!)).thenReturn(user)
 
         // Set up the mock GroupRepository behavior
@@ -126,9 +131,12 @@ class UserServiceTest {
         req.email = "john.doe@example.com"
 
         // Create a mock UserEntity and set up the mock UserRepository behavior
-        val user = UserEntity.Builder()
-            .email(req.email!!)
-            .build()
+        val user = UserEntity(
+            id = 1L,
+            firstName = "John",
+            lastName = "Doe",
+            email = req.email!!
+        )
         `when`(userRepository.findByEmail(req.email!!)).thenReturn(user)
 
         // Call the service method

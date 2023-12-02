@@ -1,9 +1,9 @@
 package hu.bme.aut.collectoro.repository
 
 import hu.bme.aut.collectoro.RepositoryTestConfig
-import hu.bme.aut.collectoro.domain.Balance
-import hu.bme.aut.collectoro.domain.Wallet
-import hu.bme.aut.collectoro.domain.transaction.Currency
+import hu.bme.aut.collectoro.core.transaction.util.Balance
+import hu.bme.aut.collectoro.core.transaction.util.Wallet
+import hu.bme.aut.collectoro.core.transaction.util.Currency
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

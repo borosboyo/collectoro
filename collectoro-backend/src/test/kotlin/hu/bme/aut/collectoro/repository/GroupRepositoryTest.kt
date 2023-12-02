@@ -1,8 +1,8 @@
 package hu.bme.aut.collectoro.repository
 
 import hu.bme.aut.collectoro.RepositoryTestConfig
-import hu.bme.aut.collectoro.domain.GroupEntity
-import hu.bme.aut.collectoro.domain.UserEntity
+import hu.bme.aut.collectoro.core.group.GroupEntity
+import hu.bme.aut.collectoro.core.user.UserEntity
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

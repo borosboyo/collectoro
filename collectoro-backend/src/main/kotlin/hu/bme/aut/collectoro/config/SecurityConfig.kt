@@ -1,6 +1,7 @@
 package hu.bme.aut.collectoro.config
 
-import hu.bme.aut.collectoro.service.UserService
+import hu.bme.aut.collectoro.config.web.JWTAuthenticationFilter
+import hu.bme.aut.collectoro.core.user.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean

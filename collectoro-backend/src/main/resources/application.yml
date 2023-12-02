@@ -38,6 +38,15 @@ spring:
         ddl-auto : create     # Hibernate ddl auto (create, create-drop, validate, update)
     generate-ddl: true
 
+logging:
+  level:
+    org.springframework.boot: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: ERROR
+    hu.bme.aut.dzsungelharcosok: INFO
+  file:
+    path: ./src/main/resources/logs/
+    name: ${logging.file.path}collectoro-backend.log
 #============================================================================
 # DATABASE
 #============================================================================

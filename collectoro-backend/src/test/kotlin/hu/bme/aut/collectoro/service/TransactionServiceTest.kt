@@ -1,16 +1,13 @@
-import hu.bme.aut.collectoro.domain.Balance
-import hu.bme.aut.collectoro.domain.GroupEntity
-import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.domain.Wallet
-import hu.bme.aut.collectoro.domain.transaction.*
-import hu.bme.aut.collectoro.domain.transaction.Currency
-import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionReq
-import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
-import hu.bme.aut.collectoro.repository.BalanceRepository
-import hu.bme.aut.collectoro.repository.GroupRepository
-import hu.bme.aut.collectoro.repository.TransactionRepository
-import hu.bme.aut.collectoro.repository.UserRepository
-import hu.bme.aut.collectoro.service.TransactionService
+import hu.bme.aut.collectoro.core.group.GroupEntity
+import hu.bme.aut.collectoro.core.group.GroupRepository
+import hu.bme.aut.collectoro.core.transaction.TransactionRepository
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.core.transaction.dto.DeleteTransactionReq
+import hu.bme.aut.collectoro.core.transaction.dto.ProcessTransactionReq
+import hu.bme.aut.collectoro.core.transaction.TransactionService
+import hu.bme.aut.collectoro.core.transaction.util.*
+import hu.bme.aut.collectoro.core.transaction.util.Currency
+import hu.bme.aut.collectoro.core.user.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,6 +17,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.util.*
 
+//TODO
 class TransactionServiceTest {
     @Mock
     private lateinit var transactionRepository: TransactionRepository

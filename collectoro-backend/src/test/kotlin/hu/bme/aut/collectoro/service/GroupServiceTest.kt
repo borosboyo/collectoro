@@ -1,14 +1,15 @@
 package hu.bme.aut.collectoro.service
 
-import hu.bme.aut.collectoro.domain.Balance
-import hu.bme.aut.collectoro.domain.GroupEntity
-import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.domain.transaction.*
-import hu.bme.aut.collectoro.domain.transaction.Currency
-import hu.bme.aut.collectoro.dto.group.*
-import hu.bme.aut.collectoro.repository.BalanceRepository
-import hu.bme.aut.collectoro.repository.GroupRepository
-import hu.bme.aut.collectoro.repository.UserRepository
+import hu.bme.aut.collectoro.core.group.GroupService
+import hu.bme.aut.collectoro.core.transaction.TransactionService
+import hu.bme.aut.collectoro.core.transaction.util.Balance
+import hu.bme.aut.collectoro.core.transaction.util.*
+import hu.bme.aut.collectoro.core.transaction.util.Currency
+import hu.bme.aut.collectoro.core.group.GroupEntity
+import hu.bme.aut.collectoro.core.group.dto.*
+import hu.bme.aut.collectoro.core.transaction.Transaction
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.dto.dto.*
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -20,6 +21,7 @@ import org.mockito.Mockito.verify
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
 
+//TODO
 @SpringBootTest
 @Transactional
 class GroupServiceTest {
