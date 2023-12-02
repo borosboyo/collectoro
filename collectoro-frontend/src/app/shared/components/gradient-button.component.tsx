@@ -1,6 +1,6 @@
 import React from "react";
 import {LinearGradient} from "expo-linear-gradient";
-import {Button, View} from "native-base";
+import {Button, View, Text} from "native-base";
 export default function GradientButtonComponent(props: any) {
    return (
            <View style={{
@@ -13,7 +13,10 @@ export default function GradientButtonComponent(props: any) {
                    start={{ x: 0, y: 0 }}
                    end={{ x: 1, y: 1 }}
                >
-                   <Button onPress={props.onPress} background={'transparent'}>{props.text}
+                   <Button onPress={props.onPress} background={'transparent'}>
+                       <Text fontWeight={"bold"} color={"white"}>
+                           {props.text}
+                       </Text>
                    </Button>
                </LinearGradient>
            </View>

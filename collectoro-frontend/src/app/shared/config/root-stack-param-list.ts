@@ -10,4 +10,7 @@ export type RootStackParamList = {
     Login: undefined,
     EnableAccount: undefined,
     Calculator: undefined,
+    TransactionSave: undefined,
+    EditWho: undefined,
+    EditWhoMultipleMember: undefined,
 };

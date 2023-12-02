@@ -3,7 +3,7 @@ import {
     CloseIcon,
     Divider,
     Pressable,
-    Text,
+    Text, useColorModeValue,
     VStack
 } from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,8 +15,9 @@ import SideBarButtonsSection from "./sidebar-sections/sidebar-buttons-section";
 import SidebarService from "../sidebar.service";
 import {styles} from "../../../shared/components/styles";
 import {SidebarNavigation} from "../sidebar-navigation.props";
-import { AppContext } from "../../../../../App";
+import {AppContext} from "../../../../../App";
 import {GetProfileByUserEmailResp} from "../../../../../swagger";
+import {ImageBackground} from "react-native";
 
 type SidebarContentComponentProps = DrawerContentComponentProps & {
     navigation: SidebarNavigation;
@@ -27,6 +28,8 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
     const [isMyGroupsModalVisible, setIsMyGroupsModalVisible] = useState<boolean>(false);
     const [isJoinGroupModalVisible, setIsJoinGroupModalVisible] = useState<boolean>(false);
     const [isCreateGroupModalVisible, setIsCreateGroupModalVisible] = useState<boolean>(false);
+    const textColor = useColorModeValue("white", "black");
+    const bgColor = "transparent";
 
     useEffect(() => {
         AsyncStorage.getItem('email').then((email) => {
@@ -65,15 +68,15 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
     }
 
     return (
-        <Box bg="black" mt="0">
+        <Box bg={bgColor} mt="0">
             <VStack
-                bg="black"
+                bg={bgColor}
                 space="4"
                 pt="16"
                 divider={<Divider thickness="0.4"/>}>
                 <SidebarProfileSection profile={profile} onPress={() => openProfile()}/>
             </VStack>
-            <Divider m="4" thickness="0.4"/>
+            <Divider mt={4} mb={4} thickness="1" color={textColor}/>
             <VStack space="2" w="100%">
                 <SideBarButtonsSection onPress={() => openMyGroups()} onPress1={() => openCreateGroup()}
                                        onPress2={() => openJoinGroup()}/>
@@ -92,8 +95,8 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
                                        });
                                    }}
                         >
-                            <CloseIcon style={{marginEnd: 10}} size="sm" color="white"/>
-                            <Text color="warmGray.100" fontSize="md">Sign out</Text>
+                            <CloseIcon style={{marginEnd: 10}} size="sm" color={textColor}/>
+                            <Text color={textColor} fontSize="md">Sign out</Text>
                         </Pressable>
                     )}
                 </AppContext.Consumer>
