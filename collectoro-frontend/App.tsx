@@ -17,6 +17,9 @@ import {RootStackParamList} from "./src/app/shared/config/root-stack-param-list"
 import GroupsComponent from "./src/app/core/groups/groups.component";
 import LoginComponent from "./src/app/core/login/login.component";
 import CalculatorComponent from "./src/app/core/transaction-editor/calculator";
+import TransactionSaveComponent from "./src/app/core/transaction-editor/transaction-save.component";
+import EditWhoComponent from "./src/app/core/transaction-editor/edit-who.component";
+import EditWhoMultipleMembersComponent from "./src/app/core/transaction-editor/edit-who-multiple-members.component";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -89,7 +92,7 @@ export default ({children, theme}: any) => {
             swipeEnabled: isLoggedIn,
         }}
                           drawerContent={(props) => <SidebarComponent {...props}/>}>
-            <Drawer.Screen name={"Calculator"} component={CalculatorComponent} options={{headerShown: false}}/>
+            <Drawer.Screen name={"HomeComponent"} component={HomeComponent} options={{headerShown: false}}/>
             <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent} />
         </Drawer.Navigator>
     );

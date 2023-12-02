@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Avatar, Box, Button, Center, FormControl, Heading, HStack, Icon, Select} from "native-base";
+import {SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {Avatar, Box, Button, Center, FormControl, Heading, HStack, Icon, Pressable, Select, View} from "native-base";
 import GradientButtonComponent from "../../shared/components/gradient-button.component";
 import {MaterialIcons} from "@expo/vector-icons";
-import {BalanceCurrencyEnum} from "../../../../swagger";
+import Modal from "react-native-modal";
 
 function ValueContainer(props: { displayValue: string }) {
     return <View style={styles.displayContainer}>
@@ -163,7 +163,7 @@ function FourthRowContainer(props: { onPress: () => void, onPress1: () => void, 
     </View>;
 }
 
-export default function CalculatorComponent() {
+export default function EditWhoComponent() {
 
     // State variables
     const [displayValue, setDisplayValue] = useState('0');
@@ -213,34 +213,18 @@ export default function CalculatorComponent() {
     };
 
     return (
-        <ScrollView>
-            <Box backgroundColor={"coolGray.600"} _dark={{
+        <SafeAreaView style={styles.safeAreaView}>
+            <Box backgroundColor={"#6E1DCE"} _dark={{
                 color: "warmGray.50"
             }} w="100%" h="10%">
-                <HStack mt={1.5} alignItems="center" space="20">
+                <HStack mt={3} alignItems="center" space="20">
                     <Button backgroundColor={"transparent"} style={{marginLeft: 10}}><Icon color="white"
                                                                                            as={MaterialIcons}
                                                                                            name="close"
                                                                                            size="md"/></Button>
-                    <FormControl backgroundColor={"transparent"} color={"transparent"} maxW="25%" isRequired>
-                        <Select
-                            minWidth="120"
-                            placeholder={"Expense"}
-                            color={"white"}
-                            isFocusVisible={false}
-                            variant={"unstyled"}
-                            textAlign={"center"}
-                            fontSize={"lg"}
-                            placeholderTextColor={"white"}
-                            fontWeight={"bold"}
-                            dropdownIcon={<Icon color="white" as={MaterialIcons} name="expand-more" size="md"/>}
-                            mt="1"
-                        >
-                            <Select.Item label="Expense" value="expense"/>
-                            <Select.Item label="Income" value="income"/>
-                            <Select.Item label="Transfer" value="transfer"/>
-                        </Select>
-                    </FormControl>
+                    <Heading ml={6} alignItems={"center"} justifyContent={"center"} backgroundColor={"transparent"} color={"white"} fontSize={18}>
+                        Who paid
+                    </Heading>
                 </HStack>
             </Box>
             <HStack alignItems={"center"}>
@@ -262,38 +246,44 @@ export default function CalculatorComponent() {
                         <Select.Item label="Gergő paid" value="expense"/>
                         <Select.Item label="Pista paid" value="income"/>
                         <Select.Item label="Józse paid" value="transfer"/>
+                        <Select.Item label="Multiple members" value="multiple"/>
                     </Select>
                 </FormControl>
             </HStack>
             <View style={styles.container}>
-            <ValueContainer displayValue={displayValue}/>
-            <SafeAreaView style={styles.buttonContainer}>
-                <FirstRowContainer onPress={() => handleNumberInput(7)} onPress1={() => handleNumberInput(8)}
-                                   onPress2={() => handleNumberInput(9)} onPress3={() => handleOperatorInput('/')}/>
-                <SecondRowContainer onPress={() => handleNumberInput(4)} onPress1={() => handleNumberInput(5)}
-                                    onPress2={() => handleNumberInput(6)}
-                                    onPress3={() => handleOperatorInput('*')}/>
-                <ThirdRowContainer onPress={() => handleNumberInput(1)} onPress1={() => handleNumberInput(2)}
-                                   onPress2={() => handleNumberInput(3)} onPress3={() => handleOperatorInput('-')}/>
-                <FourthRowContainer onPress={() => handleNumberInput(0)} onPress1={() => handleOperatorInput('+')}
-                                    onPress2={handleEqual}/>
-                <TouchableOpacity
-                    style={styles.clearButton}
-                    onPress={handleClear}>
-                    <Text style={styles.clearButtonText}>C</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-            <Box w="80%" mt={5} mb={5} color="coolGray.600" _dark={{
-                color: "warmGray.50"
-            }}>
-                <GradientButtonComponent elevation={5} text={"Continue"}></GradientButtonComponent>
-            </Box>
+                <ValueContainer displayValue={displayValue}/>
+                <SafeAreaView style={styles.buttonContainer}>
+                    <FirstRowContainer onPress={() => handleNumberInput(7)} onPress1={() => handleNumberInput(8)}
+                                       onPress2={() => handleNumberInput(9)} onPress3={() => handleOperatorInput('/')}/>
+                    <SecondRowContainer onPress={() => handleNumberInput(4)} onPress1={() => handleNumberInput(5)}
+                                        onPress2={() => handleNumberInput(6)}
+                                        onPress3={() => handleOperatorInput('*')}/>
+                    <ThirdRowContainer onPress={() => handleNumberInput(1)} onPress1={() => handleNumberInput(2)}
+                                       onPress2={() => handleNumberInput(3)} onPress3={() => handleOperatorInput('-')}/>
+                    <FourthRowContainer onPress={() => handleNumberInput(0)} onPress1={() => handleOperatorInput('+')}
+                                        onPress2={handleEqual}/>
+                    <TouchableOpacity
+                        style={styles.clearButton}
+                        onPress={handleClear}>
+                        <Text style={styles.clearButtonText}>C</Text>
+                    </TouchableOpacity>
+                </SafeAreaView>
+                <Box w="100%" mt={5} mb={5} color="black" _dark={{
+                    color: "warmGray.50"
+                }}>
+                    <GradientButtonComponent elevation={5} text={"Continue"}></GradientButtonComponent>
+                </Box>
             </View>
-        </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeAreaView: {
+        flexDirection: 'column', // inner items will be added vertically
+        flexGrow: 1,            // all the available vertical space will be occupied by it
+        justifyContent: 'space-between' // will create the gutter between body and footer
+    },
     container: {
         marginTop: 60,
         flex: 1,

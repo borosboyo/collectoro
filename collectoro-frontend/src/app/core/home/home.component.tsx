@@ -3,12 +3,13 @@ import {HomeNavigationProps} from "./home-navigation.props";
 import {TabPageComponent} from "./tab-page.component";
 import * as React from 'react';
 import {Component} from 'react';
-import {Animated, Dimensions, StatusBar} from 'react-native';
+import {Animated, Appearance, Dimensions, StatusBar} from 'react-native';
 import {Route, TabView} from 'react-native-tab-view';
-import {Box, Button, Heading, HStack, Image, Pressable, useColorModeValue, View} from "native-base";
+import {Box, Heading, HStack, Image, Pressable, useColorModeValue, View} from "native-base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeService from "./home.service";
-import CalculatorComponent from "../transaction-editor/calculator";
+import getColorScheme = Appearance.getColorScheme;
+import EmptyTabPageComponent from "./empty-tab-page.component";
 
 type HomeComponentState = {
     homePage: GetHomepageByUserEmailResp | undefined;
@@ -19,6 +20,7 @@ type HomeComponentState = {
 };
 
 class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
+
     constructor(props: HomeNavigationProps) {
         super(props);
         this.state = {
@@ -79,17 +81,7 @@ class HomeComponent extends Component<HomeNavigationProps, HomeComponentState> {
             width: Dimensions.get('window').width,
         };
         if (inputRange.length == 0) return (
-            <View style={{flex: 1, alignItems:"center", justifyContent:"center"}}>
-                <HStack justifyContent="center">
-                    <Image alt="logo" source={require("../../../assets/logo.png")}
-                           style={{width: 150, height: 150}}/>
-                </HStack>
-                <Heading textAlign={"center"} size="lg" fontWeight="600" color="coolGray.600" _dark={{
-                    color: "warmGray.50"
-                }}>
-                   It's empty here. Join a group to manage your finances!
-                </Heading>
-            </View>)
+            <EmptyTabPageComponent/>)
         if (inputRange.length == 1 && this.state.homePage?.groups?.at(0) != undefined) {
             return (<TabPageComponent group={this.state.homePage?.groups.at(0)}
                                       navigation={this.props.navigation}></TabPageComponent>);

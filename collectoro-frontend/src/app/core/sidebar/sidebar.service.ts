@@ -1,4 +1,3 @@
-
 import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,7 +7,7 @@ const SidebarService = {
     userController: UserControllerApiFactory(axiosConfig),
     groupController: GroupControllerApiFactory(axiosConfig),
 
-    getProfileByUserEmail: async function(email: string): Promise<any> {
+    getProfileByUserEmail: async function (email: string): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',
@@ -20,14 +19,14 @@ const SidebarService = {
         }, baseOptions)
     },
 
-    createGroup: async function (name: string, email: string | null ): Promise<any> {
+    createGroup: async function (name: string, email: string | null): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        if(email != null) {
+        if (email != null) {
             return this.groupController.createGroup({
                 name: name,
                 userEmail: email
@@ -37,14 +36,14 @@ const SidebarService = {
         }
     },
 
-    joinGroup: async function (joinLink: string, email: string | null ): Promise<any> {
+    joinGroup: async function (joinLink: string, email: string | null): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        if(email != null) {
+        if (email != null) {
             return this.groupController.joinGroup({
                 userEmail: email,
                 joinLink: joinLink
@@ -54,14 +53,14 @@ const SidebarService = {
         }
     },
 
-    leaveGroup: async function (groupId: number | undefined, email: string | null ): Promise<any> {
+    leaveGroup: async function (groupId: number | undefined, email: string | null): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        if(email != null && groupId != null) {
+        if (email != null && groupId != null) {
             return this.groupController.leaveGroup({
                 userEmail: email,
                 groupId: groupId
