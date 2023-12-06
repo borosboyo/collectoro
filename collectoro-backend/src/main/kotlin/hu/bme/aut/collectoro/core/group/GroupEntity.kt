@@ -1,5 +1,6 @@
 package hu.bme.aut.collectoro.core.group
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import hu.bme.aut.collectoro.core.role.GroupRole
 import hu.bme.aut.collectoro.core.transaction.Transaction
 import hu.bme.aut.collectoro.core.transaction.util.Currency
@@ -19,19 +20,23 @@ data class GroupEntity(
     var id: Long = 0,
     var name: String? = null,
 
-    @ManyToMany(mappedBy = "groups")
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var users: MutableList<UserEntity> = ArrayList(),
 
-    @OneToMany(mappedBy = "groupEntity")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var transactions: MutableList<Transaction> = ArrayList(),
 
     var joinLink: String? = UUID.randomUUID().toString(),
 
+    @Enumerated(EnumType.STRING)
     var currency: Currency = Currency.HUF,
 
     var archived: Boolean = false,
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var groupRoles: MutableList<GroupRole> = mutableListOf(),
 
     ) : Serializable

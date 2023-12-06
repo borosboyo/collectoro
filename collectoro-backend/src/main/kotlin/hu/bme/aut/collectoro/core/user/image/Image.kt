@@ -1,5 +1,6 @@
 package hu.bme.aut.collectoro.core.user.image
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import hu.bme.aut.collectoro.core.user.UserEntity
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -11,13 +12,16 @@ data class Image(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
+
     var name: String? = null,
+
     var type: String? = null,
 
     @Lob
     var imageData: ByteArray? = null,
 
     @OneToOne
+    @JsonBackReference
     var userEntity: UserEntity? = null
 )
 

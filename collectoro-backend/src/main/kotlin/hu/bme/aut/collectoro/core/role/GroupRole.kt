@@ -1,5 +1,6 @@
 package hu.bme.aut.collectoro.core.role
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import hu.bme.aut.collectoro.core.group.GroupEntity
 import hu.bme.aut.collectoro.core.user.UserEntity
 import jakarta.persistence.*
@@ -17,12 +18,13 @@ data class GroupRole(
     var groupRole: GroupRoleEnum? = null,
 
     @ManyToOne
+    @JsonBackReference
     var userEntity: UserEntity,
 
     @ManyToOne
+    @JsonBackReference
     var group: GroupEntity? = null
 ) : Serializable
 
 @Repository
-interface GroupRoleRepository : JpaRepository<GroupRole, Long> {
-}
+interface GroupRoleRepository : JpaRepository<GroupRole, Long>

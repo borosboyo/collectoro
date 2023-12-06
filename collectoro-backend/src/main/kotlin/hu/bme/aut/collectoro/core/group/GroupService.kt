@@ -42,13 +42,13 @@ class GroupService(
                 users = mutableListOf(user)
             )
         )
-        val groupRole =  groupRoleRepository.save(
-             GroupRole(
-                 group = group,
-                 userEntity = user,
-                 groupRole = GroupRoleEnum.ADMIN
-             )
-         )
+        val groupRole = groupRoleRepository.save(
+            GroupRole(
+                group = group,
+                userEntity = user,
+                groupRole = GroupRoleEnum.ADMIN
+            )
+        )
         group.groupRoles.add(groupRole)
         val savedGroup = groupRepository.save(group)
         val balance = balanceRepository.save(

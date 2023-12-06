@@ -1,7 +1,5 @@
 package hu.bme.aut.collectoro.core.user.image
 
-import hu.bme.aut.collectoro.core.group.dto.CreateGroupReq
-import hu.bme.aut.collectoro.core.group.dto.CreateGroupResp
 import hu.bme.aut.collectoro.core.group.dto.JoinGroupResp
 import hu.bme.aut.collectoro.core.user.dto.DownloadImageReq
 import hu.bme.aut.collectoro.core.user.dto.DownloadImageResp

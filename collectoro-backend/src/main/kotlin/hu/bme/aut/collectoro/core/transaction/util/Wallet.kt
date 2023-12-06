@@ -1,7 +1,7 @@
 package hu.bme.aut.collectoro.core.transaction.util
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import hu.bme.aut.collectoro.core.user.UserEntity
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -14,13 +14,14 @@ data class Wallet(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
 
-    @OneToMany(mappedBy = "wallet")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var balances: MutableList<Balance> = ArrayList(),
 
     @OneToOne
-    @JoinColumn(name = "wallet")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
+    @JsonBackReference
     var userEntity: UserEntity? = null
+
 ) : Serializable
 
 @Repository

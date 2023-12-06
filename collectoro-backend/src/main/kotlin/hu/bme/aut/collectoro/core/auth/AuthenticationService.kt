@@ -1,12 +1,20 @@
-package hu.bme.aut.collectoro.service
+package hu.bme.aut.collectoro.core.auth
 
-import hu.bme.aut.collectoro.domain.*
-import hu.bme.aut.collectoro.dto.auth.*
-import hu.bme.aut.collectoro.dto.user.EnableReq
-import hu.bme.aut.collectoro.dto.user.EnableResp
-import hu.bme.aut.collectoro.repository.TokenRepository
-import hu.bme.aut.collectoro.repository.UserRepository
-import hu.bme.aut.collectoro.repository.WalletRepository
+import hu.bme.aut.collectoro.core.auth.dto.*
+import hu.bme.aut.collectoro.core.mail.EmailService
+import hu.bme.aut.collectoro.core.mail.EmailType
+import hu.bme.aut.collectoro.core.mail.Mail
+import hu.bme.aut.collectoro.core.role.UserRole
+import hu.bme.aut.collectoro.core.token.Token
+import hu.bme.aut.collectoro.core.token.TokenRepository
+import hu.bme.aut.collectoro.core.token.util.TokenType
+import hu.bme.aut.collectoro.core.transaction.util.Wallet
+import hu.bme.aut.collectoro.core.transaction.util.WalletRepository
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.core.user.UserRepository
+import hu.bme.aut.collectoro.core.user.dto.EnableReq
+import hu.bme.aut.collectoro.core.user.dto.EnableResp
+import hu.bme.aut.collectoro.shared.provider.Provider
 import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -36,6 +44,7 @@ class AuthenticationService(
             password = passwordEncoder.encode(request.password),
             enabled = false,
             provider = Provider.LOCAL,
+            userRole = UserRole.USER
         )
         val wallet = Wallet()
         wallet.userEntity = userEntity
@@ -62,7 +71,8 @@ class AuthenticationService(
 
     @Transactional
     fun authenticate(request: AuthenticationReq): AuthenticationResp? {
-        if (userRepository.findByEmail(request.email).isEnabled == false) {
+        println(request.email.trim())
+        if (!userRepository.findByEmail(request.email.trim()).isEnabled) {
             throw Exception("User is not enabled")
         } else {
             try {
@@ -90,8 +100,9 @@ class AuthenticationService(
 
     @Transactional
     fun enable(request: EnableReq): EnableResp? {
-        val token: Token? = tokenRepository.findByToken(request.token).orElseThrow { Exception("Token not found") }
-        var user = token?.userEntity
+        val token: Token? =
+            tokenRepository.findTokenByToken(request.token!!.trim()).orElseThrow { Exception("Token not found") }
+        val user = token?.userEntity
         user?.enabled = true
         val savedUserEntity = userRepository.save(user!!)
         val jwtToken: String = jwtService.generateToken(savedUserEntity)
@@ -134,6 +145,8 @@ class AuthenticationService(
                 email = request.email,
                 enabled = true,
                 provider = Provider.GOOGLE,
+                password = " ",
+                userRole = UserRole.USER
             )
             val wallet = Wallet()
             wallet.userEntity = userEntity
@@ -175,7 +188,7 @@ class AuthenticationService(
 
     @Transactional
     fun saveForgotPassword(req: SaveForgotPasswordReq): SaveForgotPasswordResp {
-        val token: Token? = tokenRepository.findByToken(req.token).orElseThrow { Exception("Token not found") }
+        val token: Token? = tokenRepository.findTokenByToken(req.token).orElseThrow { Exception("Token not found") }
         val user = token?.userEntity
         changeUserPassword(user!!, req.newPassword)
         return SaveForgotPasswordResp()

@@ -2,7 +2,6 @@ package hu.bme.aut.collectoro.core.token
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.core.token.util.TokenType
 import hu.bme.aut.collectoro.core.user.UserEntity
@@ -31,10 +30,10 @@ data class Token(
 
     var expired: Boolean = false,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_entity_id")
+    @ManyToOne
     @JsonBackReference
     var userEntity: UserEntity? = null
+
 ) : Serializable
 
 @Repository
@@ -46,5 +45,5 @@ interface TokenRepository : JpaRepository<Token, Long> {
     )
     fun findAllNotExpiredOrRevokedTokenByUserEntityAnAndTokenType(id: Long?, tokenType: TokenType): List<Token?>?
 
-    fun findByToken(token: String?): Optional<Token>
+    fun findTokenByToken(token: String?): Optional<Token>
 }

@@ -25,7 +25,7 @@ class LogoutService(
             return
         }
         val jwt: String = authHeader.substring(7)
-        val storedToken: Token? = tokenRepository.findByToken(jwt).get()
+        val storedToken: Token = tokenRepository.findTokenByToken(jwt).get()
         if (storedToken != null) {
             storedToken.expired = true
             storedToken.revoked = true

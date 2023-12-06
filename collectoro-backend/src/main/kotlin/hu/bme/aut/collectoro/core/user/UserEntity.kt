@@ -1,8 +1,7 @@
 package hu.bme.aut.collectoro.core.user
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.core.group.GroupEntity
 import hu.bme.aut.collectoro.core.role.GroupRole
 import hu.bme.aut.collectoro.core.role.UserRole
@@ -25,7 +24,9 @@ data class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
+    @Enumerated(EnumType.STRING)
     var provider: Provider? = Provider.LOCAL,
+
     var firstName: String? = null,
     var lastName: String? = null,
     private var email: String? = null,
@@ -34,28 +35,26 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     val userRole: UserRole = UserRole.USER,
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_entity")
+    @OneToMany(cascade = [CascadeType.REMOVE], fetch = FetchType.EAGER)
     @JsonManagedReference
     val tokens: MutableList<Token> = ArrayList(),
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "group_user",
-        joinColumns = [JoinColumn(name = "user_id")]
-    )
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
+    @ManyToMany
+    @JsonBackReference
     val groups: MutableList<GroupEntity> = ArrayList(),
 
     var enabled: Boolean? = false,
 
-    @OneToOne(mappedBy = "userEntity")
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var wallet: Wallet? = null,
 
-    @OneToMany(mappedBy = "userEntity")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var groupRoles: MutableList<GroupRole> = mutableListOf(),
 
-    @OneToOne(mappedBy = "userEntity")
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JsonManagedReference
     var avatar: Image? = null
 
 ) : UserDetails {
