@@ -7,7 +7,7 @@ import {
     SunIcon,
     Text,
     useColorMode,
-    useColorModeValue,
+    useColorModeValue, View,
     VStack
 } from "native-base";
 import React from "react";
@@ -28,20 +28,20 @@ export default function SidebarProfileSection(props: { profile: GetProfileByUser
                 </Pressable>
             </HStack>
             <Text fontSize="md" fontWeight="bold" color={baseColor}>
-                FirstName LastName
                 {props.profile?.user?.firstName} {props.profile?.user?.lastName}
             </Text>
-            <HStack alignItems="stretch" space="12">
-                <Text fontSize="xs" color={baseColor}>
-                    borosgergo00@gmail.com
-                    {props.profile?.user?.email}
-                </Text>
-                <Pressable onPress={props.onPress}>
-                    <Text fontSize="xs" color={subtitleColor}>
-                        Edit profile
+            <View mt={1} style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text fontSize="xs" color={baseColor}>
+                        {props.profile?.user?.email}
                     </Text>
-                </Pressable>
-            </HStack>
+                    <Pressable onPress={props.onPress}>
+                        <Text fontSize="xs" color={subtitleColor}>
+                            Edit profile
+                        </Text>
+                    </Pressable>
+                </View>
+            </View>
         </VStack>
     </HStack>;
 }

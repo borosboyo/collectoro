@@ -1,11 +1,10 @@
 import {StyleSheet} from "react-native";
 
-export const styles= StyleSheet.create({
+export const styles = StyleSheet.create({
     textInputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffffff',
         borderRadius: 8,
         paddingHorizontal: 8,
     },

@@ -3,7 +3,7 @@ import * as React from "react";
 
 export default function EmptyTabPageComponent() {
     const textColor = useColorModeValue("white", "black");
-    const bgColor = useColorModeValue("black", "white");
+    const bgColor = useColorModeValue("black", "coolGray.100");
     return <View style={{flex: 1, alignItems: "center", justifyContent: "center"}} backgroundColor={bgColor}>
         <HStack justifyContent="center">
             <Image alt="logo" source={require("../../../assets/logo.png")}

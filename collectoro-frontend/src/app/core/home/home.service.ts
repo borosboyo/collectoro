@@ -6,17 +6,17 @@ const HomeService = {
     userController: UserControllerApiFactory(axiosConfig),
     groupController: GroupControllerApiFactory(axiosConfig),
 
-    getHomepageByUserEmail: async function(email: string): Promise<any> {
+    getHomepageByUserEmail: async function (email: string): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        return this.userController.getHomePageByUserEmail({ email: email }, baseOptions);
+        return this.userController.getHomePageByUserEmail({email: email}, baseOptions);
     },
 
-    getGroupPageAdditionalData: async function(groupId: number): Promise<any> {
+    getGroupPageAdditionalData: async function (groupId: number): Promise<any> {
         const token = await AsyncStorage.getItem("token");
         baseOptions.headers = {
             'Content-Type': 'application/json',

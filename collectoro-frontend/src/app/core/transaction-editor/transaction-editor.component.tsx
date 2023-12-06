@@ -1,25 +1,24 @@
-import React, { Component } from "react";
-import { SafeAreaView, StyleSheet, View, Platform, ScrollView, TextInput} from "react-native";
-import calculatorUtil, { initialState } from "./calculator.util";
-import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list/index";
+import React, {Component} from "react";
+import {SafeAreaView, StyleSheet, View, Platform, ScrollView, TextInput} from "react-native";
+import calculatorUtil, {initialState} from "./calculator.util";
+import {MultipleSelectList, SelectList} from "react-native-dropdown-select-list/index";
 import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack, VStack} from "native-base";
 import {Pressable, Text} from "native-base";
 import {TransactionEditorNavigationProps} from "./transaction-editor.props";
 import TransactionEditorService from "./transaction-editor.service";
 import {ProcessTransactionReqTypeEnum} from "../../../../swagger";
 
-type TransactionEditorState = {
-};
+type TransactionEditorState = {};
 
-export default class TransactionEditorComponent extends Component<TransactionEditorNavigationProps, TransactionEditorState>  {
+export default class TransactionEditorComponent extends Component<TransactionEditorNavigationProps, TransactionEditorState> {
     state = initialState;
     selectedType = ProcessTransactionReqTypeEnum;
     selectedWho = null;
     selectedForWhom = null;
     transactionType = [
-        { key: "1", value: ProcessTransactionReqTypeEnum.EXPENSE },
-        { key: "2", value: ProcessTransactionReqTypeEnum.INCOME },
-        { key: "3", value: ProcessTransactionReqTypeEnum.TRANSFER },
+        {key: "1", value: ProcessTransactionReqTypeEnum.EXPENSE},
+        {key: "2", value: ProcessTransactionReqTypeEnum.INCOME},
+        {key: "3", value: ProcessTransactionReqTypeEnum.TRANSFER},
     ];
 
     who: any[] = []
@@ -38,12 +37,27 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
         })
 
         this.whoReq = this.props.route.params.group.users.map((user) => {
-            return {id: 0, userId: user.id.toString(), lastName: user.lastName, amount: 0, transaction: null, type: UserWithAmountTypeEnum.WHO}
+            return {
+                id: 0,
+                userId: user.id.toString(),
+                lastName: user.lastName,
+                amount: 0,
+                transaction: null,
+                type: UserWithAmountTypeEnum.WHO
+            }
         })
 
         this.forWhomReq = this.props.route.params.group.users.map((user) => {
-            return {id: 0, userId: user.id.toString(), lastName: user.lastName, amount: 0, transaction: null, type: UserWithAmountTypeEnum.FORWHOM}
-        })    }
+            return {
+                id: 0,
+                userId: user.id.toString(),
+                lastName: user.lastName,
+                amount: 0,
+                transaction: null,
+                type: UserWithAmountTypeEnum.FORWHOM
+            }
+        })
+    }
 
     // handle tap method
     HandleTap = (type, value) => {
@@ -54,7 +68,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
         //copy who amount to whoReq amounts
         this.whoReq.forEach((userReq) => {
             this.who.forEach((user) => {
-                if(userReq.userId === user.key) {
+                if (userReq.userId === user.key) {
                     userReq.amount = user.amount
                 }
             })
@@ -65,7 +79,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
         //copy forWhom amount to forWhomReq amounts
         this.forWhomReq.forEach((userReq) => {
             this.forWhom.forEach((user) => {
-                if(userReq.userId === user.key) {
+                if (userReq.userId === user.key) {
                     userReq.amount = user.amount
                 }
             })
@@ -87,11 +101,13 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                         <Text color="black" fontSize="md">{this.props.route.params.group.name}</Text>
                     </HStack>
                     <Text style={styles.label}>Purpose:</Text>
-                    <TextInput style={styles.textInput} onChangeText={newText => this.purpose = newText} placeholder="Enter purpose" />
+                    <TextInput color={textColor} style={styles.textInput}
+                               onChangeText={newText => this.purpose = newText} placeholder="Enter purpose"/>
 
                     <View style={styles.selectListContainer}>
                         <Text style={styles.label}>Type:</Text>
-                        <SelectList setSelected={(val) => (this.selectedType = val)} data={this.transactionType} save="value" />
+                        <SelectList setSelected={(val) => (this.selectedType = val)} data={this.transactionType}
+                                    save="value"/>
                     </View>
                     <View style={styles.selectListContainer}>
                         <VStack>
@@ -101,10 +117,11 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput style={styles.textInput} onChangeText={newText => {
-                                                user.amount = parseFloat(newText);
-                                                this.mapWho();
-                                            }} placeholder="Enter amount" />
+                                            <TextInput color={textColor} style={styles.textInput}
+                                                       onChangeText={newText => {
+                                                           user.amount = parseFloat(newText);
+                                                           this.mapWho();
+                                                       }} placeholder="Enter amount"/>
                                         </View>
                                     </HStack>
                                 )
@@ -119,17 +136,18 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput style={styles.textInput} onChangeText={newText => {
-                                                user.amount = parseFloat(newText);
-                                                this.mapForWhom();
-                                            }} placeholder="Enter amount" />
+                                            <TextInput color={textColor} style={styles.textInput}
+                                                       onChangeText={newText => {
+                                                           user.amount = parseFloat(newText);
+                                                           this.mapForWhom();
+                                                       }} placeholder="Enter amount"/>
                                         </View>
                                     </HStack>
                                 )
                             })}
                         </VStack>
                     </View>
-                    <Divider thickness="5" />
+                    <Divider thickness="5"/>
                     <View style={styles.calculatorContainer}>
                         {/*<SafeAreaView>
                             <Text style={styles.value}>{parseFloat(this.state.currentValue).toLocaleString()}</Text>
@@ -172,7 +190,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                         </SafeAreaView>
 
                         */}
-                    <Button onPress={() => {
+                        <Button onPress={() => {
                             TransactionEditorService.processTransaction(this.purpose, this.whoReq, this.forWhomReq, this.props.route.params.group.id, Number(this.state.currentValue), this.selectedType).then(r =>
                                 this.props.navigation.goBack())
                         }}>Save</Button>

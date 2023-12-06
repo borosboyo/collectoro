@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import {
     Box,
@@ -28,16 +27,18 @@ export default function EnableAccountComponent({navigation}: EnableAccountNaviga
                 </Heading>
             </HStack>
             <VStack space={3} mt="5">
-                <FormControl style={styles.textInputContainer}>
-                    <TextInput style={styles.textInput} placeholder={"Token"} placeholderTextColor="#aaa" onChangeText={newText => setEnableToken(newText)} />
+                <FormControl backgroundColor={inputBackGroundColor} style={styles.textInputContainer}>
+                    <TextInput color={textColor} style={styles.textInput} placeholder={"Token"}
+                               placeholderTextColor="#aaa"
+                               onChangeText={newText => setEnableToken(newText)}/>
                 </FormControl>
                 <GradientButtonComponent
-                        onPress={() => {
-                            registerService.enable(enableToken).then(() => {
-                                navigation.navigate("Login");
-                            });
-                        }}
-                        text={"Enable account"}>
+                    onPress={() => {
+                        registerService.enable(enableToken).then(() => {
+                            navigation.navigate("Login");
+                        });
+                    }}
+                    text={"Enable account"}>
                 </GradientButtonComponent>
             </VStack>
         </Box>

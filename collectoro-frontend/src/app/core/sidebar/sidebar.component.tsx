@@ -4,7 +4,6 @@ import SidebarContentComponent from "./sidebar-content/sidebar-content.component
 import {ImageBackground} from "react-native";
 
 export default function SidebarComponent(props: DrawerContentComponentProps) {
-
     return (
         <ImageBackground source={require('../../../assets/sidebar-background.png')}
                          resizeMode="cover"

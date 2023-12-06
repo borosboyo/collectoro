@@ -8,7 +8,7 @@ export default function SideBarButtonsSection(props: {
     onPress2: () => void
 }) {
     const textColor = useColorModeValue("white", "black");
-    const bgColor = useColorModeValue("black", "white");
+    const bgColor = useColorModeValue("black", "coolGray.100");
     const subtitleColor = useColorModeValue("trueGray.800", "trueGray.200");
     return <>
         <Pressable style={styles.sideBarPressable}

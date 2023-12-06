@@ -1,12 +1,4 @@
-import {
-    Box,
-    CloseIcon,
-    Divider,
-    Pressable,
-    Text, useColorModeValue,
-    VStack
-} from "native-base";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Box, CloseIcon, Divider, Pressable, Text, useColorModeValue, VStack} from "native-base";
 import React, {useEffect, useState} from "react";
 import {DrawerContentComponentProps} from "@react-navigation/drawer";
 import {SidebarModalHolderComponent} from "./sidebar-modal-holder/sidebar-modal-holder.component";
@@ -15,9 +7,9 @@ import SideBarButtonsSection from "./sidebar-sections/sidebar-buttons-section";
 import SidebarService from "../sidebar.service";
 import {styles} from "../../../shared/components/styles";
 import {SidebarNavigation} from "../sidebar-navigation.props";
-import {AppContext} from "../../../../../App";
 import {GetProfileByUserEmailResp} from "../../../../../swagger";
-import {ImageBackground} from "react-native";
+import {AppContext} from "../../../shared/components/appcontext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type SidebarContentComponentProps = DrawerContentComponentProps & {
     navigation: SidebarNavigation;
@@ -80,18 +72,20 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
             <VStack space="2" w="100%">
                 <SideBarButtonsSection onPress={() => openMyGroups()} onPress1={() => openCreateGroup()}
                                        onPress2={() => openJoinGroup()}/>
-                <SidebarModalHolderComponent isProfileModalVisible={isProfileModalVisible}
-                                             isMyGroupsModalVisible={isMyGroupsModalVisible}
-                                             isCreateGroupModalVisible={isCreateGroupModalVisible}
-                                             isJoinGroupModalVisible={isJoinGroupModalVisible}
-                                             closeModal={() => closeModal()}></SidebarModalHolderComponent>
+                <SidebarModalHolderComponent
+                    profile={profile}
+                    isProfileModalVisible={isProfileModalVisible}
+                    isMyGroupsModalVisible={isMyGroupsModalVisible}
+                    isCreateGroupModalVisible={isCreateGroupModalVisible}
+                    isJoinGroupModalVisible={isJoinGroupModalVisible}
+                    closeModal={() => closeModal()}></SidebarModalHolderComponent>
                 <AppContext.Consumer>
                     {({isLoggedIn, setIsLoggedIn}) => (
                         <Pressable style={styles.sideBarPressable}
                                    onPress={() => {
                                        SidebarService.logout().then(() => {
                                            setIsLoggedIn(false)
-                                           AsyncStorage.removeItem('token')
+                                           appStorage.delete("token")
                                        });
                                    }}
                         >

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {SaveForgotPasswordNavigationProps} from "./save-forgot-password-navigation.props";
-import {Box, Center, FormControl, Heading, HStack, Image, VStack} from "native-base";
+import {Box, Center, FormControl, Heading, HStack, Image, useColorModeValue, VStack} from "native-base";
 import saveForgotPasswordService from "./save-forgot-password.service";
 import {styles} from "../../shared/components/styles";
 import {TextInput} from "react-native";
@@ -10,29 +10,35 @@ export default function SaveForgotPasswordComponent({navigation}: SaveForgotPass
     const [verificationCode, setVerificationCode] = React.useState("");
     const [newPassword, setNewPassword] = React.useState("");
     const [newPasswordAgain, setNewPasswordAgain] = React.useState("");
-    return (<Center w="100%">
+    const textColor = useColorModeValue("white", "black");
+    const bgColor = useColorModeValue("black", "coolGray.100");
+    const subtitleColor = useColorModeValue("#424242", "#c9c9c9");
+    const inputBackgroundColor = useColorModeValue("gray.700", "white");
+
+    return (<Center w="100%" h="100%" bgColor={bgColor}>
         <Box safeArea p="2" w="90%" maxW="290" py="8">
             <HStack mb="5" justifyContent="center">
                 <Image alt="logo" source={require("../../../assets/logo.png")} style={{width: 150, height: 150}}/>
             </HStack>
             <HStack mb="5" justifyContent="center">
-                <Heading textAlign={"center"} size="md" fontWeight="600" color="coolGray.600" _dark={{
-                    color: "warmGray.50"
-                }}>
+                <Heading textAlign={"center"} size="md" fontWeight="600" color={textColor}>
                     Check your mails for your token to change your password.
                 </Heading>
             </HStack>
             <VStack space={3} mt="5">
-                <FormControl style={styles.textInputContainer}>
-                    <TextInput style={styles.textInput} placeholder={"Token"} placeholderTextColor="#aaa"
+                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                    <TextInput color={textColor} style={styles.textInput} placeholder={"Token"}
+                               placeholderTextColor={subtitleColor}
                                onChangeText={newText => setVerificationCode(newText)}/>
                 </FormControl>
-                <FormControl style={styles.textInputContainer}>
-                    <TextInput style={styles.textInput} placeholder={"Password"} placeholderTextColor="#aaa"
+                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                    <TextInput color={textColor} style={styles.textInput} placeholder={"Password"}
+                               placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPassword(newText)}/>
                 </FormControl>
-                <FormControl style={styles.textInputContainer}>
-                    <TextInput style={styles.textInput} placeholder={"Confirm password"} placeholderTextColor="#aaa"
+                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                    <TextInput color={textColor} style={styles.textInput} placeholder={"Confirm password"}
+                               placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPasswordAgain(newText)}/>
                 </FormControl>
                 <GradientButtonComponent

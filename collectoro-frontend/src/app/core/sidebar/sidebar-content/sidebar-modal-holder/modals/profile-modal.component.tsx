@@ -1,21 +1,15 @@
 import Modal from "react-native-modal";
-import {
-    ArrowBackIcon,
-    Avatar,
-    Button,
-    Heading,
-    HStack,
-    View,
-    Text,
-    Box,
-    Divider,
-    useColorModeValue
-} from "native-base";
+import {ArrowBackIcon, Avatar, Box, Button, Divider, Heading, HStack, Text, useColorModeValue, View} from "native-base";
 import React from "react";
+import {GetProfileByUserEmailResp} from "../../../../../../../swagger";
 
-export default function ProfileModalComponent(props: { visible: boolean, onPress: () => void }) {
+export default function ProfileModalComponent(props: {
+    visible: boolean,
+    onPress: () => void,
+    profile: GetProfileByUserEmailResp
+}) {
     const textColor = useColorModeValue("white", "black");
-    const bgColor = useColorModeValue("black", "white");
+    const bgColor = useColorModeValue("black", "coolGray.100");
     const subtitleColor = useColorModeValue("trueGray.800", "trueGray.200");
     return <Modal isVisible={props.visible}>
         <View backgroundColor={bgColor} style={{flex: 1}}>
@@ -45,7 +39,7 @@ export default function ProfileModalComponent(props: { visible: boolean, onPress
                             Name
                         </Text>
                         <Text style={{marginRight: 15, fontSize: 16, fontWeight: 'bold', color: textColor}}>
-                            FirstName LastName
+                            {props.profile?.user?.firstName} {props.profile?.user?.lastName}
                         </Text>
                     </View>
                 </View>
@@ -56,7 +50,7 @@ export default function ProfileModalComponent(props: { visible: boolean, onPress
                             Email address
                         </Text>
                         <Text style={{marginRight: 15, fontSize: 16, fontWeight: 'bold', color: textColor}}>
-                            teszt@teszt.com
+                            {props.profile?.user?.email}
                         </Text>
                     </View>
                 </View>
