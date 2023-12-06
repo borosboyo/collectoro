@@ -1,14 +1,16 @@
 package hu.bme.aut.collectoro.service
 
-import hu.bme.aut.collectoro.domain.*
-import hu.bme.aut.collectoro.dto.auth.*
-import hu.bme.aut.collectoro.dto.user.EnableReq
-import hu.bme.aut.collectoro.repository.TokenRepository
-import hu.bme.aut.collectoro.repository.UserRepository
-import hu.bme.aut.collectoro.repository.WalletRepository
-import hu.bme.aut.collectoro.service.AuthenticationService
-import hu.bme.aut.collectoro.service.EmailService
-import hu.bme.aut.collectoro.service.JWTService
+import hu.bme.aut.collectoro.core.auth.AuthenticationService
+import hu.bme.aut.collectoro.core.auth.JWTService
+import hu.bme.aut.collectoro.core.auth.dto.*
+import hu.bme.aut.collectoro.dto.dto.*
+import hu.bme.aut.collectoro.core.user.dto.EnableReq
+import hu.bme.aut.collectoro.core.mail.EmailService
+import hu.bme.aut.collectoro.core.role.UserRole
+import hu.bme.aut.collectoro.core.token.Token
+import hu.bme.aut.collectoro.core.token.util.TokenType
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.shared.provider.Provider
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -25,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.*
 
+//TODO
 @SpringBootTest
 @Transactional
 class AuthenticationServiceTest {
@@ -79,7 +82,7 @@ class AuthenticationServiceTest {
             .lastName(request.lastName)
             .email(request.email)
             .password("encodedPassword")
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.LOCAL)
             .enabled(true)
             .build()
@@ -107,7 +110,7 @@ class AuthenticationServiceTest {
             .lastName("Doe")
             .email(request.email)
             .password("encodedPassword")
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.LOCAL)
             .enabled(true)
             .build()
@@ -140,7 +143,7 @@ class AuthenticationServiceTest {
             .lastName("Doe")
             .email("johndoe@example.com")
             .password("encodedPassword")
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.LOCAL)
             .enabled(false)
             .build()
@@ -168,7 +171,7 @@ class AuthenticationServiceTest {
             .firstName(request.firstName)
             .lastName(request.lastName)
             .email(request.email)
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.GOOGLE)
             .enabled(true)
             .build()
@@ -191,7 +194,7 @@ class AuthenticationServiceTest {
             .firstName("example")
             .lastName("example")
             .email(req.email)
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.GOOGLE)
             .enabled(true)
             .build()
@@ -235,7 +238,7 @@ class AuthenticationServiceTest {
             .lastName("Doe")
             .email("johndoe@example.com")
             .password("password")
-            .role(Role.USER)
+            .role(UserRole.USER)
             .provider(Provider.LOCAL)
             .enabled(true)
             .build()

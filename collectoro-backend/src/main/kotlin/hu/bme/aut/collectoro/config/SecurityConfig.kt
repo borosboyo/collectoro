@@ -1,6 +1,7 @@
 package hu.bme.aut.collectoro.config
 
-import hu.bme.aut.collectoro.service.UserService
+import hu.bme.aut.collectoro.config.web.JWTAuthenticationFilter
+import hu.bme.aut.collectoro.core.user.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
@@ -35,6 +36,7 @@ class SecurityConfig(
             .csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/api/**").permitAll()
             .anyRequest().authenticated().and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authenticationProvider(authenticationProvider)
@@ -44,7 +46,9 @@ class SecurityConfig(
             .addLogoutHandler(logoutHandler)
             .logoutSuccessHandler { request: HttpServletRequest?,
                                     response: HttpServletResponse?,
-                                    authentication: Authentication? -> SecurityContextHolder.clearContext() }
+                                    authentication: Authentication? ->
+                SecurityContextHolder.clearContext()
+            }
 
         return http.build()
     }

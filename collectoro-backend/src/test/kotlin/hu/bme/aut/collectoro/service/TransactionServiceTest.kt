@@ -1,13 +1,13 @@
-import hu.bme.aut.collectoro.domain.Balance
-import hu.bme.aut.collectoro.domain.GroupEntity
-import hu.bme.aut.collectoro.domain.UserEntity
-import hu.bme.aut.collectoro.domain.Wallet
-import hu.bme.aut.collectoro.domain.transaction.*
-import hu.bme.aut.collectoro.domain.transaction.Currency
-import hu.bme.aut.collectoro.dto.transaction.DeleteTransactionReq
-import hu.bme.aut.collectoro.dto.transaction.ProcessTransactionReq
-import hu.bme.aut.collectoro.repository.*
-import hu.bme.aut.collectoro.service.TransactionService
+import hu.bme.aut.collectoro.core.group.GroupEntity
+import hu.bme.aut.collectoro.core.group.GroupRepository
+import hu.bme.aut.collectoro.core.transaction.TransactionRepository
+import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.core.transaction.dto.DeleteTransactionReq
+import hu.bme.aut.collectoro.core.transaction.dto.ProcessTransactionReq
+import hu.bme.aut.collectoro.core.transaction.TransactionService
+import hu.bme.aut.collectoro.core.transaction.util.*
+import hu.bme.aut.collectoro.core.transaction.util.Currency
+import hu.bme.aut.collectoro.core.user.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,9 +15,9 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import java.util.*
 
+//TODO
 class TransactionServiceTest {
     @Mock
     private lateinit var transactionRepository: TransactionRepository
@@ -30,9 +30,6 @@ class TransactionServiceTest {
 
     @Mock
     private lateinit var balanceRepository: BalanceRepository
-
-    @Mock
-    private lateinit var userWithAmountRepository: UserWithAmountRepository
 
     @InjectMocks
     private lateinit var transactionService: TransactionService
@@ -63,17 +60,8 @@ class TransactionServiceTest {
         balance1.wallet = wallet1
         balance2.wallet = wallet2
         val groupEntity = GroupEntity.Builder().id(groupId).name("Test").build()
-        val transaction: Transaction = Transaction.Builder()
-            .purpose(req.purpose)
-            .currency(req.currency)
-            .type(req.type)
-            .who(req.who)
-            .forWhom(req.forWhom)
-            .groupEntity(groupEntity)
-            .build()
         val balances = listOf(balance1, balance2)
         `when`(balanceRepository.findBalancesByGroupId(groupId)).thenReturn(balances)
-        `when`(transactionRepository.save(any())).thenReturn(transaction)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet1)).thenReturn(balance1)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet2)).thenReturn(balance2)
         `when`(groupRepository.findById(groupId)).thenReturn(Optional.of(groupEntity))
@@ -109,18 +97,9 @@ class TransactionServiceTest {
         balance1.wallet = wallet1
         balance2.wallet = wallet2
         val groupEntity = GroupEntity.Builder().id(groupId).name("Test").build()
-        val transaction: Transaction = Transaction.Builder()
-            .purpose(req.purpose)
-            .currency(req.currency)
-            .type(req.type)
-            .who(req.who)
-            .forWhom(req.forWhom)
-            .groupEntity(groupEntity)
-            .build()
         val balances = listOf(balance1, balance2)
         `when`(balanceRepository.findBalancesByGroupId(groupId)).thenReturn(balances)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet1)).thenReturn(balance1)
-        `when`(transactionRepository.save(any())).thenReturn(transaction)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet2)).thenReturn(balance2)
         `when`(groupRepository.findById(groupId)).thenReturn(Optional.of(groupEntity))
         `when`(userRepository.findById(2L)).thenReturn(Optional.of(userEntity1))
@@ -156,16 +135,7 @@ class TransactionServiceTest {
         balance2.wallet = wallet2
         val groupEntity = GroupEntity.Builder().id(groupId).name("Test").build()
         val balances = listOf(balance1, balance2)
-        val transaction: Transaction = Transaction.Builder()
-            .purpose(req.purpose)
-            .currency(req.currency)
-            .type(req.type)
-            .who(req.who)
-            .forWhom(req.forWhom)
-            .groupEntity(groupEntity)
-            .build()
         `when`(balanceRepository.findBalancesByGroupId(groupId)).thenReturn(balances)
-        `when`(transactionRepository.save(any())).thenReturn(transaction)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet1)).thenReturn(balance1)
         `when`(balanceRepository.findBalanceByGroupIdAndWallet(groupId, wallet2)).thenReturn(balance2)
         `when`(groupRepository.findById(groupId)).thenReturn(Optional.of(groupEntity))
