@@ -7,6 +7,10 @@ const RegisterService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),
 
     register: function (email: string, password: string, firstName: string, lastName: string): Promise<any> {
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
         return this.authenticationController.register({
             email: email,
             password: password,
@@ -17,6 +21,10 @@ const RegisterService = {
     },
 
     enable: function (token: string): Promise<any> {
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
         return this.authenticationController.enable({
             token: token
         }, baseOptions).then(async (response: AxiosResponse<EnableResp>) => {

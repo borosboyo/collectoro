@@ -1,5 +1,5 @@
-import {FormControl, HStack, Image, Link, Pressable, Text, useColorModeValue, VStack} from "native-base";
-import {Platform, TextInput} from "react-native";
+import {FormControl, HStack, Image, Pressable, Text, useColorModeValue, VStack} from "native-base";
+import {TextInput} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import * as React from "react";
 import {useContext} from "react";
@@ -16,6 +16,7 @@ import {baseOptions} from "../../../shared/config/axios-config";
 import {AxiosResponse} from "axios";
 import {AuthenticationResp} from "../../../../../swagger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 export default function LoginFormComponent({navigation}: LoginNavigationProps) {
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -38,6 +39,22 @@ export default function LoginFormComponent({navigation}: LoginNavigationProps) {
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const showSuccessMessage = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: "Welcome back! 🥰",
+        });
+    }
+
+    const showErrorMessage = (error: string) => {
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: error,
+        });
+    }
 
     return <VStack space={3} mt="5">
         <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
@@ -65,11 +82,11 @@ export default function LoginFormComponent({navigation}: LoginNavigationProps) {
             onPress={() => {
                 loginService.loginWithEmail(email, password)
                     .then(() => {
-                        console.log(AsyncStorage.getItem("token"));
+                        showSuccessMessage();
                         setIsLoggedIn(true);
                     })
                     .catch(error => {
-                        console.log(error);
+                        showErrorMessage(error);
                     });
             }}
             text={"Sign in"}
@@ -99,8 +116,11 @@ export default function LoginFormComponent({navigation}: LoginNavigationProps) {
                         lastName: lastName!!,
                     }, baseOptions).then(async (backendResponse: AxiosResponse<AuthenticationResp>) => {
                         await AsyncStorage.setItem("token", backendResponse.data.token);
+                        showSuccessMessage();
                         setIsLoggedIn(true);
-                    })
+                    }).catch((error) => {
+                        showErrorMessage(error);
+                    });
                 });
             }}>
             <Image alt="google" source={require("../../../../assets/btn.png")}
@@ -112,5 +132,6 @@ export default function LoginFormComponent({navigation}: LoginNavigationProps) {
             </Text>
             <DynamicLinkComponent text={"Sign Up"} linkOnPress={() => navigation.navigate('Register')}/>
         </HStack>
+        <Toast/>
     </VStack>;
 }

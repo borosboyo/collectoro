@@ -11,12 +11,9 @@ const LoginService = {
     authenticationController: AuthenticationControllerApiFactory(axiosConfig),
 
     fetchUserInfo: function (accessToken: any) {
-        console.log('fetchUserInfo')
-        console.log(accessToken)
         return axios.get("https://www.googleapis.com/userinfo/v2/me", {
             headers: {Authorization: `Bearer ${accessToken}`}
         }).then((async (googleResponse) => {
-            console.log("fasz")
             await AsyncStorage.setItem("email", googleResponse.data.email);
             await AsyncStorage.setItem("firstName", googleResponse.data.given_name);
             await AsyncStorage.setItem("lastName", googleResponse.data.family_name);

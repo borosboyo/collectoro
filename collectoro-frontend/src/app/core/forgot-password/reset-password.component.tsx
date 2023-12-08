@@ -6,13 +6,31 @@ import GradientButtonComponent from "../../shared/components/gradient-button.com
 import {TextInput} from "react-native";
 import {styles} from "../../shared/components/styles";
 import {DynamicBackButtonComponent} from "../../shared/components/dynamic-back-button.component";
+import Toast from "react-native-toast-message";
 
-export default function ResetPasswordComponent({props}: ResetPasswordNavigationProps) {
+export default function ResetPasswordComponent({navigation}: ResetPasswordNavigationProps) {
     const textColor = useColorModeValue("white", "black");
     const bgColor = useColorModeValue("black", "coolGray.100");
     const subtitleColor = useColorModeValue("#ffffff", "#c9c9c9");
     const inputBackgroundColor = useColorModeValue("gray.700", "white");
     const [email, setEmail] = React.useState("");
+
+    const showErrorMessage = (error: string) => {
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: error,
+        });
+    }
+
+    const showSuccessMessage = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Successful password reset! 🥳',
+        });
+    }
+
     return (<Center w="100%" h="100%" bgColor={bgColor}>
         <Box safeArea p="2" py="8" maxW="350">
             <HStack mb="5" justifyContent="center">
@@ -35,12 +53,16 @@ export default function ResetPasswordComponent({props}: ResetPasswordNavigationP
                 <GradientButtonComponent text={"Reset password"} mt="2"
                                          onPress={() => {
                                              resetPasswordService.resetPassword(email).then(() => {
+                                                 showSuccessMessage();
                                                  navigation.navigate('SaveForgotPassword');
-                                             });
+                                             }).catch((error) => {
+                                                 showErrorMessage(error);
+                                             })
                                          }}>
                 </GradientButtonComponent>
                 <DynamicBackButtonComponent/>
             </VStack>
         </Box>
+        <Toast/>
     </Center>);
 }

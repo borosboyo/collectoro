@@ -10,12 +10,14 @@ import {SidebarNavigation} from "../sidebar-navigation.props";
 import {GetProfileByUserEmailResp} from "../../../../../swagger";
 import {AppContext} from "../../../shared/components/appcontext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import HomeService from "../../home/home.service";
 
 type SidebarContentComponentProps = DrawerContentComponentProps & {
     navigation: SidebarNavigation;
 }
 export default function SidebarContentComponent(props: SidebarContentComponentProps) {
     const [profile, setProfile] = useState<GetProfileByUserEmailResp>({});
+    const [homePage, setHomePage] = useState<any>({});
     const [isProfileModalVisible, setIsProfileModalVisible] = useState<boolean>(false);
     const [isMyGroupsModalVisible, setIsMyGroupsModalVisible] = useState<boolean>(false);
     const [isJoinGroupModalVisible, setIsJoinGroupModalVisible] = useState<boolean>(false);
@@ -27,6 +29,11 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
         AsyncStorage.getItem('email').then((email) => {
             SidebarService.getProfileByUserEmail(email!).then((response) => {
                 setProfile(response.data)
+            });
+        })
+        AsyncStorage.getItem('email').then((email) => {
+            HomeService.getHomepageByUserEmail(email!).then((response) => {
+                setHomePage(response.data);
             });
         })
     }, [])
@@ -74,6 +81,7 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
                                        onPress2={() => openJoinGroup()}/>
                 <SidebarModalHolderComponent
                     profile={profile}
+                    groups={homePage?.groups}
                     isProfileModalVisible={isProfileModalVisible}
                     isMyGroupsModalVisible={isMyGroupsModalVisible}
                     isCreateGroupModalVisible={isCreateGroupModalVisible}
@@ -84,8 +92,8 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
                         <Pressable style={styles.sideBarPressable}
                                    onPress={() => {
                                        SidebarService.logout().then(() => {
+                                           AsyncStorage.removeItem("token")
                                            setIsLoggedIn(false)
-                                           appStorage.delete("token")
                                        });
                                    }}
                         >

@@ -6,7 +6,7 @@ export default function EmptyTabPageComponent() {
     const bgColor = useColorModeValue("black", "coolGray.100");
     return <View style={{flex: 1, alignItems: "center", justifyContent: "center"}} backgroundColor={bgColor}>
         <HStack justifyContent="center">
-            <Image alt="logo" source={require("../../../assets/logo.png")}
+            <Image alt="logo" source={require("../../../../assets/logo.png")}
                    style={{width: 150, height: 150}}/>
         </HStack>
         <Heading textAlign={"center"} size="lg" fontWeight="600" color={textColor}>

@@ -1,15 +1,36 @@
-import {Avatar, Box, Center, Divider, Fab, Heading, HStack, Icon, ScrollView, Text, VStack} from "native-base";
+import {
+    Avatar,
+    Box,
+    Center,
+    Divider,
+    Fab,
+    Heading,
+    HStack,
+    Icon, Pressable,
+    ScrollView,
+    Text,
+    useColorModeValue,
+    VStack
+} from "native-base";
 import {BarChart} from "react-native-chart-kit";
 import {Dimensions, StyleSheet} from "react-native";
-import {MaterialIcons} from "@expo/vector-icons";
+import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import React, {useEffect} from "react";
-import {HomeNavigation} from "./home-navigation.props";
-import {Debt, GroupEntity} from "../../../../swagger";
-import HomeService from "./home.service";
 import moment from "moment";
+import HomeService from "../home.service";
+import {Debt, GroupEntity} from "../../../../../swagger";
+import {HomeNavigation} from "../home-navigation.props";
+import * as Clipboard from 'expo-clipboard';
+import Toast from "react-native-toast-message";
 
 export function TabPageComponent({group, navigation}: { group: GroupEntity | undefined, navigation: HomeNavigation }) {
-    let greenColor = (opacity = 1) => `#26653A`;
+    const textColor = useColorModeValue("white", "black");
+    const bgColor = useColorModeValue("black", "white");
+    const fabColor = useColorModeValue("#6E1DCE", "#7DD6FF");
+
+    const [codeShown, setCodeShown] = React.useState<boolean>(false);
+
+    let greenColor = (opacity = 1) => `#00ff50`;
     let redColor = (opacity = 1) => `#FF0000`;
     const [additionalData, setAdditionalData] = React.useState<any>(null);
 
@@ -30,28 +51,77 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
 
     const noTransactions = () => {
         if (group?.transactions?.length == 0) {
-            return <Text>No transactions yet.</Text>
+            return <Text color={textColor}>No transactions yet.</Text>
         }
     };
 
     const noDebts = () => {
         if (additionalData?.debtList?.length == 0) {
-            return <Text>No debts yet.</Text>
+            return <Text color={textColor}>No debts yet.</Text>
         }
     }
 
     const formatDate = (date: any) => {
-        if(date.length == 7) {
+        if (date.length == 7) {
             date.pop()
         }
         return moment(date).format('YYYY-MM-DD HH:mm:ss');
     }
 
-    return <Box flex={1}>
+    const toggleCodeShown = () => {
+        setCodeShown(!codeShown);
+    }
+
+    const showCopyMessage = () => {
+        Toast.show({
+            type: 'info',
+            text1: 'Copied',
+            text2: 'Join code copied to clipboard! 😇',
+            position: 'bottom',
+            bottomOffset: 100,
+        });
+    }
+
+    const chartRgba = () => {
+        if (bgColor == "white") {
+            return "rgba(0,0,0,1)"
+        } else {
+            return "rgba(255,255,255,1)"
+        }
+    }
+
+    const copyToClipBoard = () => {
+        Clipboard.setString(group?.joinLink!!)
+        showCopyMessage();
+    }
+
+    return <Box bgColor={bgColor} mt={50} flex={1}>
         <ScrollView>
             <Center>
-                <Heading style={styles.heading}>{group?.name}</Heading>
-                <Text selectable={true} style={styles.heading}>Join code: {group?.joinLink}</Text>
+                <Heading mt={5} fontSize={18} color={textColor}>{group?.name}</Heading>
+                <Pressable onPress={copyToClipBoard}>
+                    <HStack space={2} style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <Text selectable={true} color={textColor}>Copy code</Text>
+                        <MaterialCommunityIcons
+                            name={'content-copy'}
+                            size={12}
+                            color={textColor}
+                            onPress={() => {
+                            }}
+                        />
+                    </HStack>
+                </Pressable>
+                {/*
+                 <Pressable onPress={toggleCodeShown}>
+                    {!codeShown ? <Text color={textColor}>Show code</Text> : <></>}
+                </Pressable>
+                {codeShown ? <Text color={textColor} selectable={true}>{group.joinLink}</Text> : <></>}
+
+                 */}
             </Center>
             <BarChart
                 data={{
@@ -72,39 +142,40 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 fromZero
                 withCustomBarColorFromData={true}
                 flatColor={true}
+                withHorizontalLabels={false}
                 yAxisSuffix=" Ft"
                 yAxisInterval={1} // optional, defaults to 1
                 chartConfig={{
-                    backgroundColor: "#ffffff",
-                    backgroundGradientFrom: "#ffffff",
-                    backgroundGradientTo: "#ffffff",
+                    backgroundColor: bgColor,
+                    backgroundGradientFrom: bgColor,
+                    backgroundGradientTo: bgColor,
                     backgroundGradientFromOpacity: 0,
                     backgroundGradientToOpacity: 0,
                     decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
+                    color: () => chartRgba(),
+                    labelColor: () => chartRgba(),
                     style: {
                         borderRadius: 16
                     },
                     propsForDots: {
-                        r: "6", strokeWidth: "2", stroke: "#000000"
+                        r: "6", strokeWidth: "2", stroke: textColor
                     }
                 }}
                 style={{
                     marginVertical: 8, borderRadius: 16
                 }}
             />
-            <Text fontSize="lg" bold>
-                Transactions
-            </Text>
-            <VStack space={4} alignItems="left">
+            <VStack ml={3} space={2}>
+                <Text color={textColor} fontSize="lg" bold>
+                    Transactions
+                </Text>
                 {noTransactions()}
                 {group?.transactions?.map((transaction) => {
                     return <Box key={transaction.id}>
-                        <HStack alignItems="center" space="3" px="4" bgColor='gray.250'>
+                        <HStack alignItems="center" space="3" px="4" bgColor={bgColor}>
                             <Avatar bg="gray.300">GG</Avatar>
                             <VStack>
-                                <Text fontSize="md" fontWeight="bold" color="black">
+                                <Text fontSize="md" fontWeight="bold" color={textColor}>
                                     {transaction.purpose}
                                 </Text>
                                 <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
@@ -125,12 +196,12 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                         </HStack>
                     </Box>
                 })}
-                <Text fontSize="lg" bold>
+                <Text color={textColor} fontSize="lg" bold>
                     Settle debts
                 </Text>
                 {noDebts()}
                 {additionalData?.debtList.map((debt: Debt) => {
-                    return <HStack alignItems="center" space="3" px="4" bgColor='gray.250' key={debt.id}>
+                    return <HStack ml={3} alignItems="center" space="1" px="4" bgColor={bgColor} key={debt.id}>
                         <Avatar bg="gray.300">GG</Avatar>
                         <VStack>
                             <Text fontSize="md" fontWeight="bold" color="black">
@@ -149,13 +220,13 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                         <Avatar bg="gray.300">GG</Avatar>
                     </HStack>
                 })}
-                <Text fontSize="lg" bold>
+                <Text color={textColor} fontSize="lg" bold>
                     Total spent
                 </Text>
-                <HStack alignItems="center" space="3" px="4" bgColor='gray.250' divider={<Divider thickness={"0.0"}/>}>
-                    <Icon color="black" as={MaterialIcons} name="attach-money" size="2xl"/>
-                    <Text fontSize="lg" bold>{additionalData?.numberOfExpenses} expenses</Text>
-                    <Text fontSize="lg" bold>{additionalData?.totalSpent} HUF</Text>
+                <HStack alignItems="center" space="3" px="4" bgColor={bgColor} divider={<Divider thickness={"0.0"}/>}>
+                    <Icon color={textColor} as={MaterialIcons} name="attach-money" size="2xl"/>
+                    <Text color={textColor} fontSize="lg" bold>{additionalData?.numberOfExpenses} expenses </Text>
+                    <Text color={textColor} fontSize="lg" bold>{additionalData?.totalSpent} HUF</Text>
                 </HStack>
                 {/*
                 <Text fontSize="lg" bold>
@@ -177,11 +248,13 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
             */}
             </VStack>
         </ScrollView>
+
         <Center style={styles.fab}>
-            <Fab renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
-                 icon={<Icon color="white" as={MaterialIcons} name="add" size="4"/>}
+            <Fab bgColor={fabColor} renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
+                 icon={<Icon color={textColor} as={MaterialIcons} name="add" size="4"/>}
                  onPress={() => navigation.navigate('TransactionEditor', {group: group})}/>
         </Center>;
+        <Toast/>
     </Box>;
 }
 
@@ -199,11 +272,8 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         width: 50,
         height: 50,
-    }, title: {
-        fontSize: 18, color: "#fff", fontWeight: "bold",
-    }, heading: {
-        marginTop: 10, fontSize: 18,
     }, fab: {
-        left: '50%', marginBottom: 10,
+        left: '40%',
+        marginBottom: 10,
     },
 });

@@ -4,8 +4,9 @@ import {Box, Pressable, useColorModeValue} from "native-base";
 import {TabView} from 'react-native-tab-view'; // Import TabView from the appropriate library
 import HomeService from "./home.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {TabPageComponent} from "./tab-page.component";
-import EmptyTabPageComponent from "./empty-tab-page.component";
+import Toast from "react-native-toast-message";
+import EmptyTabPageComponent from "./tabs/empty-tab-page.component";
+import {TabPageComponent} from "./tabs/tab-page.component";
 
 // Define the type for props
 interface HomeComponentProps {
@@ -19,27 +20,53 @@ const HomeComponent = (props: HomeComponentProps) => {
     const [index, setIndex] = useState<number>(1);
     const [inputRange, setInputRange] = useState<number[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [tabBar, setTabBar] = useState<any>({});
 
     useEffect(() => {
+        setHomePage(undefined)
+        setScenes({});
+        setRoutes([]);
+        setIndex(1)
+        setInputRange([])
         AsyncStorage.getItem('email').then((email) => {
             HomeService.getHomepageByUserEmail(email!).then((response) => {
                 setHomePage(response.data);
                 updateRoutesAndScenes();
+                setTabBar(renderTabBar());
+            }).catch((error) => {
+                showErrorMessage(error);
             });
-            updateRoutesAndScenes();
         })
     }, []);
 
     const onRefresh = () => {
-        setRefreshing(true);
+        setHomePage(undefined)
+        setScenes({});
+        setRoutes([]);
+        setIndex(1)
+        setInputRange([])
         AsyncStorage.getItem('email').then((email) => {
             HomeService.getHomepageByUserEmail(email!).then((response) => {
                 setHomePage(response.data);
                 updateRoutesAndScenes();
+                setTabBar(renderTabBar());
+                setRefreshing(false);
+            }).catch((error) => {
+                showErrorMessage(error);
             });
-            updateRoutesAndScenes();
-            setRefreshing(false);
         })
+    }
+
+    const returnTabBar = (props: any) => {
+        return tabBar;
+    }
+
+    const showErrorMessage = (error: string) => {
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: error,
+        });
     }
 
     const updateRoutesAndScenes = () => {
@@ -48,23 +75,23 @@ const HomeComponent = (props: HomeComponentProps) => {
 
         homePage?.groups?.forEach((group: any) => {
             if (group.id !== undefined && group.name !== undefined && group.joinLink !== undefined) {
+                if (newRoutes.map((route) => route.key).includes(group.id.toString())) return;
                 newRoutes.push({key: group.id.toString(), title: group.name});
                 newScenes[group.id] = <TabPageComponent group={group} navigation={props.navigation}/>;
             }
         });
-
         const inputRange = newRoutes.map((_, index) => index);
         setRoutes(newRoutes);
         setScenes(newScenes);
         setInputRange(inputRange);
     };
 
-    const renderTabBar = (props: any) => {
-        const color = index === i ? useColorModeValue('#000', '#e5e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
-        const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
-        if (props.navigationState.routes === undefined) return (<></>);
+    const renderTabBar = () => {
+        if (routes === undefined) return (<></>);
         return <Box flexDirection="row">
-            {props.navigationState.routes.map((route: any, i: number) => {
+            {routes.map((route: any, i: number) => {
+                const color = index === i ? useColorModeValue('#000', '#e5e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
+                const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
                 return <Pressable key={i}
                                   borderBottomWidth="3"
                                   borderColor={borderColor}
@@ -105,7 +132,7 @@ const HomeComponent = (props: HomeComponentProps) => {
                     <TabView
                         {...props}
                         navigationState={{index, routes}}
-                        renderTabBar={renderTabBar}
+                        renderTabBar={returnTabBar}
                         renderScene={({route}: any) => {
                             return scenes[route.key];
                         }}
@@ -116,6 +143,7 @@ const HomeComponent = (props: HomeComponentProps) => {
                         }}
                     />
                 </Box>
+                <Toast/>
             </ScrollView>);
     }
 }

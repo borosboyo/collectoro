@@ -1,21 +1,29 @@
 import * as React from "react";
 import {Box, Center, FormControl, Heading, HStack, Image, useColorModeValue, VStack} from "native-base";
 import {RegisterNavigationProps} from "./register-navigation.props";
-import registerService from "./register.service";
 import {Platform, TextInput, View} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import GradientButtonComponent from "../../shared/components/gradient-button.component";
 import {styles} from "../../shared/components/styles";
+import Toast from "react-native-toast-message";
+import {ErrorMessageComponent} from "../../shared/components/error-message.component";
+import registerService from "./register.service";
+import {DynamicBackButtonComponent} from "../../shared/components/dynamic-back-button.component";
 
 export default function RegisterComponent({navigation}: RegisterNavigationProps) {
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [confirmPassword, setConfirmPassword] = React.useState("");
-    const [firstName, setFirstName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);
-    const [errors, setErrors] = React.useState({});
-
+    const [formData, setData] = React.useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+    const [firstNameError, setFirstNameError] = React.useState("");
+    const [lastNameError, setLastNameError] = React.useState("");
+    const [emailError, setEmailError] = React.useState("");
+    const [passwordError, setPasswordError] = React.useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = React.useState("");
     const textColor = useColorModeValue("white", "black");
     const bgColor = useColorModeValue("black", "coolGray.100");
     const subtitleColor = useColorModeValue("#ffffff", "#c9c9c9");
@@ -25,109 +33,108 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
         setShowPassword(!showPassword);
     };
 
+    function resetValidators() {
+        setFirstNameError("");
+        setLastNameError("");
+        setEmailError("");
+        setPasswordError("");
+        setConfirmPasswordError("");
+    }
+
     const validate = () => {
+        resetValidators();
         validateEmail();
         validatePassword();
         validateConfirmPassword();
         validateFirstName();
         validateLastName();
-        return Object.keys(errors).length === 0;
+        return !checkErrors();
     };
+
+    const checkErrors = () => {
+        return firstNameError !== "" || lastNameError !== "" || emailError !== "" || passwordError !== "" || confirmPasswordError !== "";
+    }
 
     const validateEmail = () => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regex.test(email)) {
-            setErrors({
-                ...errors,
-                email: 'Email is invalid'
-            });
+        if (!regex.test(formData.email)) {
+            setEmailError('Email is not valid');
         }
-        if (email === "") {
-            setErrors({
-                ...errors,
-                email: 'Email is required'
-            });
+        if (formData.email === "") {
+            setEmailError('Email is required');
         }
     };
 
     const validatePassword = () => {
-        console.log(password)
-        if (password.length < 6) {
-            setErrors({
-                ...errors,
-                password: 'Password must be at least 6 characters'
-            });
+        if (formData.password.length < 6) {
+            setPasswordError('Password must be at least 6 characters')
         }
-        if (password === "") {
-            setErrors({
-                ...errors,
-                password: 'Password is required'
-            });
+        if (formData.password === "") {
+            setPasswordError('Password is required')
         }
     };
 
     const validateConfirmPassword = () => {
-        if (confirmPassword !== password) {
-            setErrors({
-                ...errors,
-                confirmPassword: 'Passwords must match'
-            });
+        if (formData.confirmPassword !== formData.password) {
+            setConfirmPasswordError('Passwords do not match')
         }
-        if (confirmPassword === "") {
-            setErrors({
-                ...errors,
-                confirmPassword: 'Confirm password is required'
-            });
+        if (formData.confirmPassword === "") {
+            setConfirmPasswordError('Confirm password is required')
         }
     };
 
     const validateFirstName = () => {
-        if (firstName === "") {
-            setErrors({
-                ...errors,
-                firstName: 'First name is required'
-            });
+        if (formData.firstName === "") {
+            setFirstNameError('First name is required')
         }
-        if (firstName.length < 3) {
-            setErrors({
-                ...errors,
-                firstName: 'First name must be at least 3 characters'
-            });
+        if (formData.firstName.length < 3) {
+            setFirstNameError('First name must be at least 3 characters')
         }
     };
 
     const validateLastName = () => {
-        if (lastName === "") {
-            setErrors({
-                ...errors,
-                lastName: 'Last name is required'
-            });
+        if (formData.lastName === "") {
+            setLastNameError('Last name is required')
         }
-        if (lastName.length < 3) {
-            setErrors({
-                ...errors,
-                lastName: 'Last name must be at least 3 characters'
-            });
+        if (formData.lastName.length < 3) {
+            setLastNameError('Last name must be at least 3 characters')
         }
     };
 
     const onSubmit = () => {
-        console.log('valami')
-        console.log(errors)
         validate() ?
-            console.log('Submitted')
-            : console.log('Validation Failed');
+            showSuccess()
+            : showError();
     };
 
-
-    const submitRegister = () => {
-        registerService.register(email, password, firstName, lastName)
-            .then(() => {
+    const showSuccess = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Register',
+            text2: 'Succesful registration! 🥳'
+        });
+        registerService.register(formData.email, formData.password, formData.firstName, formData.lastName).then(
+            () => {
                 navigation.navigate("EnableAccount");
-            })
-            .catch(error => {
-                console.log(error);
-            });
+            }
+        ).catch(error => {
+                Toast.show(
+                    {
+                        type: 'error',
+                        text1: 'Error',
+                        text2: error.message
+                    }
+                )
+            }
+        )
+    }
+
+    const showError = () => {
+        Toast.show({
+            type: 'error',
+            text1: 'Register',
+            text2: 'Registration failed! 😢'
+        });
     }
 
     return (<Center w="100%" h="100%" bgColor={bgColor}>
@@ -143,38 +150,43 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
             <View style={styles.textInputContainer}>
 
             </View>
-            <VStack space={3} mt="5">
-                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+            <VStack mt="5">
+                <FormControl isRequired isInvalid={firstNameError !== ''} backgroundColor={inputBackgroundColor}
+                             style={styles.textInputContainer}>
                     <TextInput color={textColor} style={styles.textInput} placeholder={"First name"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
-                                   setFirstName(newText);
+                                   setData({...formData, firstName: newText});
                                }}/>
-                    {'firstName' in errors ?
-                        <FormControl.ErrorMessage>{errors.firstName}</FormControl.ErrorMessage> : <></>}
                 </FormControl>
-                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                {<ErrorMessageComponent condition={firstNameError !== ''}
+                                        text={firstNameError}></ErrorMessageComponent>}
+                <FormControl isRequired isInvalid={lastNameError !== ''} backgroundColor={inputBackgroundColor}
+                             style={styles.textInputContainer}>
                     <TextInput color={textColor} style={styles.textInput} placeholder={"Last name"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
-                                   setLastName(newText);
+                                   setData({...formData, lastName: newText});
                                }}/>
-                    {'lastName' in errors ?
-                        <FormControl.ErrorMessage>{errors.lastName}</FormControl.ErrorMessage> : <></>}
                 </FormControl>
-                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                {<ErrorMessageComponent condition={lastNameError !== ''}
+                                        text={lastNameError}></ErrorMessageComponent>}
+                <FormControl isRequired isInvalid={emailError !== ''} backgroundColor={inputBackgroundColor}
+                             style={styles.textInputContainer}>
                     <TextInput color={textColor} style={styles.textInput} placeholder={"Email"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
-                                   setEmail(newText);
+                                   setData({...formData, email: newText});
                                }}/>
-                    {'email' in errors ? <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage> : <></>}
                 </FormControl>
-                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                {<ErrorMessageComponent condition={emailError !== ''}
+                                        text={emailError}></ErrorMessageComponent>}
+                <FormControl isRequired isInvalid={passwordError !== ''} backgroundColor={inputBackgroundColor}
+                             style={styles.textInputContainer}>
                     <TextInput
                         secureTextEntry={!showPassword}
                         onChangeText={newPassword => {
-                            setPassword(newPassword);
+                            setData({...formData, password: newPassword});
                         }}
                         style={styles.textInput}
                         placeholder="Password"
@@ -187,14 +199,15 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                         style={styles.passwordIcon}
                         onPress={toggleShowPassword}
                     />
-                    {'password' in errors ?
-                        <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage> : <></>}
                 </FormControl>
-                <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
+                {<ErrorMessageComponent condition={passwordError !== ''}
+                                        text={passwordError}></ErrorMessageComponent>}
+                <FormControl isRequired isInvalid={confirmPasswordError !== ''} backgroundColor={inputBackgroundColor}
+                             style={styles.textInputContainer}>
                     <TextInput
                         secureTextEntry={!showPassword}
                         onChangeText={newPassword => {
-                            setConfirmPassword(newPassword);
+                            setData({...formData, confirmPassword: newPassword})
                         }}
                         style={styles.textInput}
                         placeholder="Confirm Password"
@@ -207,23 +220,16 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                         style={styles.passwordIcon}
                         onPress={toggleShowPassword}
                     />
-                    {'confirmPassword' in errors ?
-                        <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage> : <></>}
                 </FormControl>
+                {<ErrorMessageComponent condition={confirmPasswordError !== ''}
+                                        text={confirmPasswordError}></ErrorMessageComponent>}
                 <GradientButtonComponent mt="2"
                                          onPress={onSubmit}
                                          text={"Submit"}>
                 </GradientButtonComponent>
-                {
-                    Platform.OS === "web" ?
-                        <GradientButtonComponent text={"Back"} mt="2"
-                                                 onPress={() => {
-                                                     navigation.goBack();
-                                                 }}>
-                        </GradientButtonComponent> :
-                        <></>
-                }
+                <DynamicBackButtonComponent/>
             </VStack>
         </Box>
+        <Toast/>
     </Center>);
 }
