@@ -1,3 +1,5 @@
 package hu.bme.aut.collectoro.core.user.dto
 
-class DeleteUserByIdResp
+data class DeleteUserByEmailResp (
+    val email: String
+)
