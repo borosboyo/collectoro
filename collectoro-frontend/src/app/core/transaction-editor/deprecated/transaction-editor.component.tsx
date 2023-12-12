@@ -6,7 +6,7 @@ import {Box, Button, ChevronLeftIcon, ChevronRightIcon, Divider, HStack, VStack}
 import {Pressable, Text} from "native-base";
 import {TransactionEditorNavigationProps} from "./transaction-editor.props";
 import TransactionEditorService from "./transaction-editor.service";
-import {ProcessTransactionReqTypeEnum} from "../../../../swagger";
+import {ProcessTransactionReqTypeEnum, UserWithAmountTypeEnum} from "../../../../swagger/index";
 
 type TransactionEditorState = {};
 
@@ -101,7 +101,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                         <Text color="black" fontSize="md">{this.props.route.params.group.name}</Text>
                     </HStack>
                     <Text style={styles.label}>Purpose:</Text>
-                    <TextInput color={textColor} style={styles.textInput}
+                    <TextInput style={styles.textInput}
                                onChangeText={newText => this.purpose = newText} placeholder="Enter purpose"/>
 
                     <View style={styles.selectListContainer}>
@@ -117,7 +117,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput color={textColor} style={styles.textInput}
+                                            <TextInput style={styles.textInput}
                                                        onChangeText={newText => {
                                                            user.amount = parseFloat(newText);
                                                            this.mapWho();
@@ -136,7 +136,7 @@ export default class TransactionEditorComponent extends Component<TransactionEdi
                                     <HStack key={user.key}>
                                         <View>
                                             <Text style={styles.userLastName}>{user.value}</Text>
-                                            <TextInput color={textColor} style={styles.textInput}
+                                            <TextInput style={styles.textInput}
                                                        onChangeText={newText => {
                                                            user.amount = parseFloat(newText);
                                                            this.mapForWhom();
