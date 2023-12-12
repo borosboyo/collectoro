@@ -1,5 +1,5 @@
 package hu.bme.aut.collectoro.core.user.dto
 
 data class DownloadImageResp(
-    val image: ByteArray
+    val base64: String
 )

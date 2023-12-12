@@ -39,13 +39,15 @@ data class GroupEntity(
     @JsonManagedReference
     var groupRoles: MutableList<GroupRole> = mutableListOf(),
 
+    var color: String? = null
+
     ) : Serializable
 
 @Repository
 interface GroupRepository : JpaRepository<GroupEntity, Long> {
     fun findByUsers(user: UserEntity): List<GroupEntity>
 
-    fun findByJoinLink(joinLink: String): GroupEntity?
+    fun findByJoinLink(joinLink: String): Optional<GroupEntity>
     fun save(group: GroupEntity): GroupEntity
 
     @Query("SELECT g FROM GroupEntity g WHERE :user MEMBER OF g.users")

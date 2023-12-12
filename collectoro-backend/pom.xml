@@ -165,7 +165,11 @@
                         <apiSource>
                             <springmvc>false</springmvc>
                             <locations>
-                                <location>hu.bme.aut.collectoro.controller</location>
+                                <location>hu.bme.aut.collectoro.core.auth</location>
+                                <location>hu.bme.aut.collectoro.core.group</location>
+                                <location>hu.bme.aut.collectoro.core.user</location>
+                                <location>hu.bme.aut.collectoro.core.user.image</location>
+                                <location>hu.bme.aut.collectoro.core.transaction</location>
                             </locations>
                             <info>
                                 <title>REST API SPEC FOR COLLECTORO LIFE FRONTEND</title>

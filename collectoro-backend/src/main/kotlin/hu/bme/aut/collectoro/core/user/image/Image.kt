@@ -13,12 +13,12 @@ data class Image(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
 
+    @Column(unique = true)
     var name: String? = null,
 
     var type: String? = null,
 
-    @Lob
-    var imageData: ByteArray? = null,
+    var base64: String? = null,
 
     @OneToOne
     @JsonBackReference

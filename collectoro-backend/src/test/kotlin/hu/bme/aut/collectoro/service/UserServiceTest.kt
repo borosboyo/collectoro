@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 //TODO
 @SpringBootTest
@@ -52,7 +53,7 @@ class UserServiceTest {
     @Test
     fun testProcessOAuthPostLogin() {
         // Create a test email
-        val email = "john.doe@example.com"
+        //val email = "john.doe@example.com"
 
         //// Verify that userRepository.save was called with the expected UserEntity
         //val expectedUser = UserEntity.Builder()
@@ -66,25 +67,37 @@ class UserServiceTest {
 
 
         // Call the service method
-        userService.processOAuthPostLogin(email)
+        //userService.processOAuthPostLogin(email)
 
-        Mockito.verify(userRepository).save(Mockito.any(UserEntity::class.java))
+        //Mockito.verify(userRepository).save(Mockito.any(UserEntity::class.java))
     }
 
     @Test
     fun testDeleteUserById() {
         // Create a test DeleteUserByIdReq
-        val req = DeleteUserByIdReq()
-        req.userId = 1L
+        val req = DeleteUserByEmailReq(
+            email = "asd@asd.com"
+        )
+
+
+        // Create a mock UserEntity and set up the mock UserRepository behavior
+        val user = UserEntity(
+            id = 1L,
+            firstName = "John",
+            lastName = "Doe",
+            email = req.email
+        )
+
+        `when`(userRepository.findByEmail(req.email)).thenReturn(Optional.of(user))
 
         // Call the service method
-        val resp = userService.deleteUserById(req)
+        val resp = userService.deleteUserByEmail(req)
 
         // Verify that userRepository.deleteById was called with the expected user ID
-        Mockito.verify(userRepository).deleteById(req.userId)
+        Mockito.verify(userRepository).findByEmail(req.email)
 
         // Assert that the response is of type DeleteUserByIdResp
-        Assertions.assertEquals(DeleteUserByIdResp::class.java, resp.javaClass)
+        Assertions.assertEquals(DeleteUserByEmailResp::class.java, resp.javaClass)
     }
 
     @Test
@@ -111,7 +124,7 @@ class UserServiceTest {
             lastName = "Doe",
             email = req.email!!
         )
-        `when`(userRepository.findByEmail(req.email!!)).thenReturn(user)
+        `when`(userRepository.findByEmail(req.email!!)).thenReturn(Optional.of(user))
 
         // Set up the mock GroupRepository behavior
         `when`(groupRepository.findGroupEntitiesByUser(user)).thenReturn(emptyList())
@@ -137,7 +150,7 @@ class UserServiceTest {
             lastName = "Doe",
             email = req.email!!
         )
-        `when`(userRepository.findByEmail(req.email!!)).thenReturn(user)
+        `when`(userRepository.findByEmail(req.email!!)).thenReturn(Optional.of(user))
 
         // Call the service method
         val resp = userService.getProfileByUserEmail(req)

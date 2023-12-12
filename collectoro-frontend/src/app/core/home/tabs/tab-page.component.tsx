@@ -22,11 +22,15 @@ import {Debt, GroupEntity} from "../../../../../swagger";
 import {HomeNavigation} from "../home-navigation.props";
 import * as Clipboard from 'expo-clipboard';
 import Toast from "react-native-toast-message";
+import EditGroupModalComponent from "./edit-group-modal.component";
 
 export function TabPageComponent({group, navigation}: { group: GroupEntity | undefined, navigation: HomeNavigation }) {
     const textColor = useColorModeValue("white", "black");
     const bgColor = useColorModeValue("black", "white");
-    const fabColor = useColorModeValue("#6E1DCE", "#7DD6FF");
+    const fabColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const fabIconColor = useColorModeValue("black", "white");
+    const [editGroupModalVisible, setEditGroupModalVisible] = React.useState<boolean>(false);
+
 
     const [codeShown, setCodeShown] = React.useState<boolean>(false);
 
@@ -95,10 +99,30 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
         showCopyMessage();
     }
 
-    return <Box bgColor={bgColor} mt={50} flex={1}>
+    const closeModal = () => {
+        setEditGroupModalVisible(false)
+    }
+
+    return <Box bgColor={bgColor} flex={1} pt={10}>
+        <EditGroupModalComponent visible={editGroupModalVisible} closeModal={() => closeModal()} group={group!!}/>
         <ScrollView>
             <Center>
-                <Heading mt={5} fontSize={18} color={textColor}>{group?.name}</Heading>
+                <Pressable mt={5} onPress={() => {
+                    setEditGroupModalVisible(true)
+                }}>
+                    <HStack space={2} style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <Heading fontSize={18} color={group?.color}>{group?.name}</Heading>
+                        <MaterialCommunityIcons
+                            name={'pencil'}
+                            size={14}
+                            color={textColor}
+                        />
+                    </HStack>
+                </Pressable>
                 <Pressable onPress={copyToClipBoard}>
                     <HStack space={2} style={{
                         flexDirection: 'row',
@@ -173,7 +197,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 {group?.transactions?.map((transaction) => {
                     return <Box key={transaction.id}>
                         <HStack alignItems="center" space="3" px="4" bgColor={bgColor}>
-                            <Avatar bg="gray.300">GG</Avatar>
+                            <Avatar bg="gray.300">X</Avatar>
                             <VStack>
                                 <Text fontSize="md" fontWeight="bold" color={textColor}>
                                     {transaction.purpose}
@@ -185,7 +209,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                                     <Text fontSize="xs">
                                         {transaction?.type}
                                     </Text>
-                                    <Avatar bg="gray.300" size='xs'>GG</Avatar>
+                                    <Avatar bg="gray.300" size='xs'>X</Avatar>
                                 </HStack>
                                 <Text>From {transaction.who?.map((who) => {
                                     return <Text>{who.lastName} </Text>
@@ -202,7 +226,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 {noDebts()}
                 {additionalData?.debtList.map((debt: Debt) => {
                     return <HStack ml={3} alignItems="center" space="1" px="4" bgColor={bgColor} key={debt.id}>
-                        <Avatar bg="gray.300">GG</Avatar>
+                        <Avatar bg="gray.300">X</Avatar>
                         <VStack>
                             <Text fontSize="md" fontWeight="bold" color="black">
                                 {debt.fromUserLastName}
@@ -217,7 +241,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                         <Text fontSize="md" fontWeight="bold" color="black">
                             {debt.toUserLastName}
                         </Text>
-                        <Avatar bg="gray.300">GG</Avatar>
+                        <Avatar bg="gray.300">X</Avatar>
                     </HStack>
                 })}
                 <Text color={textColor} fontSize="lg" bold>
@@ -251,8 +275,8 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
 
         <Center style={styles.fab}>
             <Fab bgColor={fabColor} renderInPortal={false} shadow={2} placement="bottom-left" size="sm"
-                 icon={<Icon color={textColor} as={MaterialIcons} name="add" size="4"/>}
-                 onPress={() => navigation.navigate('TransactionEditor', {group: group})}/>
+                 icon={<Icon color={fabIconColor} as={MaterialIcons} name="add" size="4"/>}
+                 onPress={() => navigation.navigate('EditWho', {group: group})}/>
         </Center>;
         <Toast/>
     </Box>;

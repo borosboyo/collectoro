@@ -1,9 +1,8 @@
 package hu.bme.aut.collectoro.core.transaction
 
 import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.core.group.GroupEntity
 import hu.bme.aut.collectoro.core.transaction.util.Currency
 import hu.bme.aut.collectoro.core.transaction.util.TransactionType
@@ -12,7 +11,7 @@ import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.io.Serializable
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Entity
 data class Transaction(
@@ -20,7 +19,9 @@ data class Transaction(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
     var purpose: String = "",
-    var date: LocalDateTime = LocalDateTime.now(),
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    var date: LocalDate = LocalDate.now(),
 
     @Enumerated(EnumType.STRING)
     var currency: Currency = Currency.HUF,

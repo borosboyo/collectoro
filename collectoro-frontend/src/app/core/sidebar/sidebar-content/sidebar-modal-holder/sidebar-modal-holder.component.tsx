@@ -12,7 +12,7 @@ export function SidebarModalHolderComponent(props: {
     isCreateGroupModalVisible: boolean,
     isJoinGroupModalVisible: boolean
     profile: GetProfileByUserEmailResp,
-    groups: Array<GroupEntity>
+    groups: Array<GroupEntity>,
 }) {
     return <>
         <ProfileModalComponent profile={props.profile} visible={props.isProfileModalVisible}

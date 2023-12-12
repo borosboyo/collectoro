@@ -153,7 +153,11 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
             <VStack mt="5">
                 <FormControl isRequired isInvalid={firstNameError !== ''} backgroundColor={inputBackgroundColor}
                              style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"First name"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"First name"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
                                    setData({...formData, firstName: newText});
@@ -163,7 +167,11 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                                         text={firstNameError}></ErrorMessageComponent>}
                 <FormControl isRequired isInvalid={lastNameError !== ''} backgroundColor={inputBackgroundColor}
                              style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Last name"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Last name"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
                                    setData({...formData, lastName: newText});
@@ -173,7 +181,11 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                                         text={lastNameError}></ErrorMessageComponent>}
                 <FormControl isRequired isInvalid={emailError !== ''} backgroundColor={inputBackgroundColor}
                              style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Email"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Email"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => {
                                    setData({...formData, email: newText});
@@ -188,7 +200,11 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                         onChangeText={newPassword => {
                             setData({...formData, password: newPassword});
                         }}
-                        style={styles.textInput}
+                        style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}}
                         placeholder="Password"
                         placeholderTextColor={subtitleColor}
                     />
@@ -209,7 +225,11 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
                         onChangeText={newPassword => {
                             setData({...formData, confirmPassword: newPassword})
                         }}
-                        style={styles.textInput}
+                        style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}}
                         placeholder="Confirm Password"
                         placeholderTextColor={subtitleColor}
                     />

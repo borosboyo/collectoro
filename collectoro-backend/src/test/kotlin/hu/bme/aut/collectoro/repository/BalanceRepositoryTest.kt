@@ -1,9 +1,7 @@
 package hu.bme.aut.collectoro.repository
 
 import hu.bme.aut.collectoro.RepositoryTestConfig
-import hu.bme.aut.collectoro.core.transaction.util.Balance
-import hu.bme.aut.collectoro.core.transaction.util.Wallet
-import hu.bme.aut.collectoro.core.transaction.util.Currency
+import hu.bme.aut.collectoro.core.transaction.util.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,13 +22,13 @@ class BalanceRepositoryTest {
 
     @Test
     fun testFindBalanceByGroupIdAndWallet() {
-        var wallet = Wallet(/* Initialize wallet properties */)
-        var balance = Balance.Builder()
-            .groupId(777L)
-            .currency(Currency.HUF)
-            .amount(200.0)
-            .wallet(wallet)
-            .build()
+        val wallet = Wallet(/* Initialize wallet properties */)
+        val balance = Balance(
+            groupId = 777L,
+            currency = Currency.HUF,
+            amount = 200.0,
+            wallet = wallet
+        )
         walletRepository.save(wallet)
         balanceRepository.save(balance)
 
@@ -40,13 +38,13 @@ class BalanceRepositoryTest {
 
     @Test
     fun testFindBalancesByGroupId() {
-        var wallet = Wallet(/* Initialize wallet properties */)
-        var balance = Balance.Builder()
-            .groupId(777L)
-            .currency(Currency.HUF)
-            .amount(200.0)
-            .wallet(wallet)
-            .build()
+        val wallet = Wallet(/* Initialize wallet properties */)
+        val balance = Balance(
+            groupId = 777L,
+            currency = Currency.HUF,
+            amount = 200.0,
+            wallet = wallet
+        )
         walletRepository.save(wallet)
         balanceRepository.save(balance)
         val foundBalances = balanceRepository.findBalancesByGroupId(groupId = 777L)

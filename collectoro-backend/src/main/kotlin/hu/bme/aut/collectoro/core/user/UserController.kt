@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.ws.rs.DELETE
 import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -52,6 +53,20 @@ class UserController(
         return userService.getHomepageByUserEmail(req)
     }
 
+    @PUT
+    @PutMapping("/deleteUserByEmail")
+    @Path("/deleteUserByEmail")
+    @Produces("application/json")
+    @ApiOperation(value = "deleteUserByEmail", response = DeleteUserByEmailResp::class)
+    fun deleteUserByEmail(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "DeleteUserByEmailReq"
+        ) req: DeleteUserByEmailReq
+    ): DeleteUserByEmailResp {
+        return userService.deleteUserByEmail(req)
+    }
+
 
     @PUT
     @PutMapping("/getProfileByUserEmail")
@@ -82,5 +97,17 @@ class UserController(
         return userService.getUsersByIds(req)
     }
 
-
+    @PUT
+    @PutMapping("/editUserName")
+    @Path("/editUserName")
+    @Produces("application/json")
+    @ApiOperation(value = "editUserName", response = EditUserNameResp::class)
+    fun editUserName(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "EditUserNameReq"
+        ) req: EditUserNameReq
+    ): EditUserNameResp {
+        return userService.editUserName(req)
+    }
 }

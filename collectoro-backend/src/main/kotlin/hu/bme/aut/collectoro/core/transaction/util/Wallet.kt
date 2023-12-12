@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 import java.io.Serializable
 
 @Entity
-data class Wallet(
+class Wallet(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
@@ -22,7 +22,22 @@ data class Wallet(
     @JsonBackReference
     var userEntity: UserEntity? = null
 
-) : Serializable
+) : Serializable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Wallet
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}
 
 @Repository
 interface WalletRepository : JpaRepository<Wallet, Long>

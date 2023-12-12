@@ -1,133 +1,205 @@
-import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, Text, TextInput} from 'react-native';
 import {
     Avatar,
     Box,
     Button,
-    Center,
     FormControl,
     Heading,
     HStack,
     Icon,
     Pressable,
     Select,
+    useColorModeValue,
     View,
     VStack
 } from "native-base";
 import GradientButtonComponent from "../../shared/components/gradient-button.component";
 import {MaterialIcons} from "@expo/vector-icons";
-export default function EditWhoMultipleMembersComponent() {
+import DiscardTransactionModalComponent from "./discard-transaction-modal.component";
+import {ProcessTransactionReqTypeEnum, UserEntity} from "../../../../swagger/index";
+
+interface EditWhoMultipleMembersComponentProps {
+    navigation: any,
+    route: any,
+}
+
+export default function EditWhoMultipleMembersComponent(props: EditWhoMultipleMembersComponentProps) {
+    const [discardTransactionModalVisible, setDiscardTransactionModalVisible] = useState(false);
+    const [who, setWho] = useState<any[]>([]);
+    const [transactionType, setTransactionType] = useState('EXPENSE');
+    const textColor = useColorModeValue("black", "white");
+    const headerTextColor = useColorModeValue("black", "white");
+    const bgColor = useColorModeValue("black", "white");
+    const mainColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const checkBoxColor = useColorModeValue('lightBlue.300', 'purple.800');
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
+
+    useEffect(() => {
+        setWho(props.route.params.group.users.map((user: UserEntity) => {
+            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user.image.base64}
+        }))
+    }, []);
+
+    const closeModal = () => {
+        setDiscardTransactionModalVisible(false)
+    }
+
+    const discardTransaction = () => {
+        setDiscardTransactionModalVisible(false)
+        props.navigation.goBack()
+    }
+
+    const connectUsersToSelect = () => {
+        return props.route.params?.group?.users?.map((user: UserEntity) => {
+            return <Select.Item key={user.id!!} label={user?.lastName!!} value={user.id!!.toString()}/>
+        })
+    }
+
+    const setCheckUserEmail = (itemValue: string) => {
+        if (itemValue !== 'multipleMembers') {
+            props.navigation.navigate('EditWho', {group: props.route.params.group})
+        }
+    }
+    const renderWho = () => {
+        return who.map((user) => {
+            return (
+                <Box key={user.key} pt={2} pb={2}
+                     backgroundColor={mainColor} w="100%">
+                    <Pressable style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Avatar mb="3" mt="2" bg={bgColor} size="2xl" source={{uri: `data:image/png;base64,${user.base64}`}}>GG</Avatar>
+                        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+                            <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
+                                {user?.value}
+                            </Text>
+                            <View style={{flex: 1, flexDirection: 'row', marginRight: 70,}} alignItems={'center'}
+                                  justifyContent={'space-between'}>
+                                <FormControl style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'flex-end',
+                                    justifyContent: 'flex-end',
+                                    borderRadius: 8,
+                                    paddingHorizontal: 8,
+                                }}>
+                                    <TextInput style={{
+                                        color: textColor,
+                                        width: 80,
+                                        textAlign: 'right',
+                                        fontWeight: 'bold',
+                                        fontSize: 16,
+                                    }} placeholder={"0"} editable={user?.selected} placeholderTextColor={textColor}
+                                               keyboardType={"numeric"}
+                                               onChangeText={newText => {
+                                                   user.amount = newText
+                                                   setWho(who)
+                                               }}/>
+                                </FormControl>
+                                <Text style={{marginRight: 5, fontSize: 16, fontWeight: 'bold', color: textColor}}>
+                                    HUF
+                                </Text>
+                            </View>
+                        </View>
+                    </Pressable>
+                </Box>
+            )
+        })
+    }
+
     return (
         <SafeAreaView style={styles.safeAreaView}>
+            <DiscardTransactionModalComponent visible={discardTransactionModalVisible} keep={() => closeModal()}
+                                              discard={() => discardTransaction()}/>
             <ScrollView>
-                <Box backgroundColor={"#6E1DCE"} _dark={{
-                    color: "warmGray.50"
-                }} w="100%">
+                <Box backgroundColor={mainColor} w="100%">
                     <HStack mt={3} mb={3} alignItems="center" space="20">
-                        <Button backgroundColor={"transparent"} style={{marginLeft: 10}}><Icon color="white"
-                                                                                               as={MaterialIcons}
-                                                                                               name="close"
-                                                                                               size="md"/></Button>
-                        <Heading ml={6} alignItems={"center"} justifyContent={"center"} backgroundColor={"transparent"} color={"white"} fontSize={18}>
-                            Who paid
-                        </Heading>
+                        <Button onPress={() => {
+                            setDiscardTransactionModalVisible(true)
+                        }} backgroundColor={"transparent"} style={{marginLeft: 10}}><Icon color={textColor}
+                                                                                          as={MaterialIcons}
+                                                                                          name="close"
+                                                                                          size="md"/></Button>
+                        <View alignItems={"center"} justifyContent={"center"} backgroundColor={"transparent"}
+                              color={textColor}>
+                            <FormControl backgroundColor={"transparent"} color={"transparent"} isRequired>
+                                <Select
+                                    minWidth="150"
+                                    placeholder={"Expense"}
+                                    color={headerTextColor}
+                                    isFocusVisible={false}
+                                    variant={"unstyled"}
+                                    textAlign={"center"}
+                                    fontSize={"lg"}
+                                    onValueChange={(itemValue) => {
+                                        setTransactionType(itemValue)
+                                    }}
+                                    fontWeight={"bold"}
+                                    placeholderTextColor={headerTextColor}
+                                    dropdownIcon={<Icon color={headerTextColor} as={MaterialIcons} name="expand-more"
+                                                        size="md"/>}
+                                    mt="1"
+                                >
+                                    <Select.Item label="Expense" value={ProcessTransactionReqTypeEnum.EXPENSE}/>
+                                    <Select.Item label="Income" value={ProcessTransactionReqTypeEnum.INCOME}/>
+                                    <Select.Item label="Transfer" value={ProcessTransactionReqTypeEnum.TRANSFER}/>
+                                </Select>
+                            </FormControl>
+                        </View>
                     </HStack>
-                    <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                             <FormControl backgroundColor={"transparent"} color={"transparent"} maxW={"70%"} isRequired>
                                 <Select
                                     minWidth="150"
                                     maxW={"70%"}
                                     placeholder={"Multiple members"}
-                                    color={"white"}
+                                    color={textColor}
                                     isFocusVisible={false}
                                     variant={"unstyled"}
                                     textAlign={"left"}
                                     fontSize={"lg"}
                                     fontWeight={"bold"}
-                                    placeholderTextColor={"white"}
-                                    dropdownIcon={<Icon color="white" as={MaterialIcons} name="expand-more" size="md"/>}
+                                    onValueChange={(itemValue) => {
+                                        setCheckUserEmail(itemValue);
+                                    }}
+                                    placeholderTextColor={textColor}
+                                    dropdownIcon={<Icon color={textColor} as={MaterialIcons} name="expand-more"
+                                                        size="md"/>}
                                     mt="1"
                                 >
-                                    <Select.Item label="Gergő paid" value="expense"/>
-                                    <Select.Item label="Pista paid" value="income"/>
-                                    <Select.Item label="Józse paid" value="transfer"/>
-                                    <Select.Item label="Multiple members" value="multiple"/>
+                                    {connectUsersToSelect()}
+                                    <Select.Item label={"Multiple members"} value={'multipleMembers'}/>
                                 </Select>
                             </FormControl>
                             <View mr={5} alignSelf={"center"}>
-                                <Text style={{fontSize: 16, fontWeight: 'bold', color: 'white' }}>100101 HUF</Text>
+                                <Text style={{
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                    color: 'white'
+                                }}>{props.route?.params.value} HUF</Text>
                             </View>
                         </View>
                     </View>
                 </Box>
                 <VStack>
-                    <Heading style={styles.heading}>Who paid</Heading>
-                    <Box pt={2} pb={2}
-                         backgroundColor={"coolGray.600"} _dark={{
-                        color: "warmGray.50"
-                    }} w="100%">
-                        <Pressable style={{ flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar style={{marginLeft: 5, marginRight: 8}}>GG</Avatar>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>
-                                    FirstName
-                                </Text>
-                                <View mr={15}>
-                                    <FormControl>
-                                        <TextInput textAlign={"center"} color={"white"} placeholder={"123123 HUF"} placeholderTextColor="white"
-                                                   onChangeText={newText => console.log(newText)}/>
-                                    </FormControl>
-                                </View>
-                            </View>
-                        </Pressable>
-                    </Box>
-                    <Box pt={2} pb={2}
-                         backgroundColor={"coolGray.600"} _dark={{
-                        color: "warmGray.50"
-                    }} w="100%">
-                        <Pressable style={{ flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar style={{marginLeft: 5, marginRight: 8}}>GG</Avatar>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>
-                                    FirstName
-                                </Text>
-                                <View mr={15}>
-                                    <FormControl>
-                                        <TextInput textAlign={"center"} color={"white"} placeholder={"123123 HUF"} placeholderTextColor="white"
-                                                   onChangeText={newText => console.log(newText)}/>
-                                    </FormControl>
-                                </View>
-                            </View>
-                        </Pressable>
-                    </Box>
-                    <Box pt={2} pb={2}
-                         backgroundColor={"coolGray.600"} _dark={{
-                        color: "warmGray.50"
-                    }} w="100%">
-                        <Pressable style={{ flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar style={{marginLeft: 5, marginRight: 8}}>GG</Avatar>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text  style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>
-                                    FirstName
-                                </Text>
-                                <View mr={15}>
-                                    <FormControl>
-                                        <TextInput textAlign={"center"} color={"white"} placeholder={"123123 HUF"} placeholderTextColor="white"
-                                                   onChangeText={newText => console.log(newText)}/>
-                                    </FormControl>
-                                </View>
-
-                            </View>
-                        </Pressable>
-                    </Box>
+                    <Heading style={{
+                        fontSize: 16,
+                        marginLeft: 10,
+                        marginTop: 6,
+                        fontWeight: "bold",
+                        color: mainColor
+                    }}>Who paid</Heading>
+                    {renderWho()}
                 </VStack>
             </ScrollView>
-            <Box w="100%" backgroundColor="coolGray.600" _dark={{
-                color: "warmGray.50"
-            }}>
+            <Box w="100%" backgroundColor={mainColor}>
                 <View mb={2} mt={2} ml={"10%"} mr={"10%"} w="80%">
-                    <GradientButtonComponent elevation={5} text={"Continue"}></GradientButtonComponent>
+                    <GradientButtonComponent elevation={5} text={"Continue"} onPress={() => {
+                        props.navigation.navigate('TransactionSave', {
+                            who: who,
+                            type: transactionType,
+                            group: props.route.params?.group!!
+                        })
+                    }}></GradientButtonComponent>
                 </View>
             </Box>
         </SafeAreaView>
@@ -136,9 +208,10 @@ export default function EditWhoMultipleMembersComponent() {
 
 const styles = StyleSheet.create({
     safeAreaView: {
-        flexDirection: 'column', // inner items will be added vertically
-        flexGrow: 1,            // all the available vertical space will be occupied by it
-        justifyContent: 'space-between' // will create the gutter between body and footer
+        flexDirection: 'column',
+        flexGrow: 1,
+        justifyContent: 'space-between',
+        marginTop: 45,
     },
     container: {
         flex: 1,

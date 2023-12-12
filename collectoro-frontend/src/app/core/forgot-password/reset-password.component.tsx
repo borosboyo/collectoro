@@ -46,7 +46,11 @@ export default function ResetPasswordComponent({navigation}: ResetPasswordNaviga
             </HStack>
             <VStack ml={3} space={3} justifyContent={"center"} maxW="290">
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Email"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Email"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setEmail(newText)}/>
                 </FormControl>

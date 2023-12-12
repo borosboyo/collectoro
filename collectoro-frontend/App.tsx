@@ -11,11 +11,13 @@ import SaveForgotPasswordComponent from "./src/app/core/save-forgotten-password/
 import HomeComponent from "./src/app/core/home/home.component";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import SidebarComponent from "./src/app/core/sidebar/sidebar.component";
-import TransactionEditorComponent from "./src/app/core/transaction-editor/transaction-editor.component";
 import EnableAccountComponent from "./src/app/core/register/enable-account/enable-account.component";
 import {RootStackParamList} from "./src/app/shared/config/root-stack-param-list";
 import LoginComponent from "./src/app/core/login/login.component";
 import {AppContext} from "./src/app/shared/components/appcontext";
+import EditWhoComponent from "./src/app/core/transaction-editor/edit-who.component";
+import EditWhoMultipleMembersComponent from "./src/app/core/transaction-editor/edit-who-multiple-members.component";
+import TransactionSaveComponent from "./src/app/core/transaction-editor/transaction-save.component";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -78,10 +80,13 @@ export default ({children, theme}: any) => {
             },
             drawerPosition: "left",
             swipeEnabled: isLoggedIn,
+            unmountOnBlur: true,
         }}
                           drawerContent={(props) => <SidebarComponent {...props}/>}>
-            <Drawer.Screen name={"HomeComponent"} component={HomeComponent} options={{headerShown: false}}/>
-            <Drawer.Screen name={"TransactionEditor"} component={TransactionEditorComponent}/>
+            <Drawer.Screen name={"Home"} component={HomeComponent} options={{headerShown: false}}/>
+            <Drawer.Screen name={"EditWho"} component={EditWhoComponent} options={{headerShown: false}}/>
+            <Drawer.Screen name={"EditWhoMultipleMembers"} component={EditWhoMultipleMembersComponent} options={{headerShown: false}}/>
+            <Drawer.Screen name={"TransactionSave"} component={TransactionSaveComponent} options={{headerShown: false}}/>
         </Drawer.Navigator>
     );
 

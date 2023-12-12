@@ -15,6 +15,8 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Entity
@@ -55,7 +57,7 @@ data class UserEntity(
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JsonManagedReference
-    var avatar: Image? = null
+    var image: Image? = null
 
 ) : UserDetails {
 
@@ -100,9 +102,11 @@ data class UserEntity(
 
 @Repository
 interface UserRepository : JpaRepository<UserEntity, Long> {
-    fun findByEmail(email: String): UserEntity
+    fun findByEmail(email: String): Optional<UserEntity>
     fun findByEmailAndProvider(email: String, provider: Provider): UserEntity?
 
     //find users list based on array of ids
     fun findByIdIn(ids: List<Long>): List<UserEntity>
+
+    fun deleteByEmail(email: String)
 }

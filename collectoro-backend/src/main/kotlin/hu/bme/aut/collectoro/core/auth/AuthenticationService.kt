@@ -72,7 +72,7 @@ class AuthenticationService(
     @Transactional
     fun authenticate(request: AuthenticationReq): AuthenticationResp? {
         println(request.email.trim())
-        if (!userRepository.findByEmail(request.email.trim()).isEnabled) {
+        if (!userRepository.findByEmail(request.email.trim()).get().isEnabled) {
             throw Exception("User is not enabled")
         } else {
             try {
@@ -169,7 +169,7 @@ class AuthenticationService(
 
     @Transactional
     fun resetPassword(req: ResetPasswordReq): ResetPasswordResp {
-        val user: UserEntity = userRepository.findByEmail(req.email)
+        val user: UserEntity = userRepository.findByEmail(req.email).get()
         val resetPasswordToken: String = jwtService.generateToken(user)
         saveUserToken(user, resetPasswordToken, TokenType.RESET_PASSWORD)
 
@@ -198,7 +198,7 @@ class AuthenticationService(
     fun updatePassword(req: UpdatePasswordReq): UpdatePasswordResp {
         val user: UserEntity =
             (SecurityContextHolder.getContext().authentication.principal as UserEntity).getEmail().let {
-                userRepository.findByEmail(it)
+                userRepository.findByEmail(it).get()
             }
 
         if (user != null && passwordEncoder.matches(req.oldPassword, user.password)) {

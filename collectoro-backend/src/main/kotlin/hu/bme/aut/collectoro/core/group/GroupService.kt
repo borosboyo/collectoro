@@ -35,11 +35,12 @@ class GroupService(
 
     @Transactional
     fun createGroup(req: CreateGroupReq): CreateGroupResp {
-        val user = userRepository.findByEmail(req.userEmail)
+        val user = userRepository.findByEmail(req.userEmail).get()
         val group = groupRepository.save(
             GroupEntity(
                 name = req.name,
-                users = mutableListOf(user)
+                users = mutableListOf(user),
+                color = req.selectedColorName
             )
         )
         val groupRole = groupRoleRepository.save(
@@ -66,12 +67,20 @@ class GroupService(
         return CreateGroupResp(savedGroup)
     }
 
-    //TODO controller
     @Transactional
     fun editGroup(req: EditGroupReq): EditGroupResp {
         val group = groupRepository.findById(req.group.id).get()
         mapGroup(group, req.group)
         return EditGroupResp(
+            group = groupRepository.save(group)
+        )
+    }
+
+    @Transactional
+    fun toggleGroupArchive(req: ToggleGroupArchiveReq): ToggleGroupArchiveResp {
+        val group = groupRepository.findById(req.groupId).get()
+        group.archived = !group.archived
+        return ToggleGroupArchiveResp(
             group = groupRepository.save(group)
         )
     }
@@ -85,8 +94,8 @@ class GroupService(
 
     @Transactional
     fun joinGroup(req: JoinGroupReq): JoinGroupResp {
-        val group = groupRepository.findByJoinLink(req.joinLink)
-        val user = userRepository.findByEmail(req.userEmail)
+        val group = groupRepository.findByJoinLink(req.joinLink).get()
+        val user = userRepository.findByEmail(req.userEmail).get()
         if (group != null) {
             val groupRole = groupRoleRepository.save(
                 GroupRole(
@@ -117,13 +126,27 @@ class GroupService(
     @Transactional
     fun leaveGroup(req: LeaveGroupReq): LeaveGroupResp {
         val group = groupRepository.findById(req.groupId).get()
-        val user = userRepository.findByEmail(req.userEmail)
+        val user = userRepository.findByEmail(req.userEmail).get()
         //Todo grouproles
         group.users.remove(user)
         groupRepository.save(group)
         user.groups.remove(group)
         userRepository.save(user)
         return LeaveGroupResp()
+    }
+
+    @Transactional
+    fun kickUserFromGroup(req: KickUserFromGroupReq): KickUserFromGroupResp {
+        val group = groupRepository.findById(req.groupId).get()
+        val user = userRepository.findById(req.userId).get()
+        //Todo grouproles
+        group.users.remove(user)
+        val savedGroup = groupRepository.save(group)
+        user.groups.remove(group)
+        userRepository.save(user)
+        return KickUserFromGroupResp(
+            group = savedGroup
+        )
     }
 
     @Transactional
@@ -145,6 +168,7 @@ class GroupService(
         group.name = req.name
         group.users = req.users
         group.archived = req.archived
+        group.color = req.color
         group.groupRoles = req.groupRoles
         groupRepository.save(group)
     }

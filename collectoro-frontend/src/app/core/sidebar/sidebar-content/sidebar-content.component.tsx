@@ -7,10 +7,12 @@ import SideBarButtonsSection from "./sidebar-sections/sidebar-buttons-section";
 import SidebarService from "../sidebar.service";
 import {styles} from "../../../shared/components/styles";
 import {SidebarNavigation} from "../sidebar-navigation.props";
-import {GetProfileByUserEmailResp} from "../../../../../swagger";
+import {GetHomepageByUserEmailResp, GetProfileByUserEmailResp} from "../../../../../swagger";
 import {AppContext} from "../../../shared/components/appcontext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeService from "../../home/home.service";
+import sidebarService from "../sidebar.service";
+import {useIsFocused} from "@react-navigation/native";
 
 type SidebarContentComponentProps = DrawerContentComponentProps & {
     navigation: SidebarNavigation;
@@ -44,8 +46,13 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
     }
 
     const openMyGroups = () => {
-        props.navigation.toggleDrawer()
-        setIsMyGroupsModalVisible(true)
+        AsyncStorage.getItem('email').then((email) => {
+            HomeService.getHomepageByUserEmail(email!).then((response) => {
+                setHomePage(response.data);
+                props.navigation.toggleDrawer()
+                setIsMyGroupsModalVisible(true)
+            });
+        })
     }
 
     const openJoinGroup = () => {
@@ -92,8 +99,9 @@ export default function SidebarContentComponent(props: SidebarContentComponentPr
                         <Pressable style={styles.sideBarPressable}
                                    onPress={() => {
                                        SidebarService.logout().then(() => {
-                                           AsyncStorage.removeItem("token")
-                                           setIsLoggedIn(false)
+                                           AsyncStorage.removeItem("token").then(() => {
+                                               setIsLoggedIn(false)
+                                           })
                                        });
                                    }}
                         >

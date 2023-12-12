@@ -31,7 +31,11 @@ export default function EnableAccountComponent({navigation}: EnableAccountNaviga
             </HStack>
             <VStack space={3} mt="5">
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Token"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Token"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setEnableToken(newText)}/>
                 </FormControl>

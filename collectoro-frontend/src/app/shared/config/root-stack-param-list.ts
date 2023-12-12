@@ -1,4 +1,4 @@
-import {GroupEntity} from "../../../../swagger";
+import {GroupEntity} from "../../../../swagger/index";
 
 export type RootStackParamList = {
     Home: undefined,
@@ -11,6 +11,6 @@ export type RootStackParamList = {
     EnableAccount: undefined,
     Calculator: undefined,
     TransactionSave: undefined,
-    EditWho: undefined,
-    EditWhoMultipleMember: undefined,
+    EditWho: { group: GroupEntity | undefined },
+    EditWhoMultipleMember: { group: GroupEntity | undefined },
 };

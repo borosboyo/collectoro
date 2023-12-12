@@ -27,17 +27,29 @@ export default function SaveForgotPasswordComponent({navigation}: SaveForgotPass
             </HStack>
             <VStack space={3} mt="5">
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Token"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Token"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setVerificationCode(newText)}/>
                 </FormControl>
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Password"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Password"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPassword(newText)}/>
                 </FormControl>
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Confirm password"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Confirm password"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPasswordAgain(newText)}/>
                 </FormControl>

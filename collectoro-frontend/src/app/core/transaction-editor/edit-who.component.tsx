@@ -1,13 +1,31 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {Avatar, Box, Button, Center, FormControl, Heading, HStack, Icon, Pressable, Select, View} from "native-base";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {
+    Avatar,
+    Box,
+    Button,
+    FormControl,
+    HStack,
+    Icon,
+    Select,
+    useColorModeValue,
+    View
+} from "native-base";
 import GradientButtonComponent from "../../shared/components/gradient-button.component";
 import {MaterialIcons} from "@expo/vector-icons";
-import Modal from "react-native-modal";
+import {ProcessTransactionReqTypeEnum, UserEntity} from "../../../../swagger/index";
+import DiscardTransactionModalComponent from "./discard-transaction-modal.component";
+import transactionEditorService from "./transaction-editor.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import base64 from "react-native-base64";
 
 function ValueContainer(props: { displayValue: string }) {
+    const buttonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
     return <View style={styles.displayContainer}>
-        <Text style={styles.displayText}>
+        <Text style={{
+            fontSize: 48,
+            color: buttonTextColor,
+        }}>
             {props.displayValue} {'HUF'}
         </Text>
     </View>;
@@ -19,33 +37,73 @@ function FirstRowContainer(props: {
     onPress2: () => void,
     onPress3: () => void
 }) {
+    const buttonTextColor = useColorModeValue("#ffffff", "#000000");
+    const specialButtonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
     return <View style={styles.row}>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress}
         >
-            <Text style={styles.buttonText}>7</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>7</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress1}
         >
-            <Text style={styles.buttonText}>8</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>8</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress2}
         >
-            <Text style={styles.buttonText}>9</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>9</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={[styles.button, styles.operatorButton]}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress3}
         >
-            <Text style={[
-                styles.buttonText,
-                styles.operatorButtonText
-            ]}>
+            <Text style={{
+                fontSize: 34,
+                color: specialButtonTextColor,
+            }}>
                 ÷
             </Text>
         </TouchableOpacity>
@@ -58,33 +116,73 @@ function SecondRowContainer(props: {
     onPress2: () => void,
     onPress3: () => void
 }) {
+    const buttonTextColor = useColorModeValue("#ffffff", "#000000");
+    const specialButtonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
     return <View style={styles.row}>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress}
         >
-            <Text style={styles.buttonText}>4</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>4</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress1}
         >
-            <Text style={styles.buttonText}>5</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>5</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress2}
         >
-            <Text style={styles.buttonText}>6</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>6</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={[styles.button, styles.operatorButton]}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress3}
         >
-            <Text style={[
-                styles.buttonText,
-                styles.operatorButtonText
-            ]}>
+            <Text style={{
+                fontSize: 34,
+                color: specialButtonTextColor,
+            }}>
                 ×
             </Text>
         </TouchableOpacity>
@@ -97,33 +195,73 @@ function ThirdRowContainer(props: {
     onPress2: () => void,
     onPress3: () => void
 }) {
+    const buttonTextColor = useColorModeValue("#ffffff", "#000000");
+    const specialButtonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
     return <View style={styles.row}>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress}
         >
-            <Text style={styles.buttonText}>1</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>1</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress1}
         >
-            <Text style={styles.buttonText}>2</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>2</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.button}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress2}
         >
-            <Text style={styles.buttonText}>3</Text>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+            }}>3</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={[styles.button, styles.operatorButton]}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}
             onPress={props.onPress3}
         >
-            <Text style={[
-                styles.buttonText,
-                styles.operatorButtonText
-            ]}>
+            <Text style={{
+                fontSize: 34,
+                color: specialButtonTextColor,
+            }}>
                 −
             </Text>
         </TouchableOpacity>
@@ -131,47 +269,94 @@ function ThirdRowContainer(props: {
 }
 
 function FourthRowContainer(props: { onPress: () => void, onPress1: () => void, onPress2: () => void }) {
+    const buttonTextColor = useColorModeValue("#ffffff", "#000000");
+    const specialButtonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
+    const equalButtonColorBackGroundColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+
     return <View style={styles.row}>
         <TouchableOpacity
-            style={[styles.button, styles.zeroButton]}
+            style={{
+                flex: 2,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3,
+                paddingLeft: 35,
+                paddingRight: 35,
+            }}
             onPress={props.onPress}
         >
-            <Text style={[
-                styles.buttonText,
-                styles.zeroButtonText
-            ]}>
+            <Text style={{
+                fontSize: 34,
+                color: buttonTextColor,
+                marginLeft: 10,
+            }}>
                 0
             </Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={[styles.button, styles.operatorButton]}
             onPress={props.onPress1}
-        >
-            <Text style={[
-                styles.buttonText,
-                styles.operatorButtonText
-            ]}>
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: buttonBackGroundColor,
+                elevation: 3
+            }}>
+            <Text style={{
+                fontSize: 34,
+                color: specialButtonTextColor,
+            }}>
                 +
             </Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.equalButton}
+            style={{
+                flex: 1,
+                borderRadius: 50,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: equalButtonColorBackGroundColor,
+                elevation: 3,
+            }}
             onPress={props.onPress2}
         >
-            <Text style={styles.equalButtonText}>=</Text>
+            <Text style={{
+                fontSize: 32,
+                color: 'white',
+            }}>=</Text>
         </TouchableOpacity>
     </View>;
 }
 
-export default function EditWhoComponent() {
+
+interface EditWhoComponentProps {
+    navigation: any
+    route: any
+}
+
+export default function EditWhoComponent(props: EditWhoComponentProps) {
 
     // State variables
     const [displayValue, setDisplayValue] = useState('0');
     const [operator, setOperator] = useState(null);
     const [firstValue, setFirstValue] = useState('');
+    const [transactionType, setTransactionType] = useState('EXPENSE');
+    const [userId, setUserId] = useState('');
+    const [discardTransactionModalVisible, setDiscardTransactionModalVisible] = useState(false);
+    const textColor = useColorModeValue("white", "black");
+    const headerTextColor = useColorModeValue("black", "white");
+    const bgColor = useColorModeValue("black", "white");
+    const mainColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const buttonBackGroundColor = useColorModeValue("#888888", "#ffffff");
+    const [base64Image, setBase64Image] = useState<string>('');
 
     // Function to handle number inputs
-    const handleNumberInput = (num) => {
+    const handleNumberInput = (num: any) => {
         if (displayValue === '0') {
             setDisplayValue(num.toString());
         } else {
@@ -180,7 +365,7 @@ export default function EditWhoComponent() {
     };
 
     // Function to handle operator inputs
-    const handleOperatorInput = (operator) => {
+    const handleOperatorInput = (operator: any) => {
         setOperator(operator);
         setFirstValue(displayValue);
         setDisplayValue('0');
@@ -212,45 +397,119 @@ export default function EditWhoComponent() {
         setFirstValue('');
     };
 
+    const connectUsersToSelect = () => {
+        return props.route.params?.group?.users?.map((user: UserEntity) => {
+            return <Select.Item key={user.id!!} label={user?.lastName!!} value={user.id!!.toString()}/>
+        })
+    }
+
+    const setCheckUserEmail = (itemValue: string) => {
+        if (itemValue === 'multipleMembers') {
+            props.navigation.navigate('EditWhoMultipleMembers', {group: props.route.params?.group, value: displayValue})
+        } else {
+            setUserId(itemValue)
+            AsyncStorage.getItem('email').then((email) => {
+                transactionEditorService.getSelectedAvatar(email!!).then((response) => {
+                    setBase64Image(response.data?.base64!!)
+                })
+            })
+        }
+    }
+
+    const createWho = () => {
+        let whoTemp: any[]
+        whoTemp = props.route.params.group.users.map((user: UserEntity) => {
+            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user.image.base64}
+        })
+        //modify whoTemp, where key is the id of the user, value is the name of the user, amount is the amount of the transaction, selected is if the user is selected
+        whoTemp.forEach((user: any) => {
+            if (user.key === userId) {
+                user.amount = displayValue
+            } else {
+                user.amount = 0
+            }
+        })
+        return whoTemp;
+    }
+
+    const closeModal = () => {
+        setDiscardTransactionModalVisible(false)
+    }
+
+    const discardTransaction = () => {
+        setDiscardTransactionModalVisible(false)
+        props.navigation.goBack()
+    }
+
     return (
-        <SafeAreaView style={styles.safeAreaView}>
-            <Box backgroundColor={"#6E1DCE"} _dark={{
-                color: "warmGray.50"
-            }} w="100%" h="10%">
-                <HStack mt={3} alignItems="center" space="20">
-                    <Button backgroundColor={"transparent"} style={{marginLeft: 10}}><Icon color="white"
-                                                                                           as={MaterialIcons}
-                                                                                           name="close"
-                                                                                           size="md"/></Button>
-                    <Heading ml={6} alignItems={"center"} justifyContent={"center"} backgroundColor={"transparent"} color={"white"} fontSize={18}>
-                        Who paid
-                    </Heading>
+        <SafeAreaView style={{
+            flexDirection: 'column',
+            flexGrow: 1,
+            justifyContent: 'space-between',
+            marginTop: 45,
+            backgroundColor: bgColor
+        }}>
+            <DiscardTransactionModalComponent visible={discardTransactionModalVisible} keep={() => closeModal()} discard={() => discardTransaction()}/>
+            <Box backgroundColor={mainColor} w="100%" h="7%">
+                <HStack alignItems="center" space="20">
+                    <Button backgroundColor={"transparent"} style={{marginLeft: 5}} onPress={() => {
+                        setDiscardTransactionModalVisible(true)
+                    }}>
+                        <Icon
+                            color={headerTextColor}
+                            name="close"
+                            as={MaterialIcons}
+                            size="md"/></Button>
+                    <FormControl backgroundColor={"transparent"} color={"transparent"} maxW="25%" isRequired>
+                        <Select
+                            minWidth="150"
+                            placeholder={"Expense"}
+                            color={headerTextColor}
+                            isFocusVisible={false}
+                            variant={"unstyled"}
+                            textAlign={"center"}
+                            fontSize={"lg"}
+                            onValueChange={(itemValue) => {
+                                setTransactionType(itemValue)
+                            }}
+                            fontWeight={"bold"}
+                            placeholderTextColor={headerTextColor}
+                            dropdownIcon={<Icon color={headerTextColor} as={MaterialIcons} name="expand-more"
+                                                size="md"/>}
+                            mt="1"
+                        >
+                            <Select.Item label="Expense" value={ProcessTransactionReqTypeEnum.EXPENSE}/>
+                            <Select.Item label="Income" value={ProcessTransactionReqTypeEnum.INCOME}/>
+                            <Select.Item label="Transfer" value={ProcessTransactionReqTypeEnum.TRANSFER}/>
+                        </Select>
+                    </FormControl>
                 </HStack>
             </Box>
-            <HStack alignItems={"center"}>
-                <Avatar mt={3} ml={3} bg="gray.300">GG</Avatar>
-                <FormControl backgroundColor={"transparent"} color={"transparent"} maxW="25%" isRequired>
+            <HStack bgColor={bgColor} alignItems={"center"}>
+                {base64Image === '' ? <Avatar mt={3} ml={3} bg="gray.300">X</Avatar> : <Avatar mt={3} ml={3} bg="gray.300" source={{uri: `data:image/png;base64,${base64Image}`}}/>}
+                <FormControl mt={3} backgroundColor={"transparent"} color={"transparent"} maxW="25%" isRequired>
                     <Select
                         minWidth="150"
-                        placeholder={"Expense"}
-                        color={"black"}
+                        placeholder={props.route.params?.group?.users?.[0]?.firstName!!}
+                        color={textColor}
                         isFocusVisible={false}
                         variant={"unstyled"}
                         textAlign={"center"}
                         fontSize={"lg"}
                         fontWeight={"bold"}
-                        placeholderTextColor={"black"}
-                        dropdownIcon={<Icon color="black" as={MaterialIcons} name="expand-more" size="md"/>}
+                        onValueChange={(itemValue) => {
+                          setCheckUserEmail(itemValue);
+                        }}
+                        placeholderTextColor={textColor}
+                        dropdownIcon={<Icon color={textColor} as={MaterialIcons} name="expand-more" size="md"/>}
                         mt="1"
                     >
-                        <Select.Item label="Gergő paid" value="expense"/>
-                        <Select.Item label="Pista paid" value="income"/>
-                        <Select.Item label="Józse paid" value="transfer"/>
-                        <Select.Item label="Multiple members" value="multiple"/>
+                        {connectUsersToSelect()}
+                        <Select.Item label={"Multiple members"} value={'multipleMembers'}/>
                     </Select>
                 </FormControl>
             </HStack>
-            <View style={styles.container}>
+            <View backgroundColor={bgColor} style={styles.container}>
                 <ValueContainer displayValue={displayValue}/>
                 <SafeAreaView style={styles.buttonContainer}>
                     <FirstRowContainer onPress={() => handleNumberInput(7)} onPress1={() => handleNumberInput(8)}
@@ -263,15 +522,26 @@ export default function EditWhoComponent() {
                     <FourthRowContainer onPress={() => handleNumberInput(0)} onPress1={() => handleOperatorInput('+')}
                                         onPress2={handleEqual}/>
                     <TouchableOpacity
-                        style={styles.clearButton}
+                        style={{
+                            borderRadius: 50,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: buttonBackGroundColor,
+                            marginTop: 10,
+                            elevation: 3,
+                            padding: 10,
+                        }}
                         onPress={handleClear}>
-                        <Text style={styles.clearButtonText}>C</Text>
+                        <Text style={{
+                            fontSize: 24,
+                            color: buttonTextColor,
+                        }}>C</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
-                <Box w="100%" mt={5} mb={5} color="black" _dark={{
-                    color: "warmGray.50"
-                }}>
-                    <GradientButtonComponent elevation={5} text={"Continue"}></GradientButtonComponent>
+                <Box w="80%" mt={5} mb={5} bgColor={bgColor}>
+                    <GradientButtonComponent elevation={5} text={"Continue"} onPress={() => {
+                        props.navigation.navigate('TransactionSave', {who: createWho(), type: transactionType, group: props.route.params?.group!!})
+                    }}></GradientButtonComponent>
                 </Box>
             </View>
         </SafeAreaView>
@@ -280,14 +550,14 @@ export default function EditWhoComponent() {
 
 const styles = StyleSheet.create({
     safeAreaView: {
-        flexDirection: 'column', // inner items will be added vertically
-        flexGrow: 1,            // all the available vertical space will be occupied by it
-        justifyContent: 'space-between' // will create the gutter between body and footer
+        flexDirection: 'column',
+        flexGrow: 1,
+        justifyContent: 'space-between',
+        marginTop: 45
     },
     container: {
         marginTop: 60,
         flex: 1,
-        backgroundColor: '#f5f5f5',
         alignItems: "center",
         justifyContent: "center",
     },
@@ -317,18 +587,19 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     button: {
-        flex: 1,
+        flex: 2,
         borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fff',
         elevation: 3,
-        margin: 2,
-        padding: 5,
+        paddingLeft: 35,
+        paddingRight: 35,
     },
     buttonText: {
         fontSize: 34,
         color: '#333',
+        marginLeft: 10,
     },
     zeroButton: {
         flex: 2,
@@ -364,9 +635,5 @@ const styles = StyleSheet.create({
         marginTop: 10,
         elevation: 3,
         padding: 10,
-    },
-    clearButtonText: {
-        fontSize: 24,
-        color: '#333',
-    },
+    }
 });

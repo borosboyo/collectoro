@@ -22,7 +22,7 @@ class UserService(
 
     fun processOAuthPostLogin(email: String?) {
         if (email != null) {
-            val existUser: UserEntity = userRepository.findByEmail(email)
+            val existUser: UserEntity = userRepository.findByEmail(email).get()
             if (existUser == null) {
                 val newUser = UserEntity(
                     email = email,
@@ -36,9 +36,12 @@ class UserService(
     }
 
     @Transactional
-    fun deleteUserById(req: DeleteUserByIdReq): DeleteUserByIdResp {
-        userRepository.deleteById(req.userId)
-        return DeleteUserByIdResp()
+    fun deleteUserByEmail(req: DeleteUserByEmailReq): DeleteUserByEmailResp {
+        val user = userRepository.findByEmail(req.email).get()
+        userRepository.delete(user)
+        return DeleteUserByEmailResp(
+            email = req.email
+        )
     }
 
     @Transactional
@@ -48,7 +51,7 @@ class UserService(
 
     @Transactional
     fun getHomepageByUserEmail(req: GetHomepageByUserEmailReq): GetHomepageByUserEmailResp {
-        val user = userRepository.findByEmail(req.email!!)
+        val user = userRepository.findByEmail(req.email!!).get()
         val groups = groupRepository.findGroupEntitiesByUser(user)
         for (group in groups) {
             for (transaction in group.transactions) {
@@ -61,7 +64,7 @@ class UserService(
 
     @Transactional
     fun getProfileByUserEmail(req: GetProfileByUserEmailReq): GetProfileByUserEmailResp {
-        return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!))
+        return GetProfileByUserEmailResp(userRepository.findByEmail(req.email!!).get())
     }
 
     @Transactional
@@ -71,20 +74,13 @@ class UserService(
         return resp
     }
 
-    //TODO
     @Transactional
-    fun editUser(req: EditUserReq): EditUserResp {
-        val user = userRepository.findById(req.user.id).get()
-        user.firstName = req.user.firstName
-        user.lastName = req.user.lastName
-        user.groupRoles = req.user.groupRoles
-        return EditUserResp(
+    fun editUserName(req: EditUserNameReq): EditUserNameResp {
+        val user = userRepository.findByEmail(req.email).get()
+        user.firstName = req.firstName
+        user.lastName = req.lastName
+        return EditUserNameResp(
             user = userRepository.save(user)
         )
-    }
-
-    @Transactional
-    fun uploadUserPicture() {
-
     }
 }

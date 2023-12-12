@@ -2,7 +2,7 @@ import {AuthSessionResult} from "expo-auth-session";
 import axios, {AxiosResponse} from "axios";
 import {
     AuthenticationControllerApiFactory, AuthenticationResp,
-} from "../../../../swagger";
+} from "../../../../swagger/index";
 import {axiosConfig, baseOptions} from "../../shared/config/axios-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

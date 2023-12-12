@@ -48,6 +48,20 @@ class GroupController(
         return ResponseEntity.ok(groupService.createGroup(request))
     }
 
+    @PUT
+    @PutMapping("/editGroup")
+    @Path("/editGroup")
+    @Produces("application/json")
+    @ApiOperation(value = "editGroup", response = EditGroupResp::class)
+    fun editGroup(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "EditGroupReq"
+        ) request: EditGroupReq
+    ): ResponseEntity<EditGroupResp> {
+        return ResponseEntity.ok(groupService.editGroup(request))
+    }
+
 
     @PUT
     @PutMapping("/leaveGroup")
@@ -64,6 +78,20 @@ class GroupController(
     }
 
     @PUT
+    @PutMapping("/toggleGroupArchive")
+    @Path("/toggleGroupArchive")
+    @Produces("application/json")
+    @ApiOperation(value = "toggleGroupArchive", response = ToggleGroupArchiveResp::class)
+    fun toggleGroupArchive(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "ToggleGroupArchiveReq"
+        ) request: ToggleGroupArchiveReq
+    ): ResponseEntity<ToggleGroupArchiveResp> {
+        return ResponseEntity.ok(groupService.toggleGroupArchive(request))
+    }
+
+    @PUT
     @PutMapping("/getGroupPageAdditionalData")
     @Path("/getGroupPageAdditionalData")
     @Produces("application/json")
@@ -75,6 +103,20 @@ class GroupController(
         ) request: GetGroupPageAdditionalDataReq
     ): ResponseEntity<GetGroupPageAdditionalDataResp> {
         return ResponseEntity.ok(groupService.getGroupPageAdditionalData(request))
+    }
+
+    @PUT
+    @PutMapping("/kickUserFromGroup")
+    @Path("/kickUserFromGroup")
+    @Produces("application/json")
+    @ApiOperation(value = "kickUserFromGroup", response = KickUserFromGroupResp::class)
+    fun kickUserFromGroup(
+        @RequestBody @NotNull @ApiParam(
+            required = false,
+            value = "KickUserFromGroupReq"
+        ) request: KickUserFromGroupReq
+    ): ResponseEntity<KickUserFromGroupResp> {
+        return ResponseEntity.ok(groupService.kickUserFromGroup(request))
     }
 
 }

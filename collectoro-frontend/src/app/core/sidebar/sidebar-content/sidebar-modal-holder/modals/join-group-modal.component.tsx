@@ -29,7 +29,11 @@ export default function JoinGroupModalComponent(props: { visible: boolean, onPre
             </HStack>
             <VStack m="5" space={5}>
                 <FormControl backgroundColor={inputBackgroundColor} style={styles.textInputContainer}>
-                    <TextInput color={textColor} style={styles.textInput} placeholder={"Join code"}
+                    <TextInput style={{flex: 1,
+                paddingVertical: 10,
+                paddingRight: 10,
+                fontSize: 12,
+                color: textColor}} placeholder={"Join code"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setJoinCode(newText)}/>
                 </FormControl>

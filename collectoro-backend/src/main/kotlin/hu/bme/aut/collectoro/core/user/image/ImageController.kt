@@ -4,6 +4,7 @@ import hu.bme.aut.collectoro.core.group.dto.JoinGroupResp
 import hu.bme.aut.collectoro.core.user.dto.DownloadImageReq
 import hu.bme.aut.collectoro.core.user.dto.DownloadImageResp
 import hu.bme.aut.collectoro.core.user.dto.UploadImageReq
+import hu.bme.aut.collectoro.core.user.dto.UploadImageResp
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -13,10 +14,8 @@ import org.springframework.http.MediaType
 import org.springframework.http.MediaType.IMAGE_PNG_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import javax.ws.rs.POST
-import javax.ws.rs.PUT
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import org.springframework.web.multipart.MultipartFile
+import javax.ws.rs.*
 
 
 @Api(value = "ImageController", description = "REST APIs related to Image")
@@ -30,14 +29,13 @@ class ImageController(
     @PostMapping("/uploadImage")
     @Path("/uploadImage")
     @Produces("application/json")
-    @ApiOperation(value = "uploadImage", response = UploadImageReq::class)
+    @Consumes("multipart/form-data")
+    @ApiOperation(value = "uploadImage", response = UploadImageResp::class)
     fun uploadImage(
-        @RequestBody @NotNull @ApiParam(
-            required = false,
-            value = "UploadImageReq"
-        ) req: UploadImageReq
+        @RequestParam("userEmail") userEmail: Array<String>,
+        @RequestParam("base64") base64: Array<String>
     ): ResponseEntity<*> {
-        imageService.uploadImage(req.image, req.userEmail)
+        imageService.uploadImage(userEmail, base64)
         return ResponseEntity.status(HttpStatus.OK).body("Done")
     }
 
@@ -45,16 +43,14 @@ class ImageController(
     @PutMapping("/downloadImage")
     @Path("/downloadImage")
     @Produces("application/json")
-    @ApiOperation(value = "downloadImage", response = JoinGroupResp::class)
+    @Consumes("application/json")
+    @ApiOperation(value = "downloadImage", response = DownloadImageResp::class)
     fun downloadImage(
         @RequestBody @NotNull @ApiParam(
             required = false,
             value = "DownloadImageReq"
         ) req: DownloadImageReq
-    ): ResponseEntity<DownloadImageResp> {
-        val imageData = imageService.downloadImage(req.imageName)
-        return ResponseEntity.status(HttpStatus.OK)
-            .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
-            .body<DownloadImageResp>(DownloadImageResp(image = imageData!!))
+    ): DownloadImageResp {
+        return imageService.downloadImage(req.imageName)
     }
 }

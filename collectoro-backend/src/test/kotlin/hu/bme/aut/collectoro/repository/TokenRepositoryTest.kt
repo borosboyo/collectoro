@@ -2,14 +2,17 @@ package hu.bme.aut.collectoro.repository
 
 import hu.bme.aut.collectoro.RepositoryTestConfig
 import hu.bme.aut.collectoro.core.token.Token
+import hu.bme.aut.collectoro.core.token.TokenRepository
 import hu.bme.aut.collectoro.core.token.util.TokenType
 import hu.bme.aut.collectoro.core.user.UserEntity
+import hu.bme.aut.collectoro.core.user.UserRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
+import java.time.LocalDateTime
 
 @DataJpaTest
 @Import(value = [RepositoryTestConfig::class])
@@ -24,15 +27,15 @@ class TokenRepositoryTest {
     @Test
     fun testFindAllNotExpiredOrRevokedTokenByUserEntityAnAndTokenType() {
         // Create a UserEntity and save it to the repository
-        val userEntity = UserEntity.Builder().build()
+        val userEntity = UserEntity()
         val savedUserEntity = userRepository.save(userEntity)
 
         // Create a Token and associate it with the UserEntity
-        val token = Token.Builder()
-            .token("token123")
-            .tokenType(TokenType.BEARER)
-            .userEntity(savedUserEntity)
-            .build()
+        val token = Token(
+            token = "token123",
+            tokenType = TokenType.BEARER,
+            userEntity = savedUserEntity,
+        )
         tokenRepository.save(token)
 
         // Call the repository method to find tokens
@@ -44,21 +47,24 @@ class TokenRepositoryTest {
     }
 
     @Test
-    fun testFindByToken() {
-        // Create a Token and save it to the repository
-        val token = Token.Builder()
-            .token("token123")
-            .tokenType(TokenType.BEARER)
-            .build()
+    fun testFindTokenByToken() {
+        // Create a UserEntity and save it to the repository
+        val userEntity = UserEntity()
+        val savedUserEntity = userRepository.save(userEntity)
+
+        // Create a Token and associate it with the saved UserEntity
+        val token = Token(
+            token = "token123",
+            tokenType = TokenType.BEARER,
+            userEntity = savedUserEntity,
+        )
         tokenRepository.save(token)
 
         // Call the repository method to find the token by token string
-        val foundToken = tokenRepository.findByToken("token123")
+        val foundToken = tokenRepository.findTokenByToken("token123")
 
         // Assert that the found token is present and matches the expected token
-        foundToken?.let { Assertions.assertTrue(it.isPresent) }
-        if (foundToken != null) {
-            Assertions.assertEquals(token, foundToken.get())
-        }
+        foundToken.let { Assertions.assertTrue(it.isPresent) }
+        Assertions.assertEquals(token, foundToken.get())
     }
 }

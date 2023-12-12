@@ -10,7 +10,7 @@ export default function EmptyTabPageComponent() {
                    style={{width: 150, height: 150}}/>
         </HStack>
         <Heading textAlign={"center"} size="lg" fontWeight="600" color={textColor}>
-            It's empty here. Join a group to manage your finances!
+            It's empty here. You have no active groups!
         </Heading>
     </View>;
 }

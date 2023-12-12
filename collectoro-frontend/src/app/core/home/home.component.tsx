@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Animated, Dimensions, RefreshControl, ScrollView, StatusBar} from 'react-native';
 import {Box, Pressable, useColorModeValue} from "native-base";
-import {TabView} from 'react-native-tab-view'; // Import TabView from the appropriate library
+import {TabView} from 'react-native-tab-view';
 import HomeService from "./home.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import EmptyTabPageComponent from "./tabs/empty-tab-page.component";
 import {TabPageComponent} from "./tabs/tab-page.component";
 
-// Define the type for props
+
 interface HomeComponentProps {
     navigation: any;
 }
@@ -21,6 +21,9 @@ const HomeComponent = (props: HomeComponentProps) => {
     const [inputRange, setInputRange] = useState<number[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [tabBar, setTabBar] = useState<any>({});
+    const tabBarColor = useColorModeValue("#7DD6FF", "#6E1DCE");
+    const textColor = useColorModeValue("white", "black");
+    const bgColor = useColorModeValue("black", "white");
 
     useEffect(() => {
         setHomePage(undefined)
@@ -29,12 +32,12 @@ const HomeComponent = (props: HomeComponentProps) => {
         setIndex(1)
         setInputRange([])
         AsyncStorage.getItem('email').then((email) => {
-            HomeService.getHomepageByUserEmail(email!).then((response) => {
+            HomeService.getHomepageByUserEmail(email!!).then((response) => {
                 setHomePage(response.data);
                 updateRoutesAndScenes();
                 setTabBar(renderTabBar());
             }).catch((error) => {
-                showErrorMessage(error);
+                //console.log(error)
             });
         })
     }, []);
@@ -52,13 +55,9 @@ const HomeComponent = (props: HomeComponentProps) => {
                 setTabBar(renderTabBar());
                 setRefreshing(false);
             }).catch((error) => {
-                showErrorMessage(error);
+                //console.log(error)
             });
         })
-    }
-
-    const returnTabBar = (props: any) => {
-        return tabBar;
     }
 
     const showErrorMessage = (error: string) => {
@@ -74,12 +73,21 @@ const HomeComponent = (props: HomeComponentProps) => {
         const newScenes = {...scenes};
 
         homePage?.groups?.forEach((group: any) => {
-            if (group.id !== undefined && group.name !== undefined && group.joinLink !== undefined) {
+            if (group.id !== undefined && group.name !== undefined && group.joinLink !== undefined && group.archived === false) {
                 if (newRoutes.map((route) => route.key).includes(group.id.toString())) return;
                 newRoutes.push({key: group.id.toString(), title: group.name});
                 newScenes[group.id] = <TabPageComponent group={group} navigation={props.navigation}/>;
             }
         });
+        homePage?.groups?.forEach((group: any) => {
+            if (group.archived !== undefined && group.archived === true) {
+                const index = newRoutes.map((route) => route.key).indexOf(group.id.toString());
+                if (index > -1) {
+                    newRoutes.splice(index, 1);
+                }
+                delete newScenes[group.id];
+            }
+        })
         const inputRange = newRoutes.map((_, index) => index);
         setRoutes(newRoutes);
         setScenes(newScenes);
@@ -88,14 +96,15 @@ const HomeComponent = (props: HomeComponentProps) => {
 
     const renderTabBar = () => {
         if (routes === undefined) return (<></>);
-        return <Box flexDirection="row">
+        return <Box flexDirection="row" bgColor={bgColor}>
             {routes.map((route: any, i: number) => {
-                const color = index === i ? useColorModeValue('#000', '#e5e5e5') : useColorModeValue('#1f2937', '#a1a1aa');
-                const borderColor = index === i ? 'cyan.500' : useColorModeValue('coolGray.200', 'gray.400');
+                const color = index === i ? useColorModeValue('#ffffff', '#000000') : useColorModeValue('#ffffff', '#000000');
+                const borderColor = index === i ? tabBarColor : useColorModeValue('coolGray.200', 'gray.400');
                 return <Pressable key={i}
                                   borderBottomWidth="3"
                                   borderColor={borderColor}
                                   flex={1}
+                                  color={bgColor}
                                   alignItems="center"
                                   p="3" onPress={() => {
                     setIndex(i);
@@ -132,7 +141,7 @@ const HomeComponent = (props: HomeComponentProps) => {
                     <TabView
                         {...props}
                         navigationState={{index, routes}}
-                        renderTabBar={returnTabBar}
+                        renderTabBar={renderTabBar}
                         renderScene={({route}: any) => {
                             return scenes[route.key];
                         }}
