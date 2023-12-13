@@ -17,12 +17,10 @@ data class GroupRole(
     @Enumerated(EnumType.STRING)
     var groupRole: GroupRoleEnum? = null,
 
-    @ManyToOne
-    @JsonBackReference
-    var userEntity: UserEntity,
+    var userEmail: String? = null,
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value="groupRoleGroupEntity")
     var group: GroupEntity? = null
 ) : Serializable
 

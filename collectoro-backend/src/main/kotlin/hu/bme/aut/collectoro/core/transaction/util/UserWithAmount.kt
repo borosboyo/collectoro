@@ -25,7 +25,7 @@ data class UserWithAmount(
     var type: UserWithAmountType = UserWithAmountType.WHO,
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value="groupRoleTransaction")
     var transaction: Transaction? = null
 
 ) : Serializable

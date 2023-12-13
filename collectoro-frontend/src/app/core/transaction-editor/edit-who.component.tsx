@@ -17,7 +17,6 @@ import {ProcessTransactionReqTypeEnum, UserEntity} from "../../../../swagger/ind
 import DiscardTransactionModalComponent from "./discard-transaction-modal.component";
 import transactionEditorService from "./transaction-editor.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import base64 from "react-native-base64";
 
 function ValueContainer(props: { displayValue: string }) {
     const buttonTextColor = useColorModeValue("#7DD6FF", "#6E1DCE");
@@ -419,7 +418,7 @@ export default function EditWhoComponent(props: EditWhoComponentProps) {
     const createWho = () => {
         let whoTemp: any[]
         whoTemp = props.route.params.group.users.map((user: UserEntity) => {
-            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user.image.base64}
+            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user?.image?.base64}
         })
         //modify whoTemp, where key is the id of the user, value is the name of the user, amount is the amount of the transaction, selected is if the user is selected
         whoTemp.forEach((user: any) => {
@@ -486,11 +485,11 @@ export default function EditWhoComponent(props: EditWhoComponentProps) {
                 </HStack>
             </Box>
             <HStack bgColor={bgColor} alignItems={"center"}>
-                {base64Image === '' ? <Avatar mt={3} ml={3} bg="gray.300">X</Avatar> : <Avatar mt={3} ml={3} bg="gray.300" source={{uri: `data:image/png;base64,${base64Image}`}}/>}
+                {base64Image === '' || base64Image == null ? <Avatar mt={3} ml={3} bg="gray.300">X</Avatar> : <Avatar mt={3} ml={3} bg="gray.300" source={{uri: `data:image/png;base64,${base64Image}`}}/>}
                 <FormControl mt={3} backgroundColor={"transparent"} color={"transparent"} maxW="25%" isRequired>
                     <Select
                         minWidth="150"
-                        placeholder={props.route.params?.group?.users?.[0]?.firstName!!}
+                        placeholder={props.route.params?.group?.users?.[0]?.lastName!!}
                         color={textColor}
                         isFocusVisible={false}
                         variant={"unstyled"}

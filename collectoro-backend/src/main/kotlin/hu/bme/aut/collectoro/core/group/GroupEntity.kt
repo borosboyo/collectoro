@@ -1,6 +1,9 @@
 package hu.bme.aut.collectoro.core.group
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import hu.bme.aut.collectoro.core.role.GroupRole
 import hu.bme.aut.collectoro.core.transaction.Transaction
 import hu.bme.aut.collectoro.core.transaction.util.Currency
@@ -14,6 +17,7 @@ import java.util.*
 
 @Entity
 @Table(name = "group_entity")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 data class GroupEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,12 +25,12 @@ data class GroupEntity(
     var name: String? = null,
 
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value="groupUsers")
     var users: MutableList<UserEntity> = ArrayList(),
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
-    var transactions: MutableList<Transaction> = ArrayList(),
+    @JsonManagedReference(value="groupTransactions")
+    var transactions: MutableList<Transaction> = mutableListOf(),
 
     var joinLink: String? = UUID.randomUUID().toString(),
 
@@ -36,7 +40,7 @@ data class GroupEntity(
     var archived: Boolean = false,
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value="groupRoles")
     var groupRoles: MutableList<GroupRole> = mutableListOf(),
 
     var color: String? = null

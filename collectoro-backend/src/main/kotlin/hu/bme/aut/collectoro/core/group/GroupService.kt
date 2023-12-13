@@ -46,7 +46,7 @@ class GroupService(
         val groupRole = groupRoleRepository.save(
             GroupRole(
                 group = group,
-                userEntity = user,
+                userEmail = user.getEmail(),
                 groupRole = GroupRoleEnum.ADMIN
             )
         )
@@ -60,7 +60,6 @@ class GroupService(
                 amount = 0.0
             )
         )
-        user.groupRoles.add(groupRole)
         user.groups.add(savedGroup)
         user.wallet?.balances?.add(balance)
         userRepository.save(user)
@@ -69,8 +68,9 @@ class GroupService(
 
     @Transactional
     fun editGroup(req: EditGroupReq): EditGroupResp {
-        val group = groupRepository.findById(req.group.id).get()
-        mapGroup(group, req.group)
+        val group = groupRepository.findById(req.groupId).get()
+        group.name = req.name
+        group.color = req.selectedColorName
         return EditGroupResp(
             group = groupRepository.save(group)
         )
@@ -100,7 +100,7 @@ class GroupService(
             val groupRole = groupRoleRepository.save(
                 GroupRole(
                     group = group,
-                    userEntity = user,
+                    userEmail = user.getEmail(),
                     groupRole = GroupRoleEnum.MEMBER
                 )
             )
@@ -116,7 +116,6 @@ class GroupService(
                 )
             )
             user.groups.add(group)
-            user.groupRoles.add(groupRole)
             user.wallet?.balances?.add(balance)
             userRepository.save(user)
         }
@@ -127,11 +126,13 @@ class GroupService(
     fun leaveGroup(req: LeaveGroupReq): LeaveGroupResp {
         val group = groupRepository.findById(req.groupId).get()
         val user = userRepository.findByEmail(req.userEmail).get()
-        //Todo grouproles
+        val groupRole = groupRoleRepository.findById(group.groupRoles.find { it.userEmail == user.getEmail() }!!.id).get()
+        group.groupRoles.remove(groupRole)
         group.users.remove(user)
-        groupRepository.save(group)
+        groupRoleRepository.delete(groupRole)
         user.groups.remove(group)
         userRepository.save(user)
+        groupRepository.delete(group)
         return LeaveGroupResp()
     }
 

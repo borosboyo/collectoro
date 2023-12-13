@@ -12,11 +12,11 @@ import * as Google from "expo-auth-session/providers/google";
 import {makeRedirectUri} from "expo-auth-session";
 import {DynamicLinkComponent} from "../../../shared/components/dynamic-link.component";
 import {AppContext} from "../../../shared/components/appcontext";
+import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {baseOptions} from "../../../shared/config/axios-config";
 import {AxiosResponse} from "axios";
-import {AuthenticationResp} from "../../../../../swagger";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
+import {AuthenticationResp} from "swagger/models";
 
 export default function LoginFormComponent({navigation}: LoginNavigationProps) {
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -24,7 +24,7 @@ export default function LoginFormComponent({navigation}: LoginNavigationProps) {
         iosClientId: "409953552731-balks0c557np9556tlqdl69llpkgtogd.apps.googleusercontent.com",
         androidClientId: "409953552731-si4ntgth3u05eroseo5k2d4du8q9gpq7.apps.googleusercontent.com",
         redirectUri: makeRedirectUri({
-            scheme: "hu.bme.aut.collectoro.frontend"
+            scheme: "collectoro-frontend"
         }),
         scopes: ["profile", "email"],
     });

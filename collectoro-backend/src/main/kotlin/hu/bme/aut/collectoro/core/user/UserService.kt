@@ -1,6 +1,7 @@
 package hu.bme.aut.collectoro.core.user
 
 import hu.bme.aut.collectoro.core.group.GroupRepository
+import hu.bme.aut.collectoro.core.token.TokenRepository
 import hu.bme.aut.collectoro.core.transaction.util.UserWithAmountType
 import hu.bme.aut.collectoro.core.user.dto.*
 import hu.bme.aut.collectoro.shared.provider.Provider
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val tokenRepository: TokenRepository
 ) {
 
     @Transactional
@@ -38,6 +40,12 @@ class UserService(
     @Transactional
     fun deleteUserByEmail(req: DeleteUserByEmailReq): DeleteUserByEmailResp {
         val user = userRepository.findByEmail(req.email).get()
+        val tokens = tokenRepository.findAll()
+        for (token in tokens) {
+            if (token.userEntity?.id == user.id) {
+                tokenRepository.delete(token)
+            }
+        }
         userRepository.delete(user)
         return DeleteUserByEmailResp(
             email = req.email

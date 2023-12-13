@@ -27,6 +27,20 @@ const HomeService = {
             groupId: groupId
         }, baseOptions)
     },
+
+    editGroup: async function (groupId: number, name: string, color: string): Promise<any> {
+        const token = await AsyncStorage.getItem("token");
+        baseOptions.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        return this.groupController.editGroup({
+            groupId: groupId,
+            name: name,
+            selectedColorName: color
+        }, baseOptions)
+    }
 }
 
 export default HomeService;

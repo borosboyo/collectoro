@@ -38,25 +38,21 @@ data class UserEntity(
     val userRole: UserRole = UserRole.USER,
 
     @OneToMany(cascade = [CascadeType.REMOVE], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value = "userTokens")
     val tokens: MutableList<Token> = ArrayList(),
 
     @ManyToMany
-    @JsonBackReference
+    @JsonBackReference(value = "userGroups")
     val groups: MutableList<GroupEntity> = ArrayList(),
 
     var enabled: Boolean? = false,
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value = "userWallet")
     var wallet: Wallet? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
-    var groupRoles: MutableList<GroupRole> = mutableListOf(),
-
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value = "userImage")
     var image: Image? = null
 
 ) : UserDetails {

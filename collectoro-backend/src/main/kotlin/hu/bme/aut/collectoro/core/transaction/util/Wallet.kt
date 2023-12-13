@@ -15,11 +15,11 @@ class Wallet(
     var id: Long = 0,
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value = "walletBalances")
     var balances: MutableList<Balance> = ArrayList(),
 
     @OneToOne
-    @JsonBackReference
+    @JsonBackReference(value = "walletUserEntity")
     var userEntity: UserEntity? = null
 
 ) : Serializable {

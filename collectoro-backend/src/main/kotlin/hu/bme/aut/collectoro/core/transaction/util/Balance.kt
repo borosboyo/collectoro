@@ -20,7 +20,7 @@ class Balance(
     var amount: Double,
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "balanceWallet")
     var wallet: Wallet? = null
 
 ) : Serializable {

@@ -20,11 +20,11 @@ const LoginService = {
         }));
     },
 
-    loginWithGoogle: function (promptAsync: any): Promise<any> {
+     loginWithGoogle: function (promptAsync: any): Promise<any> {
         return promptAsync().then(
             (result: AuthSessionResult) => {
                 if (result.type === "success") {
-                    return this.fetchUserInfo(result.params.code)
+                    return this.fetchUserInfo(result.authentication?.accessToken)
                 }
             }
         );

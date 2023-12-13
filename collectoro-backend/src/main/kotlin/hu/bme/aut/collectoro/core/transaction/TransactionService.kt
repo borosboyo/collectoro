@@ -36,6 +36,9 @@ class TransactionService(
             groupEntity = groupRepository.findById(req.groupEntityId).get()
         )
         val savedTransaction = transactionRepository.save(transaction)
+        val group = groupRepository.findById(req.groupEntityId).get()
+        group.transactions.add(savedTransaction)
+        groupRepository.save(group)
         req.who.forEach {
             it.transaction = savedTransaction
             userWithAmountRepository.save(it)
@@ -165,6 +168,9 @@ class TransactionService(
                 details.remove(minKey)
                 details[maxKey] = 0.0
                 details[minKey] = result
+            }
+            if(maxValue == 0.0 && minValue < 0.0) {
+                return debtBalanceResult
             }
             findPath(details)
         }

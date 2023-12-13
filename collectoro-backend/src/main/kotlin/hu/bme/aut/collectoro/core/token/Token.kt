@@ -31,7 +31,7 @@ data class Token(
     var expired: Boolean = false,
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "tokenUserEntity")
     var userEntity: UserEntity? = null
 
 ) : Serializable

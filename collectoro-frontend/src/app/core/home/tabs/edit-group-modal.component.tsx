@@ -18,6 +18,7 @@ import {styles} from "../../../shared/components/styles";
 import {TextInput} from "react-native";
 import GradientButtonComponent from "../../../shared/components/gradient-button.component";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import homeService from "../home.service";
 //TODO Jogosultságok kezelése editnél, userek kezelése
 export default function EditGroupModalComponent(props: {
     visible: boolean,
@@ -89,10 +90,9 @@ export default function EditGroupModalComponent(props: {
                 <GradientButtonComponent
                     onPress={() => {
                         AsyncStorage.getItem('email').then((email) => {
-                            //TODO
-                            //sidebarService.createGroup(groupName, email!!).then(() => {
-                            //    props.closeModal
-                            //})
+                            homeService.editGroup(props.group.id, groupName, selectedColorName).then(() => {
+                                props.closeModal
+                            })
                         })
                     }}
                     text={"Create"}

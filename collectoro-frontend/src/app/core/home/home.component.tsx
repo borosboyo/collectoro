@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {Animated, Dimensions, RefreshControl, ScrollView, StatusBar} from 'react-native';
-import {Box, Pressable, useColorModeValue} from "native-base";
+import {Animated, Dimensions, Platform, RefreshControl, ScrollView, StatusBar} from 'react-native';
+import {Box, Button, Center, HStack, Icon, Pressable, Text, useColorModeValue, View} from "native-base";
 import {TabView} from 'react-native-tab-view';
 import HomeService from "./home.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import EmptyTabPageComponent from "./tabs/empty-tab-page.component";
 import {TabPageComponent} from "./tabs/tab-page.component";
+import {MaterialIcons} from "@expo/vector-icons";
+import EmptyTabPageComponent from "./tabs/empty-tab-page.component";
 
 
 interface HomeComponentProps {
@@ -94,6 +95,31 @@ const HomeComponent = (props: HomeComponentProps) => {
         setInputRange(inputRange);
     };
 
+    const renderRefreshControl = () => {
+        return Platform.OS === "web" ?
+            <>
+                <Center>
+                    <Button bgColor={'green.500'} onPress={onRefresh}>
+                        <HStack>
+                            <Text mr={2} color={textColor}>
+                                Refresh
+                            </Text>
+                            <Icon color={textColor}
+                                  as={MaterialIcons}
+                                  name="refresh"
+                                  size="md"/>
+                        </HStack>
+                    </Button>
+                </Center>
+                <EmptyTabPageComponent/>
+            </>
+             : <ScrollView contentContainerStyle={{flexGrow: 1}} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+            }>
+                <EmptyTabPageComponent/>
+            </ScrollView>
+    }
+
     const renderTabBar = () => {
         if (routes === undefined) return (<></>);
         return <Box flexDirection="row" bgColor={bgColor}>
@@ -119,11 +145,8 @@ const HomeComponent = (props: HomeComponentProps) => {
         width: Dimensions.get('window').width,
     };
     if (inputRange.length == 0) return (
-        <ScrollView contentContainerStyle={{flexGrow: 1}} refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-        }>
-            <EmptyTabPageComponent/>
-        </ScrollView>)
+        renderRefreshControl()
+    )
     if (inputRange.length == 1 && homePage?.groups?.at(0) != undefined) {
         return (
             <ScrollView contentContainerStyle={{flexGrow: 1}} refreshControl={

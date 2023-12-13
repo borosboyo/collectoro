@@ -21,6 +21,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import DiscardTransactionModalComponent from "./discard-transaction-modal.component";
 import {UserEntity, UserWithAmountTypeEnum} from "../../../../swagger/index";
+import TransactionEditorService from "./transaction-editor.service";
 
 interface TransactionSaveComponentProps {
     navigation: any;
@@ -48,7 +49,7 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
         setWho(props.route.params.who)
 
         setForWhom(props.route.params.group.users.map((user: UserEntity) => {
-            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user.image.base64}
+            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user?.image?.base64}
         }))
 
         setWhoReq(props.route.params.group.users.map((user: UserEntity) => {
@@ -115,13 +116,15 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
                 }
             })
         })
+        console.log(forWhomReq)
     }
 
     const renderWho = () => {
         return who.map((user: any) => {
             return (
-                <Pressable key={user.key} style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Avatar style={{marginLeft: 5, marginRight: 8}} source={{uri: `data:image/png;base64,${user.base64}`}}>X</Avatar>
+                <View mb={2} key={user.key} style={{flexDirection: 'row', alignItems: 'center'}}>
+                    {user?.base64 == null || user?.base64 === '' ? <Avatar style={{marginLeft: 5, marginRight: 8}}>X</Avatar> :
+                        <Avatar style={{marginLeft: 5, marginRight: 8}} source={{uri: `data:image/png;base64,${user.base64}`}}>X</Avatar>}
                     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                         <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
                             {user?.value}
@@ -130,7 +133,7 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
                             {user?.amount} HUF
                         </Text>
                     </View>
-                </Pressable>
+                </View>
             )
         })
     }
@@ -138,7 +141,8 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
     const renderForWhom = () => {
         return forWhom.map((user: any) => {
             return (<View key={user.key} mb={2} style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Avatar style={{marginLeft: 5, marginRight: 8}} source={{uri: `data:image/png;base64,${user.base64}`}}>X</Avatar>
+                {user?.base64 == null || user?.base64 === '' ? <Avatar style={{marginLeft: 5, marginRight: 8}}>X</Avatar> :
+                    <Avatar style={{marginLeft: 5, marginRight: 8}} source={{uri: `data:image/png;base64,${user.base64}`}}>X</Avatar>}
                 <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                     <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
                         {user?.value}
@@ -161,7 +165,9 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
                             }} placeholder={"0"} editable={user?.selected} placeholderTextColor={textColor} keyboardType={"numeric"}
                                        onChangeText={newText => {
                                            user.amount = newText
-                                           setForWhom(forWhom)
+                                             setForWhom(forWhom.map((item: any) =>
+                                                  item.key === user.key ? {...item, amount: newText} : item
+                                             ));
                                        }}/>
                         </FormControl>
                         <Text style={{marginRight: 5, fontSize: 16, fontWeight: 'bold', color: textColor}}>
@@ -285,7 +291,12 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
             </ScrollView>
             <Box w="100%" backgroundColor={mainColor}>
                 <View mb={2} mt={2} ml={"10%"} mr={"10%"} w="80%">
-                    <GradientButtonComponent elevation={5} text={"Save"}></GradientButtonComponent>
+                    <GradientButtonComponent onPress={() => {
+                        mapWho()
+                        mapForWhom()
+                        TransactionEditorService.processTransaction(purpose, whoReq, forWhomReq, props.route?.params?.group?.id, props.route?.params?.type).then(r =>
+                            props.navigation.goBack())
+                    }} elevation={5} text={"Save"}></GradientButtonComponent>
                 </View>
             </Box>
         </SafeAreaView>

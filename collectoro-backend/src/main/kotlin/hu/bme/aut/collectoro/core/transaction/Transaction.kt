@@ -1,8 +1,6 @@
 package hu.bme.aut.collectoro.core.transaction
 
-import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.*
 import hu.bme.aut.collectoro.core.group.GroupEntity
 import hu.bme.aut.collectoro.core.transaction.util.Currency
 import hu.bme.aut.collectoro.core.transaction.util.TransactionType
@@ -14,6 +12,7 @@ import java.io.Serializable
 import java.time.LocalDate
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 data class Transaction(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +29,15 @@ data class Transaction(
     var type: TransactionType? = TransactionType.EXPENSE,
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value="transactionWho")
     var who: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference(value="transactionForWhom")
     var forWhom: MutableList<UserWithAmount> = ArrayList<UserWithAmount>(),
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value="transactionGroupEntity")
     var groupEntity: GroupEntity = GroupEntity()
 
 ) : Serializable {

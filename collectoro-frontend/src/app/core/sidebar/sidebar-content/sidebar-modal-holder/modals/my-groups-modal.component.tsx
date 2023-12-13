@@ -12,11 +12,11 @@ import {
     View,
     VStack
 } from "native-base";
-import React from "react";
-import {GroupEntity} from "../../../../../../../swagger";
+import React, {useEffect} from "react";
+import {GroupEntity, GroupRole, GroupRoleGroupRoleEnum} from "../../../../../../../swagger/index";
 import {ImageBackground} from "react-native";
 import sidebarService from "../../../sidebar.service";
-import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MyGroupsModalComponent(props: {
     visible: boolean,
@@ -26,6 +26,92 @@ export default function MyGroupsModalComponent(props: {
     const textColor = useColorModeValue("white", "black");
     const bgColor = useColorModeValue("black", "coolGray.100");
     const subtitleColor = useColorModeValue("#6E1DCE", "#7DD6FF");
+    const [userEmail, setUserEmail] = React.useState<string>("");
+
+
+    useEffect(() => {
+        AsyncStorage.getItem('email').then((email) => {
+            setUserEmail(email!!);
+        })
+    }, []);
+
+    const renderGroupButton = (group) => {
+        return group.groupRoles.map((groupRole: GroupRole) => {
+            if (groupRole?.userEmail === userEmail) {
+                if (groupRole.groupRole === GroupRoleGroupRoleEnum.ADMIN.toString()) {
+                    return <HStack key={groupRole.id}>
+                        <Pressable onPress={() => {
+                            sidebarService.toggleGroupArchive(group.id!!).then(() => {
+                                props.onPress()
+                            });
+                        }}>
+                            <Text style={{fontSize: 14, color: textColor}}>
+                                Archive
+                            </Text>
+                        </Pressable>
+                        <Pressable onPress={() => {
+                            sidebarService.toggleGroupArchive(group.id!!).then(() => {
+                                props.onPress()
+                            });
+                        }}>
+                            <Text ml={5} mr={5} style={{fontSize: 14, color: textColor}}>
+                                Leave
+                            </Text>
+                        </Pressable>
+                    </HStack>
+                } else {
+                    return <Pressable key={groupRole.id} onPress={() => {
+                        sidebarService.leaveGroup(group.id!!, userEmail).then(() => {
+                            props.onPress()
+                        });
+                    }}>
+                        <Text ml={5} mr={5} style={{fontSize: 14, color: textColor}}>
+                            Leave
+                        </Text>
+                    </Pressable>
+                }
+            }
+        })
+    }
+
+    const renderArchivedGroupButton = (group) => {
+        return group.groupRoles.map((groupRole: GroupRole) => {
+            if (groupRole?.userEmail === userEmail) {
+                if (groupRole.groupRole === GroupRoleGroupRoleEnum.ADMIN.toString()) {
+                    return <HStack key={groupRole.id}>
+                        <Pressable onPress={() => {
+                            sidebarService.toggleGroupArchive(group.id!!).then(() => {
+                                props.onPress()
+                            });
+                        }}>
+                            <Text style={{fontSize: 14, color: textColor}}>
+                                Unarchive
+                            </Text>
+                        </Pressable>
+                        <Pressable onPress={() => {
+                            sidebarService.leaveGroup(group.id!!, userEmail).then(() => {
+                                props.onPress()
+                            });
+                        }}>
+                            <Text ml={5} mr={5} style={{fontSize: 14, color: textColor}}>
+                                Leave
+                            </Text>
+                        </Pressable>
+                    </HStack>
+                } else {
+                    return <Pressable key={groupRole.id} onPress={() => {
+                        sidebarService.leaveGroup(group.id!!, userEmail).then(() => {
+                            props.onPress()
+                        });
+                    }}>
+                        <Text ml={5} mr={5} style={{fontSize: 14, color: textColor}}>
+                            Leave
+                        </Text>
+                    </Pressable>
+                }
+            }
+        })
+    }
 
     const checkGroups = () => {
         if (props.groups === undefined || props.groups.length === 0) {
@@ -47,15 +133,7 @@ export default function MyGroupsModalComponent(props: {
                                     <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
                                         {group?.name}
                                     </Text>
-                                    <Pressable onPress={() => {
-                                        sidebarService.toggleGroupArchive(group.id!!).then(() => {
-                                            props.onPress()
-                                        });
-                                    }}>
-                                        <Text mr={5} style={{fontSize: 14, color: textColor}}>
-                                            Archive
-                                        </Text>
-                                    </Pressable>
+                                    {renderGroupButton(group)}
                                 </View>
                             </View>
                             <Divider thickness="1" bgColor={textColor}/>
@@ -86,15 +164,7 @@ export default function MyGroupsModalComponent(props: {
                                     <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
                                         {group?.name}
                                     </Text>
-                                    <Pressable onPress={() => {
-                                        sidebarService.toggleGroupArchive(group.id!!).then(() => {
-                                            props.onPress()
-                                        });
-                                    }}>
-                                        <Text mr={5} style={{fontSize: 14, color: textColor}}>
-                                            Unarchive
-                                        </Text>
-                                    </Pressable>
+                                    {renderArchivedGroupButton(group)}
                                 </View>
                             </View>
                             <Divider thickness="1" bgColor={textColor}/>

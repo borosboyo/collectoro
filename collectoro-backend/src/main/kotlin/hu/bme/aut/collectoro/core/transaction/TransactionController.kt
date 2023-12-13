@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -27,6 +28,7 @@ class TransactionController(
     @PostMapping("/processTransaction")
     @Path("/processTransaction")
     @Produces("application/json")
+    @Consumes("application/json;charset=UTF-8")
     @ApiOperation(value = "processTransaction", response = ProcessTransactionResp::class)
     fun processTransaction(
         @RequestBody @NotNull @ApiParam(

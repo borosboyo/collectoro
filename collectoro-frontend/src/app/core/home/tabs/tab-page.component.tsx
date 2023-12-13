@@ -42,9 +42,12 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
     const balances = group?.users?.map((user) => {
         return user.wallet?.balances?.find((balance) => balance.groupId == group?.id)?.amount!;
     });
-    const colors = balances?.map((balance) => balance > 0 ? greenColor : redColor);
 
+    const [colors, setColors] = React.useState<any>([]);
     useEffect(() => {
+        if (balances.length != 1) {
+            setColors(balances?.map((balance) => balance > 0 ? greenColor : redColor))
+        }
         if (group != undefined && group.id != undefined) {
             HomeService.getGroupPageAdditionalData(group.id).then((response) => {
                 setAdditionalData(response.data);
@@ -69,7 +72,7 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
         if (date.length == 7) {
             date.pop()
         }
-        return moment(date).format('YYYY-MM-DD HH:mm:ss');
+        return moment(date).format('YYYY-MM-DD');
     }
 
     const toggleCodeShown = () => {
@@ -101,6 +104,18 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
 
     const closeModal = () => {
         setEditGroupModalVisible(false)
+    }
+
+    const getUserAvatarByIdFromGroupUsers = (userId: number) => {
+        return group?.users?.find((user) => user.id == userId)?.image?.base64;
+    }
+
+    const getTransactionAmount = (transaction: any) => {
+        let amount = 0;
+        transaction?.who?.forEach((who: any) => {
+            amount += who.amount;
+        })
+        return amount
     }
 
     return <Box bgColor={bgColor} flex={1} pt={10}>
@@ -153,9 +168,9 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                         data: balances!, // dataset
                         colors: colors!
                     }, {
-                        data: [-10], withDots: false
+                        data: [-100], withDots: false
                     }, {
-                        data: [10], withDots: false
+                        data: [100], withDots: false
                     },],
                 }}
                 width={Dimensions.get("window").width} // from react-native
@@ -195,26 +210,27 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 </Text>
                 {noTransactions()}
                 {group?.transactions?.map((transaction) => {
-                    return <Box key={transaction.id}>
+                    return <Box ml={3} key={transaction.id}>
                         <HStack alignItems="center" space="3" px="4" bgColor={bgColor}>
-                            <Avatar bg="gray.300">X</Avatar>
                             <VStack>
-                                <Text fontSize="md" fontWeight="bold" color={textColor}>
+                                <Text fontSize="md" color={textColor}>
                                     {transaction.purpose}
                                 </Text>
-                                <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
-                                    <Text fontSize="xs">
+                                <HStack alignItems="stretch" space="6">
+                                    <Text fontSize="xs" fontWeight={'bold'} color={textColor}>
                                         {formatDate(transaction?.date)}
                                     </Text>
-                                    <Text fontSize="xs">
+                                    <Text fontSize="xs" fontWeight="bold" color={textColor}>
                                         {transaction?.type}
                                     </Text>
-                                    <Avatar bg="gray.300" size='xs'>X</Avatar>
+                                    <Text fontSize="xs" fontWeight="bold" color={textColor}>
+                                        {getTransactionAmount(transaction)} Ft
+                                    </Text>
                                 </HStack>
-                                <Text>From {transaction.who?.map((who) => {
-                                    return <Text>{who.lastName} </Text>
+                                <Text color={textColor}>From {transaction.who?.map((who) => {
+                                    return <Text key={who.id} color={textColor}>{who.lastName}</Text>
                                 })} to {transaction.forWhom?.map((forWhom) => {
-                                    return <Text>{forWhom.lastName} </Text>
+                                    return <Text key={forWhom.id} color={textColor}>{forWhom.lastName} </Text>
                                 })}</Text>
                             </VStack>
                         </HStack>
@@ -226,22 +242,24 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
                 {noDebts()}
                 {additionalData?.debtList.map((debt: Debt) => {
                     return <HStack ml={3} alignItems="center" space="1" px="4" bgColor={bgColor} key={debt.id}>
-                        <Avatar bg="gray.300">X</Avatar>
+                        {getUserAvatarByIdFromGroupUsers(debt.fromUserId) == '' || getUserAvatarByIdFromGroupUsers(debt.fromUserId) == null ? <Avatar bg="gray.300">X</Avatar> :
+                            <Avatar bg="gray.300" source={{uri: `data:image/png;base64,${getUserAvatarByIdFromGroupUsers(debt.fromUserId)}`}}></Avatar>}
                         <VStack>
-                            <Text fontSize="md" fontWeight="bold" color="black">
+                            <Text fontSize="md" fontWeight="bold" color={textColor}>
                                 {debt.fromUserLastName}
                             </Text>
                             <HStack alignItems="stretch" space="12" divider={<Divider thickness="0.3"/>}>
-                                <Text fontSize="xs" fontWeight="bold">
+                                <Text fontSize="xs" fontWeight="bold" color={textColor}>
                                     {debt.amount} HUF
                                 </Text>
                             </HStack>
                         </VStack>
-                        <Icon color="black" as={MaterialIcons} name="chevron-right" size="4xl"/>
-                        <Text fontSize="md" fontWeight="bold" color="black">
+                        <Icon color={textColor} as={MaterialIcons} name="chevron-right" size="4xl"/>
+                        <Text fontSize="md" fontWeight="bold" color={textColor}>
                             {debt.toUserLastName}
                         </Text>
-                        <Avatar bg="gray.300">X</Avatar>
+                        {getUserAvatarByIdFromGroupUsers(debt.toUserId) == '' || getUserAvatarByIdFromGroupUsers(debt.toUserId) == null ? <Avatar bg="gray.300">X</Avatar> :
+                            <Avatar bg="gray.300" source={{uri: `data:image/png;base64,${getUserAvatarByIdFromGroupUsers(debt.toUserId)}`}}></Avatar>}
                     </HStack>
                 })}
                 <Text color={textColor} fontSize="lg" bold>
@@ -298,6 +316,6 @@ const styles = StyleSheet.create({
         height: 50,
     }, fab: {
         left: '40%',
-        marginBottom: 10,
+        marginBottom: 0,
     },
 });

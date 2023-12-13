@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-//TODO
+
 @SpringBootTest
 @Transactional
 class UserServiceTest {

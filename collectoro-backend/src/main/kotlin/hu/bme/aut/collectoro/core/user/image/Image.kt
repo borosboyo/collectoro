@@ -21,7 +21,7 @@ data class Image(
     var base64: String? = null,
 
     @OneToOne
-    @JsonBackReference
+    @JsonBackReference(value = "imageUser")
     var userEntity: UserEntity? = null
 )
 

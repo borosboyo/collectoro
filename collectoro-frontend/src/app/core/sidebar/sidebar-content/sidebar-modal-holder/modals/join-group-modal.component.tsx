@@ -41,7 +41,7 @@ export default function JoinGroupModalComponent(props: { visible: boolean, onPre
                     onPress={() => {
                         AsyncStorage.getItem('email').then((email) => {
                             sidebarService.joinGroup(joinCode, email!!).then(() => {
-                                props.onPress
+                                props.onPress()
                             })
                         })
                     }}

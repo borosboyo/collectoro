@@ -37,7 +37,7 @@ export default function EditWhoMultipleMembersComponent(props: EditWhoMultipleMe
 
     useEffect(() => {
         setWho(props.route.params.group.users.map((user: UserEntity) => {
-            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user.image.base64}
+            return {key: user?.id!!.toString(), value: user.lastName, amount: 0, selected: true, base64: user?.image?.base64}
         }))
     }, []);
 
@@ -61,13 +61,15 @@ export default function EditWhoMultipleMembersComponent(props: EditWhoMultipleMe
             props.navigation.navigate('EditWho', {group: props.route.params.group})
         }
     }
+
     const renderWho = () => {
         return who.map((user) => {
             return (
                 <Box key={user.key} pt={2} pb={2}
                      backgroundColor={mainColor} w="100%">
                     <Pressable style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Avatar mb="3" mt="2" bg={bgColor} size="2xl" source={{uri: `data:image/png;base64,${user.base64}`}}>GG</Avatar>
+                        {user.base64 == null ||  user.base64 == '' ? <Avatar ml={3} mb="3" mt="2" mr={3} bg={bgColor} size="md">X</Avatar> : <Avatar ml={3} mb="3" mt="2" mr={3} bg={bgColor} size="md" source={{uri: `data:image/png;base64,${user.base64}`}}>X</Avatar>}
+
                         <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                             <Text style={{fontSize: 16, fontWeight: 'bold', color: textColor}}>
                                 {user?.value}

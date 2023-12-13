@@ -22,10 +22,15 @@ const TransactionEditorService = {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
+        console.log("purpose: " + purpose);
+        console.log(who);
+        console.log(forWhom);
+        console.log("groupEntityId: " + groupEntityId);
+        console.log("type: " + type);
         return this.transactionController.processTransaction({
             purpose: purpose,
-            type: type,
             currency: ProcessTransactionReqCurrencyEnum.HUF,
+            type: type,
             who: who,
             forWhom: forWhom,
             groupEntityId: groupEntityId
