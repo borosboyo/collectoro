@@ -104,6 +104,17 @@ export function TabPageComponent({group, navigation}: { group: GroupEntity | und
 
     const closeModal = () => {
         setEditGroupModalVisible(false)
+        showEditGroupMessage()
+    }
+
+    const showEditGroupMessage = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Group edited successfully! 😇 Relogin to see changes.',
+            position: 'bottom',
+            bottomOffset: 100,
+        });
     }
 
     const getUserAvatarByIdFromGroupUsers = (userId: number) => {

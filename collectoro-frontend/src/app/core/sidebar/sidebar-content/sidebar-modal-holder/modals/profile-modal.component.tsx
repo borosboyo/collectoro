@@ -57,7 +57,7 @@ export default function ProfileModalComponent(props: {
         Toast.show({
             type: 'success',
             position: 'top',
-            text1: 'Profile updated! 🎉',
+            text1: 'Profile updated! 🎉 Relogin to see changes.'
         });
     }
 

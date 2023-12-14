@@ -45,7 +45,7 @@ export default function JoinGroupModalComponent(props: { visible: boolean, onPre
                             })
                         })
                     }}
-                    text={"Create"}
+                    text={"Join"}
                     elevation={5}>
                 </GradientButtonComponent>
             </VStack>

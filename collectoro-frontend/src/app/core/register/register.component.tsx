@@ -43,68 +43,89 @@ export default function RegisterComponent({navigation}: RegisterNavigationProps)
 
     const validate = () => {
         resetValidators();
-        validateEmail();
-        validatePassword();
-        validateConfirmPassword();
-        validateFirstName();
-        validateLastName();
-        return !checkErrors();
+        let emailError = validateEmail();
+        let passwordError = validatePassword();
+        let confirmPasswordError = validateConfirmPassword();
+        let firstNameError = validateFirstName();
+        let lastNameError = validateLastName();
+
+        let ret = !(emailError || passwordError || confirmPasswordError || firstNameError || lastNameError);
+        return ret;
     };
 
-    const checkErrors = () => {
-        return firstNameError !== "" || lastNameError !== "" || emailError !== "" || passwordError !== "" || confirmPasswordError !== "";
-    }
 
     const validateEmail = () => {
+        let ret = false;
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regex.test(formData.email)) {
-            setEmailError('Email is not valid');
-        }
         if (formData.email === "") {
             setEmailError('Email is required');
+            ret = true
         }
+        if (!regex.test(formData.email)) {
+            setEmailError('Email is not valid');
+            ret = true
+        }
+        return ret
     };
 
     const validatePassword = () => {
-        if (formData.password.length < 6) {
-            setPasswordError('Password must be at least 6 characters')
-        }
+        let ret = false;
         if (formData.password === "") {
             setPasswordError('Password is required')
+            ret = true
         }
+        if (formData.password.length < 6) {
+            setPasswordError('Password must be at least 6 characters')
+            ret = true
+        }
+        return ret
     };
 
     const validateConfirmPassword = () => {
-        if (formData.confirmPassword !== formData.password) {
-            setConfirmPasswordError('Passwords do not match')
-        }
+        let ret = false;
         if (formData.confirmPassword === "") {
             setConfirmPasswordError('Confirm password is required')
+            ret = true
         }
+        if (formData.confirmPassword !== formData.password) {
+            setConfirmPasswordError('Passwords do not match')
+            ret = true
+        }
+        return ret
     };
 
     const validateFirstName = () => {
-        if (formData.firstName === "") {
-            setFirstNameError('First name is required')
-        }
+        let ret = false;
         if (formData.firstName.length < 3) {
             setFirstNameError('First name must be at least 3 characters')
+            ret = true
         }
+        if (formData.firstName === "") {
+            setFirstNameError('First name is required')
+            ret = true
+        }
+        return ret
     };
 
     const validateLastName = () => {
+        let ret = false;
         if (formData.lastName === "") {
             setLastNameError('Last name is required')
+            ret = true
         }
         if (formData.lastName.length < 3) {
             setLastNameError('Last name must be at least 3 characters')
+            ret = true
         }
+        return ret
     };
 
     const onSubmit = () => {
-        validate() ?
-            showSuccess()
-            : showError();
+        if (validate()) {
+            showSuccess();
+        } else {
+            showError();
+        }
     };
 
     const showSuccess = () => {

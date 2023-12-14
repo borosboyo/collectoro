@@ -12,7 +12,8 @@ export default function SaveForgotPasswordComponent({navigation}: SaveForgotPass
     const [newPasswordAgain, setNewPasswordAgain] = React.useState("");
     const textColor = useColorModeValue("white", "black");
     const bgColor = useColorModeValue("black", "coolGray.100");
-    const subtitleColor = useColorModeValue("#424242", "#c9c9c9");
+    const subtitleColor = useColorModeValue("#c9c9c9", "#424242");
+
     const inputBackgroundColor = useColorModeValue("gray.700", "white");
 
     return (<Center w="100%" h="100%" bgColor={bgColor}>
@@ -40,7 +41,7 @@ export default function SaveForgotPasswordComponent({navigation}: SaveForgotPass
                 paddingVertical: 10,
                 paddingRight: 10,
                 fontSize: 12,
-                color: textColor}} placeholder={"Password"}
+                color: textColor}} secureTextEntry={true} placeholder={"Password"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPassword(newText)}/>
                 </FormControl>
@@ -49,7 +50,7 @@ export default function SaveForgotPasswordComponent({navigation}: SaveForgotPass
                 paddingVertical: 10,
                 paddingRight: 10,
                 fontSize: 12,
-                color: textColor}} placeholder={"Confirm password"}
+                color: textColor}} secureTextEntry={true} placeholder={"Confirm password"}
                                placeholderTextColor={subtitleColor}
                                onChangeText={newText => setNewPasswordAgain(newText)}/>
                 </FormControl>

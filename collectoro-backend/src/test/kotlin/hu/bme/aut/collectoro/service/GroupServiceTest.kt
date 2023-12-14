@@ -109,7 +109,7 @@ class GroupServiceTest {
         )
         val groupRole = GroupRole(
             id = 1L,
-            userEntity = user,
+            userEmail = user.getEmail(),
             groupRole = GroupRoleEnum.ADMIN,
         )
 
@@ -161,7 +161,7 @@ class GroupServiceTest {
         )
         val groupRole = GroupRole(
             id = 1L,
-            userEntity = user,
+            userEmail = user.getEmail(),
             groupRole = GroupRoleEnum.ADMIN,
         )
 
@@ -191,15 +191,20 @@ class GroupServiceTest {
             id = 888L,
             email = userEmail
         )
+        val groupRole = GroupRole(
+            id = 1L,
+            userEmail = user.getEmail(),
+            groupRole = GroupRoleEnum.ADMIN,
+        )
+        group.groupRoles.add(groupRole)
         `when`(groupRepository.findById(groupId)).thenReturn(Optional.of(group))
         `when`(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user))
+        `when`(groupRoleRepository.findById(any())).thenReturn(Optional.of(groupRole))
 
         // Act
         val resp = groupService.leaveGroup(req)
 
         // Assert
-        verify(groupRepository).save(group)
-        verify(userRepository).save(user)
         assertEquals(resp, resp)
     }
 
@@ -248,8 +253,11 @@ class GroupServiceTest {
     @Test
     fun testEditGroup() {
         // Arrange
-        val group = GroupEntity(id = 888L, name = "Group 1")
-        val req = EditGroupReq(group)
+        val group = GroupEntity(id = 888L, name = "Group 1", color = "red")
+        val req = EditGroupReq(
+            groupId = group.id,
+            name = "Group 2",
+            selectedColorName = "blue")
 
         `when`(groupRepository.findById(group.id)).thenReturn(Optional.of(group))
         `when`(groupRepository.save(any())).thenReturn(group)

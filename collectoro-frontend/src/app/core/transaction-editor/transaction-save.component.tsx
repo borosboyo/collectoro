@@ -116,7 +116,6 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
                 }
             })
         })
-        console.log(forWhomReq)
     }
 
     const renderWho = () => {
@@ -165,9 +164,7 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
                             }} placeholder={"0"} editable={user?.selected} placeholderTextColor={textColor} keyboardType={"numeric"}
                                        onChangeText={newText => {
                                            user.amount = newText
-                                             setForWhom(forWhom.map((item: any) =>
-                                                  item.key === user.key ? {...item, amount: newText} : item
-                                             ));
+                                             setForWhom(forWhom)
                                        }}/>
                         </FormControl>
                         <Text style={{marginRight: 5, fontSize: 16, fontWeight: 'bold', color: textColor}}>
@@ -292,8 +289,12 @@ export default function TransactionSaveComponent(props: TransactionSaveComponent
             <Box w="100%" backgroundColor={mainColor}>
                 <View mb={2} mt={2} ml={"10%"} mr={"10%"} w="80%">
                     <GradientButtonComponent onPress={() => {
+                        console.log(who)
                         mapWho()
+                        console.log(whoReq)
+                        console.log(forWhom)
                         mapForWhom()
+                        console.log(forWhomReq)
                         TransactionEditorService.processTransaction(purpose, whoReq, forWhomReq, props.route?.params?.group?.id, props.route?.params?.type).then(r =>
                             props.navigation.goBack())
                     }} elevation={5} text={"Save"}></GradientButtonComponent>

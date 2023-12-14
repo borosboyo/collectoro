@@ -19,7 +19,6 @@ import {TextInput} from "react-native";
 import GradientButtonComponent from "../../../shared/components/gradient-button.component";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import homeService from "../home.service";
-//TODO Jogosultságok kezelése editnél, userek kezelése
 export default function EditGroupModalComponent(props: {
     visible: boolean,
     closeModal: () => void,
@@ -72,12 +71,12 @@ export default function EditGroupModalComponent(props: {
                         <Avatar bg={'teal.500'} size={"sm"}></Avatar>
                     </Pressable>
                     <Pressable onPress={() => {
-                        setSelectedColorName("cyan.500");
+                        setSelectedColorName("red.500");
                     }}>
                         <Avatar bg={'red.500'} size={"sm"}></Avatar>
                     </Pressable>
                     <Pressable onPress={() => {
-                        setSelectedColorName("pink.500");
+                        setSelectedColorName("orange.500");
                     }}>
                         <Avatar bg={'orange.500'} size={"sm"}></Avatar>
                     </Pressable>
@@ -91,7 +90,7 @@ export default function EditGroupModalComponent(props: {
                     onPress={() => {
                         AsyncStorage.getItem('email').then((email) => {
                             homeService.editGroup(props.group.id, groupName, selectedColorName).then(() => {
-                                props.closeModal
+                                props.closeModal()
                             })
                         })
                     }}

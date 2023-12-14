@@ -22,12 +22,15 @@ import TransactionSaveComponent from "./src/app/core/transaction-editor/transact
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
+import { LogBox } from 'react-native';
 
 export default ({children, theme}: any) => {
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [token, setToken] = React.useState<string | null>(null);
 
     useEffect(() => {
+        LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+        LogBox.ignoreAllLogs();//Ignore all log notifications
         const checkLoginStatus = async () => {
             try {
                 // Retrieve the JWT token from AsyncStorage
